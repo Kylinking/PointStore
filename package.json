@@ -12,6 +12,7 @@
     "express": "^4.16.3",
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
+    "log4js": "^2.11.0",
     "morgan": "~1.9.0",
     "sequelize": "^4.38.0",
     "sequelize-cli": "^4.0.0"
