@@ -1,0 +1,172 @@
+[2018-07-17T00:14:01.402] [INFO] default - ip:::1
+[2018-07-17T00:14:01.409] [INFO] default - path:/login
+[2018-07-17T00:14:01.414] [INFO] default - headers:[object Object]
+[2018-07-17T00:14:01.416] [INFO] default - body:[object Object]
+[2018-07-17T00:14:01.416] [INFO] default - params:[object Object]
+[2018-07-17T00:14:01.418] [INFO] default - login.js enter
+[2018-07-17T00:14:01.422] [INFO] default - login.js end
+[2018-07-17T00:14:01.802] [INFO] default - ip:::1
+[2018-07-17T00:14:01.804] [INFO] default - path:/favicon.ico
+[2018-07-17T00:14:01.804] [INFO] default - headers:[object Object]
+[2018-07-17T00:14:01.806] [INFO] default - body:[object Object]
+[2018-07-17T00:14:01.807] [INFO] default - params:[object Object]
+[2018-07-17T00:14:18.909] [INFO] default - ip:::1
+[2018-07-17T00:14:18.916] [INFO] default - path:/
+[2018-07-17T00:14:18.917] [INFO] default - headers:[object Object]
+[2018-07-17T00:14:18.918] [INFO] default - body:[object Object]
+[2018-07-17T00:14:18.919] [INFO] default - params:[object Object]
+[2018-07-17T00:14:32.015] [INFO] default - ip:::1
+[2018-07-17T00:14:32.016] [INFO] default - path:/login
+[2018-07-17T00:14:32.017] [INFO] default - headers:[object Object]
+[2018-07-17T00:14:32.019] [INFO] default - body:[object Object]
+[2018-07-17T00:14:32.020] [INFO] default - params:[object Object]
+[2018-07-17T00:14:32.020] [INFO] default - login.js enter
+[2018-07-17T00:14:32.021] [INFO] default - login.js end
+[2018-07-17T00:14:33.851] [INFO] default - ip:::1
+[2018-07-17T00:14:33.852] [INFO] default - path:/favicon.ico
+[2018-07-17T00:14:33.853] [INFO] default - headers:[object Object]
+[2018-07-17T00:14:33.853] [INFO] default - body:[object Object]
+[2018-07-17T00:14:33.854] [INFO] default - params:[object Object]
+[2018-07-17T00:14:44.297] [INFO] default - ip:::1
+[2018-07-17T00:14:44.299] [INFO] default - path:/login
+[2018-07-17T00:14:44.300] [INFO] default - headers:[object Object]
+[2018-07-17T00:14:44.301] [INFO] default - body:[object Object]
+[2018-07-17T00:14:44.303] [INFO] default - params:[object Object]
+[2018-07-17T00:14:44.304] [INFO] default - login.js enter
+[2018-07-17T00:14:44.305] [INFO] default - login.js end
+[2018-07-17T00:14:44.582] [INFO] default - ip:::1
+[2018-07-17T00:14:44.583] [INFO] default - path:/favicon.ico
+[2018-07-17T00:14:44.584] [INFO] default - headers:[object Object]
+[2018-07-17T00:14:44.585] [INFO] default - body:[object Object]
+[2018-07-17T00:14:44.587] [INFO] default - params:[object Object]
+[2018-07-17T00:15:16.408] [INFO] default - ip:::1
+[2018-07-17T00:15:16.411] [INFO] default - path:/login
+[2018-07-17T00:15:16.413] [INFO] default - headers:[object Object]
+[2018-07-17T00:15:16.414] [INFO] default - body:[object Object]
+[2018-07-17T00:15:16.416] [INFO] default - params:[object Object]
+[2018-07-17T00:15:44.093] [INFO] default - ip:::1
+[2018-07-17T00:15:44.094] [INFO] default - path:/login
+[2018-07-17T00:15:44.096] [INFO] default - headers:[object Object]
+[2018-07-17T00:15:44.097] [INFO] default - body:[object Object]
+[2018-07-17T00:15:44.100] [INFO] default - params:[object Object]
+[2018-07-17T00:15:49.818] [INFO] default - ip:::1
+[2018-07-17T00:15:49.820] [INFO] default - path:/
+[2018-07-17T00:15:49.823] [INFO] default - headers:[object Object]
+[2018-07-17T00:15:49.825] [INFO] default - body:[object Object]
+[2018-07-17T00:15:49.828] [INFO] default - params:[object Object]
+[2018-07-17T00:16:12.208] [INFO] default - ip:::1
+[2018-07-17T00:16:12.209] [INFO] default - path:/login
+[2018-07-17T00:16:12.210] [INFO] default - headers:[object Object]
+[2018-07-17T00:16:12.213] [INFO] default - body:[object Object]
+[2018-07-17T00:16:12.216] [INFO] default - params:[object Object]
+[2018-07-17T00:16:21.962] [INFO] default - ip:::1
+[2018-07-17T00:16:21.964] [INFO] default - path:/
+[2018-07-17T00:16:21.965] [INFO] default - headers:[object Object]
+[2018-07-17T00:16:21.966] [INFO] default - body:[object Object]
+[2018-07-17T00:16:21.967] [INFO] default - params:[object Object]
+[2018-07-17T00:16:29.369] [INFO] default - ip:::1
+[2018-07-17T00:16:29.371] [INFO] default - path:/login
+[2018-07-17T00:16:29.373] [INFO] default - headers:[object Object]
+[2018-07-17T00:16:29.373] [INFO] default - body:[object Object]
+[2018-07-17T00:16:29.374] [INFO] default - params:[object Object]
+[2018-07-17T00:16:43.803] [INFO] default - ip:::1
+[2018-07-17T00:16:43.807] [INFO] default - path:/login
+[2018-07-17T00:16:43.810] [INFO] default - headers:[object Object]
+[2018-07-17T00:16:43.814] [INFO] default - body:[object Object]
+[2018-07-17T00:16:43.815] [INFO] default - params:[object Object]
+[2018-07-17T00:17:21.643] [INFO] default - ip:::1
+[2018-07-17T00:17:21.649] [INFO] default - path:/login
+[2018-07-17T00:17:21.649] [INFO] default - headers:[object Object]
+[2018-07-17T00:17:21.654] [INFO] default - body:[object Object]
+[2018-07-17T00:17:21.656] [INFO] default - params:[object Object]
+[2018-07-17T00:17:32.245] [INFO] default - ip:::1
+[2018-07-17T00:17:32.270] [INFO] default - path:/login
+[2018-07-17T00:17:32.274] [INFO] default - headers:[object Object]
+[2018-07-17T00:17:32.276] [INFO] default - body:[object Object]
+[2018-07-17T00:17:32.277] [INFO] default - params:[object Object]
+[2018-07-17T00:19:40.017] [INFO] default - ip:::1
+[2018-07-17T00:19:40.028] [INFO] default - path:/login
+[2018-07-17T00:19:40.029] [INFO] default - headers:[object Object]
+[2018-07-17T00:19:40.031] [INFO] default - body:[object Object]
+[2018-07-17T00:19:40.034] [INFO] default - params:[object Object]
+[2018-07-17T00:19:40.037] [INFO] default - login.js enter
+[2018-07-17T00:19:40.041] [INFO] default - login.js end
+[2018-07-17T00:19:40.681] [INFO] default - ip:::1
+[2018-07-17T00:19:40.683] [INFO] default - path:/favicon.ico
+[2018-07-17T00:19:40.684] [INFO] default - headers:[object Object]
+[2018-07-17T00:19:40.684] [INFO] default - body:[object Object]
+[2018-07-17T00:19:40.685] [INFO] default - params:[object Object]
+[2018-07-17T00:20:19.626] [INFO] default - ip:::1
+[2018-07-17T00:20:19.627] [INFO] default - path:/login
+[2018-07-17T00:20:19.628] [INFO] default - headers:[object Object]
+[2018-07-17T00:20:19.628] [INFO] default - body:[object Object]
+[2018-07-17T00:20:19.629] [INFO] default - params:[object Object]
+[2018-07-17T00:20:19.630] [INFO] default - login.js enter
+[2018-07-17T00:20:19.630] [INFO] default - login.js end
+[2018-07-17T00:20:19.948] [INFO] default - ip:::1
+[2018-07-17T00:20:19.950] [INFO] default - path:/favicon.ico
+[2018-07-17T00:20:19.951] [INFO] default - headers:[object Object]
+[2018-07-17T00:20:19.951] [INFO] default - body:[object Object]
+[2018-07-17T00:20:19.952] [INFO] default - params:[object Object]
+[2018-07-17T00:20:31.805] [INFO] default - ip:::1
+[2018-07-17T00:20:31.820] [INFO] default - path:/login
+[2018-07-17T00:20:31.820] [INFO] default - headers:[object Object]
+[2018-07-17T00:20:31.822] [INFO] default - body:[object Object]
+[2018-07-17T00:20:31.823] [INFO] default - params:[object Object]
+[2018-07-17T00:20:31.824] [INFO] default - login.js enter
+[2018-07-17T00:20:31.824] [INFO] default - /login
+[2018-07-17T00:20:31.827] [INFO] default - login.js end
+[2018-07-17T00:20:32.300] [INFO] default - ip:::1
+[2018-07-17T00:20:32.309] [INFO] default - path:/favicon.ico
+[2018-07-17T00:20:32.311] [INFO] default - headers:[object Object]
+[2018-07-17T00:20:32.312] [INFO] default - body:[object Object]
+[2018-07-17T00:20:32.312] [INFO] default - params:[object Object]
+[2018-07-17T00:20:35.856] [INFO] default - ip:::1
+[2018-07-17T00:20:35.859] [INFO] default - path:/login
+[2018-07-17T00:20:35.864] [INFO] default - headers:[object Object]
+[2018-07-17T00:20:35.865] [INFO] default - body:[object Object]
+[2018-07-17T00:20:35.866] [INFO] default - params:[object Object]
+[2018-07-17T00:20:35.866] [INFO] default - login.js enter
+[2018-07-17T00:20:35.868] [INFO] default - /login
+[2018-07-17T00:20:35.869] [INFO] default - login.js end
+[2018-07-17T00:20:36.066] [INFO] default - ip:::1
+[2018-07-17T00:20:36.068] [INFO] default - path:/favicon.ico
+[2018-07-17T00:20:36.068] [INFO] default - headers:[object Object]
+[2018-07-17T00:20:36.069] [INFO] default - body:[object Object]
+[2018-07-17T00:20:36.069] [INFO] default - params:[object Object]
+[2018-07-17T00:21:23.532] [INFO] default - ip:::1
+[2018-07-17T00:21:23.537] [INFO] default - path:/login
+[2018-07-17T00:21:23.538] [INFO] default - headers:[object Object]
+[2018-07-17T00:21:23.538] [INFO] default - body:[object Object]
+[2018-07-17T00:21:23.541] [INFO] default - params:[object Object]
+[2018-07-17T00:21:23.541] [INFO] default - login.js enter
+[2018-07-17T00:21:23.542] [INFO] default - /login
+[2018-07-17T00:21:23.542] [INFO] default - login.js end
+[2018-07-17T00:21:23.917] [INFO] default - ip:::1
+[2018-07-17T00:21:23.919] [INFO] default - path:/favicon.ico
+[2018-07-17T00:21:23.919] [INFO] default - headers:[object Object]
+[2018-07-17T00:21:23.920] [INFO] default - body:[object Object]
+[2018-07-17T00:21:23.920] [INFO] default - params:[object Object]
+[2018-07-17T00:21:31.987] [INFO] default - ip:::1
+[2018-07-17T00:21:31.994] [INFO] default - path:/login
+[2018-07-17T00:21:31.995] [INFO] default - headers:[object Object]
+[2018-07-17T00:21:31.995] [INFO] default - body:[object Object]
+[2018-07-17T00:21:31.996] [INFO] default - params:[object Object]
+[2018-07-17T00:21:48.319] [INFO] default - ip:::1
+[2018-07-17T00:21:48.326] [INFO] default - path:/login/login
+[2018-07-17T00:21:48.327] [INFO] default - headers:[object Object]
+[2018-07-17T00:21:48.329] [INFO] default - body:[object Object]
+[2018-07-17T00:21:48.331] [INFO] default - params:[object Object]
+[2018-07-17T00:21:48.332] [INFO] default - login.js enter
+[2018-07-17T00:21:48.334] [INFO] default - login.js end
+[2018-07-17T00:21:48.600] [INFO] default - ip:::1
+[2018-07-17T00:21:48.601] [INFO] default - path:/favicon.ico
+[2018-07-17T00:21:48.602] [INFO] default - headers:[object Object]
+[2018-07-17T00:21:48.603] [INFO] default - body:[object Object]
+[2018-07-17T00:21:48.604] [INFO] default - params:[object Object]
+[2018-07-17T00:23:44.042] [INFO] default - ip:::1 path:/login/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-17T00:24:00.576] [INFO] default - ip:::1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-17T00:24:00.580] [INFO] default - login.js enter
+[2018-07-17T00:24:00.585] [INFO] default - login.js end
+[2018-07-17T00:24:01.556] [INFO] default - ip:::1 path:/favicon.ico headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-17T00:26:01.561] [INFO] default - ip:::1 path:/favicon.ico headers:[object Object] body:[object Object] params:[object Object]

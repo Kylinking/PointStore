@@ -1,0 +1,142 @@
+[2018-07-20T05:57:20.758] [INFO] default - ip:::1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T05:57:20.762] [INFO] default - login.js enter
+[2018-07-20T05:57:20.763] [INFO] default - {}
+[2018-07-20T05:57:20.766] [INFO] default - login.js end
+[2018-07-20T05:57:22.283] [INFO] default - ip:::1 path:/favicon.ico headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T05:57:35.029] [INFO] default - ip:::1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T05:57:35.031] [INFO] default - login.js enter
+[2018-07-20T05:57:35.033] [INFO] default - {}
+[2018-07-20T05:57:35.037] [INFO] default - login.js end
+[2018-07-20T05:57:35.315] [INFO] default - ip:::1 path:/favicon.ico headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T05:58:52.435] [INFO] default - ip:::ffff:127.0.0.1 path:/ headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T05:59:56.552] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T05:59:56.554] [INFO] default - login.js enter
+[2018-07-20T05:59:56.554] [INFO] default - {}
+[2018-07-20T05:59:56.560] [INFO] default - login.js end
+[2018-07-20T06:01:50.015] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T06:01:50.020] [INFO] default - login.js enter
+[2018-07-20T06:01:50.021] [INFO] default - {}
+[2018-07-20T06:01:50.025] [INFO] default - login.js end
+[2018-07-20T06:08:20.371] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T06:08:20.375] [INFO] default - login.js enter
+[2018-07-20T06:08:20.376] [INFO] default - { usr: '123', pass: '12345' }
+[2018-07-20T06:08:20.381] [INFO] default - login.js end
+[2018-07-20T06:08:45.336] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T06:08:45.339] [INFO] default - login.js enter
+[2018-07-20T06:08:45.339] [INFO] default - { usr: '123', pass: '12345' }
+[2018-07-20T06:08:45.341] [INFO] default - login.js end
+[2018-07-20T06:10:28.355] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T06:10:28.363] [INFO] default - login.js enter
+[2018-07-20T06:10:28.370] [INFO] default - 123
+[2018-07-20T06:10:28.378] [INFO] default - login.js end
+[2018-07-20T06:15:57.220] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T06:15:57.224] [INFO] default - login.js enter
+[2018-07-20T06:15:57.228] [INFO] default - {"error":{"message":"用户名、密码不能为空"}}
+[2018-07-20T06:15:57.229] [INFO] default - login.js end
+[2018-07-20T06:19:19.530] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T06:19:19.540] [INFO] default - login.js enter
+[2018-07-20T06:19:19.545] [INFO] default - login.js end
+[2018-07-20T06:19:41.326] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T06:19:41.329] [INFO] default - login.js enter
+[2018-07-20T06:19:41.330] [INFO] default - login.js end
+[2018-07-20T07:19:22.299] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T07:19:22.303] [INFO] default - login.js enter
+[2018-07-20T07:19:22.310] [INFO] default - login.js end
+[2018-07-20T07:19:22.856] [INFO] default - Login {
+  dataValues:
+   { ShopID: 123,
+     Password: 'hello',
+     createdAt: 2018-07-19T22:54:24.000Z,
+     updatedAt: 2018-07-19T22:54:24.000Z },
+  _previousDataValues:
+   { ShopID: 123,
+     Password: 'hello',
+     createdAt: 2018-07-19T22:54:24.000Z,
+     updatedAt: 2018-07-19T22:54:24.000Z },
+  _changed: {},
+  _modelOptions:
+   { timestamps: true,
+     validate: {},
+     freezeTableName: false,
+     underscored: false,
+     underscoredAll: false,
+     paranoid: false,
+     rejectOnEmpty: false,
+     whereCollection: { ShopID: '123' },
+     schema: null,
+     schemaDelimiter: '',
+     defaultScope: {},
+     scopes: [],
+     indexes: [],
+     name: { plural: 'Logins', singular: 'Login' },
+     omitNull: false,
+     sequelize:
+      Sequelize {
+        options: [Object],
+        config: [Object],
+        dialect: [MysqlDialect],
+        queryInterface: [QueryInterface],
+        models: [Object],
+        modelManager: [ModelManager],
+        connectionManager: [ConnectionManager],
+        importCache: {},
+        test: [Object] },
+     hooks: {},
+     uniqueKeys: {} },
+  _options:
+   { isNewRecord: false,
+     _schema: null,
+     _schemaDelimiter: '',
+     raw: true,
+     attributes: [ 'ShopID', 'Password', 'createdAt', 'updatedAt' ] },
+  __eagerlyLoadedAssociations: [],
+  isNewRecord: false }
+[2018-07-20T07:20:40.901] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T07:20:40.907] [INFO] default - login.js enter
+[2018-07-20T07:20:40.916] [INFO] default - login.js end
+[2018-07-20T07:21:02.918] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T07:21:02.927] [INFO] default - login.js enter
+[2018-07-20T07:21:02.939] [INFO] default - login.js end
+[2018-07-20T07:23:39.264] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T07:23:39.267] [INFO] default - login.js enter
+[2018-07-20T07:23:39.272] [INFO] default - login.js end
+[2018-07-20T07:23:45.425] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T07:23:45.426] [INFO] default - login.js enter
+[2018-07-20T07:23:45.428] [INFO] default - login.js end
+[2018-07-20T07:24:37.569] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T07:24:37.585] [INFO] default - login.js enter
+[2018-07-20T07:24:37.641] [INFO] default - login.js end
+[2018-07-20T10:44:48.006] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T10:44:48.017] [INFO] default - login.js enter
+[2018-07-20T10:45:44.326] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T10:45:44.333] [INFO] default - login.js enter
+[2018-07-20T10:55:41.055] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T10:55:41.059] [INFO] default - login.js enter
+[2018-07-20T10:59:31.223] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T10:59:31.226] [INFO] default - login.js enter
+[2018-07-20T10:59:31.733] [INFO] default - eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIxMjMifQ.YYoLLamO-PI3f7NUF_bsS1O-V0_MdEq568IM-sv6WaQ
+[2018-07-20T11:09:44.492] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T11:09:44.495] [INFO] default - login.js enter
+[2018-07-20T11:09:44.986] [INFO] default - eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIxMjMifQ.YYoLLamO-PI3f7NUF_bsS1O-V0_MdEq568IM-sv6WaQ
+[2018-07-20T11:10:18.467] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T11:10:18.472] [INFO] default - login.js enter
+[2018-07-20T11:10:18.962] [INFO] default - function String() { [native code] }
+[2018-07-20T11:10:18.990] [INFO] default - eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIxMjMifQ.YYoLLamO-PI3f7NUF_bsS1O-V0_MdEq568IM-sv6WaQ
+[2018-07-20T11:10:52.611] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T11:10:52.615] [INFO] default - login.js enter
+[2018-07-20T11:10:53.135] [INFO] default - eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIxMjMifQ.YYoLLamO-PI3f7NUF_bsS1O-V0_MdEq568IM-sv6WaQ
+[2018-07-20T11:12:00.021] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T11:12:00.027] [INFO] default - login.js enter
+[2018-07-20T11:12:00.529] [INFO] default - 123
+[2018-07-20T11:13:01.605] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T11:13:01.639] [INFO] default - login.js enter
+[2018-07-20T11:13:02.372] [INFO] default - 123
+[2018-07-20T11:13:02.383] [INFO] default - eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIxMjMifQ.YYoLLamO-PI3f7NUF_bsS1O-V0_MdEq568IM-sv6WaQ
+[2018-07-20T11:13:33.507] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T11:13:33.515] [INFO] default - login.js enter
+[2018-07-20T11:13:34.044] [INFO] default - 123
+[2018-07-20T11:13:34.048] [INFO] default - eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIxMjMifQ.YYoLLamO-PI3f7NUF_bsS1O-V0_MdEq568IM-sv6WaQ
+[2018-07-20T11:40:20.330] [INFO] default - ip:::ffff:127.0.0.1 path:/login headers:[object Object] body:[object Object] params:[object Object]
+[2018-07-20T11:40:20.333] [INFO] default - login.js enter
+[2018-07-20T11:40:20.815] [INFO] default - 123
+[2018-07-20T11:40:20.820] [INFO] default - eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIxMjMifQ.YYoLLamO-PI3f7NUF_bsS1O-V0_MdEq568IM-sv6WaQ
