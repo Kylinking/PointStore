@@ -1,41 +1,44 @@
+'use strict';
+
 var express = require('express');
 var router = express.Router();
-var logins = require('../../models/login');
-var redisClient = require('../../models/index').redisClient;
-var redis = require('redis');
 var jwt = require('jwt-simple');
-/* Login in */
 
-router.post('/', function(req, res, next) {
-  res.locals.logger.info('enter post /login"');
+//TODO: Take expire time
+const expireTime = 8*3600 //seconds
+
+// Login in
+router.post('/', function(req, res, next) {  
   let shopID = req.body.ShopID || '';
   let password = req.body.Password || '';
+  let db = res.locals.db;
+  let redisClient = res.locals.redisClient;
+  let logger = res.locals.logger;
+  logger.info('enter post /login"');
   if (shopID == '' || password == ''){
-      res.locals.logger.warn("用户名、密码为空");      
+      logger.warn("用户名、密码为空");      
       res.json({error:{message:"用户名、密码不能为空"}}).end();
   }else{
-    logins.findOne({ where: {ShopID: shopID} }).then(login => {
+    db.Login.findOne({ where: {ID: shopID} }).then(login => {
       if (login == null){
-        res.locals.logger.warn(shopID + ": 用户不存在");
+        logger.warn(shopID + ": 用户不存在");
         res.json({error:{message:"用户不存在"}}).end();
       }else if(login.dataValues.Password !== password){
-        res.locals.logger.warn(shopID + ": 密码错误");
+        logger.warn(shopID + ": 密码错误");
         res.json({error:{message:"密码错误"}}).end();
       }else{
         var token = jwt.encode({
             iss:shopID
         },'SomeSecret');
         redisClient.set(String(shopID),token);
-        redisClient.expire(String(shopID),8*3600);
-        res.locals.logger.info(shopID+": 登录成功");
+        redisClient.expire(String(shopID),expireTime);
+        logger.info(shopID+": 登录成功");
         res.json({data:{message:"Login Success!",token:token}}).end();
       }
     }).then(()=>{
-      res.locals.logger.info("exit post /login")
+      logger.info("exit post /login")
     })
   }  
 });
-
-
 
 module.exports = router;
