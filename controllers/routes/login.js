@@ -9,12 +9,13 @@ const expireTime = 8*3600 //seconds
 
 // Login in
 router.post('/', function(req, res, next) {  
+  let logger = res.locals.logger;
+  logger.info('enter post /login"');
   let shopID = req.body.ShopID || '';
   let password = req.body.Password || '';
   let db = res.locals.db;
   let redisClient = res.locals.redisClient;
-  let logger = res.locals.logger;
-  logger.info('enter post /login"');
+  
   if (shopID == '' || password == ''){
       logger.warn("用户名、密码为空");      
       res.json({error:{message:"用户名、密码不能为空"}}).end();
@@ -41,4 +42,10 @@ router.post('/', function(req, res, next) {
   }  
 });
 
+
+
+router.use('/',(req,res)=>{
+  res.status(401);
+  res.json({error:{message:"No Service with "+req.method}}).end();
+})
 module.exports = router;

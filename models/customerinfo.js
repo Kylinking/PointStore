@@ -8,15 +8,16 @@ module.exports = (sequelize, DataTypes)=>{
             allowNull:false,
         },
         Name:{
-            type:DataTypes.TEXT,
+            type:DataTypes.STRING,
             allowNull:true,
         },
         Phone:{
-            type:DataTypes.TEXT,
+            type:DataTypes.STRING,
             allowNull:false,
+            unique: true,
         },
         Address:{
-            type:DataTypes.TEXT,
+            type:DataTypes.STRING,
             allowNull:true,
         },
         Status:{
@@ -28,10 +29,11 @@ module.exports = (sequelize, DataTypes)=>{
             allowNull:true,
         },
         Sex:{
-            type:DataTypes.TEXT,
+            type:DataTypes.STRING,
             allowNull:false,
         },
     });
+
 
     return CustomerInfo;
 }

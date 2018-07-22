@@ -42,10 +42,12 @@ app.use('/login', LoginRouter);
 app.use('/api', ApiRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
+  console.log("before createError");
   next(createError(404));
 });
 // error handler
 app.use(function (err, req, res, next) {
+  console.log("before app.js error");
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -58,7 +60,7 @@ app.use(function (err, req, res, next) {
 const developMode = require('./config/global.json').develop;
 if (developMode == true){
   db.sequelize.sync({force:true}).then(()=>{
-      require('./test/test.js')(db);
+      require('./test/fakedata.js')(db);
   });
 }
 module.exports = app;

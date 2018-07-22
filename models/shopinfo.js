@@ -8,15 +8,17 @@ module.exports = (sequelize, DataTypes)=>{
             allowNull:false,
         },
         Name:{
-            type:DataTypes.TEXT,
+            type:DataTypes.STRING,
             allowNull:false,
+            unique: true,
         },
         Phone:{
-            type:DataTypes.TEXT,
+            type:DataTypes.STRING,
             allowNull:false,
+            unique: true,
         },
         Address:{
-            type:DataTypes.TEXT,
+            type:DataTypes.STRING,
             allowNull:false,
         },
         Status:{

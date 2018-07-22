@@ -16,4 +16,13 @@ module.exports = (models)=>{
     }).then(shop=>{
         console.log(shop.toJSON());
     })
+    models.ShopInfo.create({
+        ShopID:"124",
+        Name:"柏杨路",
+        Phone:"7654321",
+        Address:"市中区",
+        Status:1
+    }).then(shop=>{
+        console.log(shop.toJSON());
+    })
 }
