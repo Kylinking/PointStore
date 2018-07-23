@@ -86,8 +86,8 @@ router.get('/shops', async (req, res, next) => {
 router.delete('/shops', async (req, res, next) => {
     var shopInfo = res.locals.db.ShopInfo;
     var logger = res.locals.logger;
-    var shopID = req.query.ShopID || '';
-    var phone = req.query.Phone || '';
+    var shopID = req.body.ShopID || '';
+    var phone = req.body.Phone || '';
     if (shopID == '' && phone == '') {
         res.json({
             error: {
@@ -124,7 +124,15 @@ router.delete('/shops', async (req, res, next) => {
                         ShopID: shopID
                     },
                 }).then((count, row) => {
-                    res.json({data:row.dataValues}).end();
+                    res.json({
+                        data: {
+                            ShopID: instance.dataValues.ShopID,
+                            Name: instance.dataValues.Name,
+                            Address: instance.dataValues.Address,
+                            Status: 0,
+                            Phone: instance.dataValues.Phone
+                        }
+                    }).end();
                 })
             } else {
                 shopInfo.update({
@@ -134,7 +142,15 @@ router.delete('/shops', async (req, res, next) => {
                         Phone: phone
                     }
                 }).then((count, row) => {
-                    res.json({data:row.dataValues}).end();
+                    res.json({
+                        data: {
+                            ShopID: instance.dataValues.ShopID,
+                            Name: instance.dataValues.Name,
+                            Address: instance.dataValues.Address,
+                            Status: 0,
+                            Phone: instance.dataValues.Phone
+                        }
+                    }).end();
                 })
             }
         } else {
@@ -187,6 +203,11 @@ router.post('/shops', (req, res, next) => {
             }
         }).end();
     });
+});
+
+router.update('/shops',(req, res, next)=>{
+    var shopInfo = res.locals.db.ShopInfo;
+    var logger = res.locals.logger;
 });
 
 // error 

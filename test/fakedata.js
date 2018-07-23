@@ -6,7 +6,7 @@ module.exports = (models)=>{
         Password:"hello"
     }).then(login=>{
         console.log(login.toJSON());
-    })
+    });
     models.ShopInfo.create({
         ShopID:"123",
         Name:"春华路",
@@ -15,7 +15,7 @@ module.exports = (models)=>{
         Status:1
     }).then(shop=>{
         console.log(shop.toJSON());
-    })
+    });
     models.ShopInfo.create({
         ShopID:"124",
         Name:"柏杨路",
@@ -24,5 +24,15 @@ module.exports = (models)=>{
         Status:1
     }).then(shop=>{
         console.log(shop.toJSON());
+    });
+    models.CustomerInfo.create({
+        Name: "小红",
+            Address: "市中区",
+            Status: 1,
+            Phone: 123987,
+            Sex: "女",
+            Age: 13
+    }).then(data=>{
+        console.log(data.toJSON());
     })
 }

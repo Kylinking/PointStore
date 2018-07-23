@@ -16,7 +16,7 @@ router.post('/customers', (req, res) => {
     var address = req.body.Address || '';
     var sex = req.body.Sex || '';
     var age = req.body.Age || '';
-    [phone, status, sex].forEach(elem => {
+    [phone, status, sex, name].forEach(elem => {
         if (elem == '') {
             res.json({
                 error: {
@@ -56,7 +56,7 @@ router.post('/customers', (req, res) => {
         error => {
             res.json({
                 error: {
-                    Message: error
+                    message: error
                 }
             }).end();
         });
@@ -125,7 +125,15 @@ router.delete('/customers', async (req, res) => {
                     }
                 }).then(() => {
                     res.json({
-                        data: row.dataValues
+                        data: {
+                            CustomerID: instance.dataValues.CustomerID,
+                            Name: instance.dataValues.Name,
+                            Address: instance.dataValues.Address,
+                            Status: 0,
+                            Phone: instance.dataValues.Phone,
+                            Sex: instance.dataValues.Sex,
+                            Age: instance.dataValues.Age
+                        }
                     }).end();
                 })
             }

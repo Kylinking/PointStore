@@ -1,8 +1,6 @@
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('../app');
-let should = chai.should();
-let db = require('../models').db;
 
 chai.use(chaiHttp);
 
@@ -20,7 +18,6 @@ describe('Create customerinfo', () => {
             .post('/api/v1/customers')
             .send(customer)
             .end((err, res) => {
-                console.log(err);
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('data');
@@ -36,16 +33,38 @@ describe('Create customerinfo', () => {
     });
 });
 
+describe('Create customerinfo with duplicated phone', () => {
+    it('it should return error', (done) => {
+        let customer = {
+            Name: "小明",
+            Address: "市中区",
+            Status: 1,
+            Phone: 123321,
+            Sex: "男",
+            Age: 11
+        };
+        chai.request(server)
+            .post('/api/v1/customers')
+            .send(customer)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('error');
+                res.body.error.should.have.property('message');
+                done();
+            });
+    });
+});
+
 describe('delete customerinfo', () => {
     it('it should set a customerinfo status=0 and return customerinfo', (done) => {
         let customer = {
             CustomerID:1
         };
         chai.request(server)
-            .post('/api/v1/customers')
+            .delete('/api/v1/customers')
             .send(customer)
             .end((err, res) => {
-                console.log(err);
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('data');
@@ -56,6 +75,24 @@ describe('delete customerinfo', () => {
                 res.body.data.should.have.property('Address');
                 res.body.data.should.have.property('Status');
                 res.body.data.should.have.property('Phone');
+                done();
+            });
+    });
+});
+
+describe('delete customerinfo with deleted customer', () => {
+    it('it should return error', (done) => {
+        let customer = {
+            CustomerID:1
+        };
+        chai.request(server)
+            .delete('/api/v1/customers')
+            .send(customer)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('error');
+                res.body.error.should.have.property('message');
                 done();
             });
     });
