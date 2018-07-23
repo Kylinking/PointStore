@@ -5,12 +5,12 @@ module.exports = (sequelize, DataTypes)=>{
         ShopID:{
             type:DataTypes.INTEGER,
             primaryKey:true,
-            allowNull:false,
+            autoIncrement: true
         },
         Name:{
             type:DataTypes.STRING,
             allowNull:false,
-            unique: true,
+            unique: false,
         },
         Phone:{
             type:DataTypes.STRING,

@@ -29,7 +29,7 @@ router.use('/',(req,res,next)=>{
     next();
 });
 
-router.use('/',apis);
+router.use('/'+version,apis);
 
 router.use((err,req,res,next)=>{
    // res.status(err.status || 500);

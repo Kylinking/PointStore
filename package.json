@@ -3,10 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "start": "nodemon ./bin/www",
+    "test" : "mocha --timeout 10000"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
+    "chai": "^4.1.2",
+    "chai-http": "^4.0.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "^4.16.3",
@@ -14,6 +17,7 @@
     "jade": "~1.11.0",
     "jwt-simple": "^0.5.1",
     "log4js": "^2.11.0",
+    "mocha": "^5.2.0",
     "morgan": "~1.9.0",
     "mysql": "^2.16.0",
     "mysql2": "^1.5.3",

@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes)=>{
         CustomerID:{
             type:DataTypes.INTEGER,
             primaryKey:true,
-            allowNull:false,
+            autoIncrement: true,
         },
         Name:{
             type:DataTypes.STRING,
