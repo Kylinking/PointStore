@@ -1,7 +1,7 @@
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('../app');
-
+const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJTaG9wSUQiOjEyM30.7f9YHrKohwNUajhlGB1RPzGTjBt0eOcOA30KknLRugI';
 chai.use(chaiHttp);
 
 describe('Create customerinfo', () => {
@@ -12,10 +12,12 @@ describe('Create customerinfo', () => {
             Status: 1,
             Phone: 123321,
             Sex: "男",
-            Age: 11
+            Age: 11,
+            ShopID:123
         };
         chai.request(server)
             .post('/api/v1/customers')
+            .set("TOKEN",token)
             .send(customer)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -41,10 +43,12 @@ describe('Create customerinfo with duplicated phone', () => {
             Status: 1,
             Phone: 123321,
             Sex: "男",
-            Age: 11
+            Age: 11,
+            ShopID:123
         };
         chai.request(server)
             .post('/api/v1/customers')
+            .set("TOKEN",token)
             .send(customer)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -63,6 +67,7 @@ describe('delete customerinfo', () => {
         };
         chai.request(server)
             .delete('/api/v1/customers')
+            .set("TOKEN",token)
             .send(customer)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -87,6 +92,7 @@ describe('delete customerinfo with deleted customer', () => {
         };
         chai.request(server)
             .delete('/api/v1/customers')
+            .set("TOKEN",token)
             .send(customer)
             .end((err, res) => {
                 res.should.have.status(200);

@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 
 before(async ()=>{
    await db.sequelize.sync({force:true});
-   require('./fakedata.js')(db);
+   await require('./fakedata.js')(db);
 });
 
 

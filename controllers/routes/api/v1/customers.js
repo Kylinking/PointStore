@@ -3,8 +3,123 @@ var express = require('express');
 var router = express.Router();
 const Op = require('sequelize').Op;
 
-router.get('/customers', (req, res) => {
-    res.end('customers');
+function isAdmin(shopID) {
+    return true;
+}
+router.get('/customers', async (req, res) => {
+    var customerInfo = res.locals.db.CustomerInfo;
+    var logger = res.locals.logger;
+    var operateShopID = res.locals.ShopID;
+    var queryShopID = req.query.ShopID || '';
+    var userPhone = req.query.Phone || '';
+    var page = parseInt(req.query.Page || 1);
+    var pageSize = parseInt(req.query.Size || 20);
+    var offset = (page - 1) * pageSize;
+    var pages = Math.ceil(await customerInfo.count() / pageSize);
+    if (page > pages) {
+        logger.warn("查询分页溢出");
+        json["Pages"] = Math.ceil(pages);
+        json["Size"] = pageSize;
+        json["Message"] = "查询分页溢出";
+        res.json(json).end();
+        return;
+    }
+    var json = {
+        data: []
+    };
+    if (!isAdmin(operateShopID)) {
+        if (userPhone == '') {
+            customerInfo.findAll({
+                where: {
+                    ShopInfoShopID: operateShopID
+                },
+                limit: pageSize,
+                offset: offset
+            }).then(results => {
+                results.forEach(result => {
+                    json.data.push(result);
+                });
+                json["Pages"] = Math.ceil(pages);
+                json["Size"] = pageSize;
+                res.json(json).end();
+            }, error => {
+                res.json({
+                    error: {
+                        message: error.message
+                    }
+                }).end();
+            });
+        } else {
+            customerInfo.findAll({
+                where: {
+                    ShopInfoShopID: operateShopID,
+                    Phone: userPhone
+                },
+                limit: pageSize,
+                offset: offset
+            }).then(results => {
+                results.forEach(result => {
+                    json.data.push(result);
+                });
+                json["Pages"] = Math.ceil(pages);
+                json["Size"] = pageSize;
+                res.json(json).end();
+            }, error => {
+                res.json({
+                    error: {
+                        message: error.message
+                    }
+                }).end();
+            })
+        }
+    } else {
+        //Todo add userPhone & queryShopID conditions.
+        if (userPhone == '') {
+            customerInfo.findAll({
+                where: {
+                    ShopInfoShopID: queryShopID
+                },
+                limit: pageSize,
+                offset: offset
+            }).then(results => {
+                results.forEach(result => {
+                    json.data.push(result);
+                });
+                json["Pages"] = Math.ceil(pages);
+                json["Size"] = pageSize;
+                res.json(json).end();
+            }, error => {
+                res.json({
+                    error: {
+                        message: error.message
+                    }
+                }).end();
+            });
+        } else {
+            customerInfo.findAll({
+                where: {
+                    ShopInfoShopID: queryShopID,
+                    Phone: userPhone
+                },
+                limit: pageSize,
+                offset: offset
+            }).then(results => {
+                results.forEach(result => {
+                    json.data.push(result);
+                });
+                json["Pages"] = Math.ceil(pages);
+                json["Size"] = pageSize;
+                res.json(json).end();
+            }, error => {
+                res.json({
+                    error: {
+                        message: error.message
+                    }
+                }).end();
+            })
+        }
+    }
+
 });
 
 router.post('/customers', (req, res) => {
@@ -16,6 +131,7 @@ router.post('/customers', (req, res) => {
     var address = req.body.Address || '';
     var sex = req.body.Sex || '';
     var age = req.body.Age || '';
+    var shopID = res.locals.ShopID;
     [phone, status, sex, name].forEach(elem => {
         if (elem == '') {
             res.json({
@@ -32,7 +148,8 @@ router.post('/customers', (req, res) => {
         Status: parseInt(status),
         Phone: phone,
         Sex: sex,
-        Age: age
+        Age: age,
+        ShopInfoShopID: shopID
     }).then((row) => {
             logger.info("CustomerInfo insert Values(" +
                 row.dataValues.CustomerID + " " +
@@ -49,7 +166,8 @@ router.post('/customers', (req, res) => {
                     Status: parseInt(status),
                     Phone: phone,
                     Sex: sex,
-                    Age: parseInt(age)
+                    Age: parseInt(age),
+                    ShopInfoShopID: shopID
                 }
             }).end();
         },
@@ -65,9 +183,9 @@ router.post('/customers', (req, res) => {
 router.delete('/customers', async (req, res) => {
     var customerInfo = res.locals.db.CustomerInfo;
     var logger = res.locals.logger;
+    var shopID = res.locals.ShopID;
     var customerID = req.body.CustomerID || '';
     var phone = req.body.Phone || '';
-
     if (customerID == '' && phone == '') {
         res.json({
             error: {
@@ -112,7 +230,8 @@ router.delete('/customers', async (req, res) => {
                             Status: 0,
                             Phone: instance.dataValues.Phone,
                             Sex: instance.dataValues.Sex,
-                            Age: instance.dataValues.Age
+                            Age: instance.dataValues.Age,
+                            ShopInfoShopID: instance.dataValues.ShopInfoShopID,
                         }
                     }).end();
                 })
@@ -132,7 +251,8 @@ router.delete('/customers', async (req, res) => {
                             Status: 0,
                             Phone: instance.dataValues.Phone,
                             Sex: instance.dataValues.Sex,
-                            Age: instance.dataValues.Age
+                            Age: instance.dataValues.Age,
+                            ShopInfoShopID: instance.dataValues.ShopInfoShopID,
                         }
                     }).end();
                 })
@@ -148,6 +268,7 @@ router.delete('/customers', async (req, res) => {
 });
 
 router.patch('/customers', (req, res) => {
+    var shopID = res.locals.ShopID;
     res.end('customers');
 });
 

@@ -34,6 +34,14 @@ module.exports = (sequelize, DataTypes)=>{
         },
     });
 
+    CustomerInfo.associate = function (models) {
+        models.CustomerInfo.belongsTo(models.ShopInfo, {
+          onDelete: "CASCADE",
+          foreignKey: {
+            allowNull: false
+          }
+        });
+      };
 
     return CustomerInfo;
 }

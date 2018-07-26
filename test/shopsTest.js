@@ -1,13 +1,14 @@
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('../app');
-
+const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJTaG9wSUQiOjEyM30.7f9YHrKohwNUajhlGB1RPzGTjBt0eOcOA30KknLRugI';
 chai.use(chaiHttp);
 
 describe('Get shopInfos',()=>{
     it('it should return array', done=>{
         chai.request(server)
             .get('/api/v1/shops')
+            .set("TOKEN",token)
             .end((err,res)=>{
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
@@ -32,6 +33,7 @@ describe('Create shopInfo', () => {
         };
         chai.request(server)
             .post('/api/v1/shops')
+            .set("TOKEN",token)
             .send(data)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -54,6 +56,7 @@ describe('delete shopInfo', () => {
         };
         chai.request(server)
             .delete('/api/v1/shops')
+            .set("TOKEN",token)
             .send(data)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -76,12 +79,33 @@ describe('delete shopInfo twice', () => {
         };
         chai.request(server)
             .delete('/api/v1/shops')
+            .set("TOKEN",token)
             .send(data)
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('error');
-                res.body.data.should.have.property('message');
+                res.body.error.should.have.property('message');
+                done();
+            });
+    });
+});
+
+describe('patch shopInfo fields', () => {
+    it('it should return info', (done) => {
+        let data = {
+            ShopID:124,
+            Name:"testNameChange"
+        };
+        chai.request(server)
+            .patch('/api/v1/shops')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.should.have.property('Name');
                 done();
             });
     });

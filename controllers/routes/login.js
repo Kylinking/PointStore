@@ -3,9 +3,9 @@
 var express = require('express');
 var router = express.Router();
 var jwt = require('jwt-simple');
-
+var jwtSecret = require('../../config/global.json').jwtSecret;
 //TODO: Take expire time
-const expireTime = 8*3600 //seconds
+const expireTime = 8*3600; //seconds
 
 // Login in
 router.post('/', function(req, res, next) {  
@@ -29,8 +29,8 @@ router.post('/', function(req, res, next) {
         res.json({error:{message:"密码错误"}}).end();
       }else{
         var token = jwt.encode({
-            iss:shopID
-        },'SomeSecret');
+            ShopID:shopID
+        },jwtSecret);
         redisClient.set(String(shopID),token);
         redisClient.expire(String(shopID),expireTime);
         logger.info(shopID+": 登录成功");

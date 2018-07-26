@@ -3,7 +3,6 @@
 const Sequelize = require('sequelize');
 const mysqlConfig = require('../config/global.json').database.mysql;
 const redisConfig = require('../config/global.json').database.redis;
-const developMode = require('../config/global.json').develop;
 var redis = require("redis"),
     client = redis.createClient({
         host: redisConfig.host
