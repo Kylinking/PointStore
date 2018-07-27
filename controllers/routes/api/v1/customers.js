@@ -1,11 +1,10 @@
 'use strict';
+var util = require('../../../../util/util');
 var express = require('express');
 var router = express.Router();
 const Op = require('sequelize').Op;
 
-function isAdmin(shopID) {
-    return true;
-}
+
 router.get('/customers', async (req, res) => {
     var customerInfo = res.locals.db.CustomerInfo;
     var logger = res.locals.logger;
@@ -27,99 +26,61 @@ router.get('/customers', async (req, res) => {
     var json = {
         data: []
     };
-    if (!isAdmin(operateShopID)) {
-        if (userPhone == '') {
-            customerInfo.findAll({
-                where: {
-                    ShopInfoShopID: operateShopID
-                },
-                limit: pageSize,
-                offset: offset
-            }).then(results => {
-                results.forEach(result => {
-                    json.data.push(result);
-                });
-                json["Pages"] = Math.ceil(pages);
-                json["Size"] = pageSize;
-                res.json(json).end();
-            }, error => {
-                res.json({
-                    error: {
-                        message: error.message
-                    }
-                }).end();
-            });
-        } else {
-            customerInfo.findAll({
-                where: {
-                    ShopInfoShopID: operateShopID,
-                    Phone: userPhone
-                },
-                limit: pageSize,
-                offset: offset
-            }).then(results => {
-                results.forEach(result => {
-                    json.data.push(result);
-                });
-                json["Pages"] = Math.ceil(pages);
-                json["Size"] = pageSize;
-                res.json(json).end();
-            }, error => {
-                res.json({
-                    error: {
-                        message: error.message
-                    }
-                }).end();
-            })
+    if (!util.isAdminShop(operateShopID)) {
+        if (queryShopID != '' && queryShopID != operateShopID){
+            res.json({error:{message:"无权限查询其它分店客户."}}).end();
+            return;
         }
+        var whereObj = { ShopInfoShopID: operateShopID };
+        if (userPhone != '') {
+            whereObj.Phone = userPhone;
+        }
+        customerInfo.findAll({
+            where: whereObj,
+            limit: pageSize,
+            offset: offset
+        }).then(results => {
+            results.forEach(result => {
+                json.data.push(result);
+            });
+            json["Pages"] = Math.ceil(pages);
+            json["Size"] = pageSize;
+            res.json(json).end();
+        }, error => {
+            res.json({
+                error: {
+                    message: error.message
+                }
+            }).end();
+        })
     } else {
         //Todo add userPhone & queryShopID conditions.
-        if (userPhone == '') {
-            customerInfo.findAll({
-                where: {
-                    ShopInfoShopID: queryShopID
-                },
-                limit: pageSize,
-                offset: offset
-            }).then(results => {
-                results.forEach(result => {
-                    json.data.push(result);
-                });
-                json["Pages"] = Math.ceil(pages);
-                json["Size"] = pageSize;
-                res.json(json).end();
-            }, error => {
-                res.json({
-                    error: {
-                        message: error.message
-                    }
-                }).end();
-            });
-        } else {
-            customerInfo.findAll({
-                where: {
-                    ShopInfoShopID: queryShopID,
-                    Phone: userPhone
-                },
-                limit: pageSize,
-                offset: offset
-            }).then(results => {
-                results.forEach(result => {
-                    json.data.push(result);
-                });
-                json["Pages"] = Math.ceil(pages);
-                json["Size"] = pageSize;
-                res.json(json).end();
-            }, error => {
-                res.json({
-                    error: {
-                        message: error.message
-                    }
-                }).end();
-            })
+        var whereObj = {};
+        if (userPhone != '') {
+            whereObj.Phone = userPhone;
         }
+        if (queryShopID != '') {
+            whereObj.ShopInfoShopID = queryShopID;
+        }
+        customerInfo.findAll({
+            where: whereObj,
+            limit: pageSize,
+            offset: offset
+        }).then(results => {
+            results.forEach(result => {
+                json.data.push(result);
+            });
+            json["Pages"] = Math.ceil(pages);
+            json["Size"] = pageSize;
+            res.json(json).end();
+        }, error => {
+            res.json({
+                error: {
+                    message: error.message
+                }
+            }).end();
+        });
     }
-
 });
 
 router.post('/customers', (req, res) => {
@@ -151,26 +112,26 @@ router.post('/customers', (req, res) => {
         Age: age,
         ShopInfoShopID: shopID
     }).then((row) => {
-            logger.info("CustomerInfo insert Values(" +
-                row.dataValues.CustomerID + " " +
-                name + " " +
-                address + " " +
-                phone + " " +
-                sex + " " +
-                age + ')');
-            res.json({
-                data: {
-                    CustomerID: row.dataValues.CustomerID,
-                    Name: name,
-                    Address: address,
-                    Status: parseInt(status),
-                    Phone: phone,
-                    Sex: sex,
-                    Age: parseInt(age),
-                    ShopInfoShopID: shopID
-                }
-            }).end();
-        },
+        logger.info("CustomerInfo insert Values(" +
+            row.dataValues.CustomerID + " " +
+            name + " " +
+            address + " " +
+            phone + " " +
+            sex + " " +
+            age + ')');
+        res.json({
+            data: {
+                CustomerID: row.dataValues.CustomerID,
+                Name: name,
+                Address: address,
+                Status: parseInt(status),
+                Phone: phone,
+                Sex: sex,
+                Age: parseInt(age),
+                ShopInfoShopID: shopID
+            }
+        }).end();
+    },
         error => {
             res.json({
                 error: {
@@ -196,11 +157,11 @@ router.delete('/customers', async (req, res) => {
         var instance = await customerInfo.findOne({
             where: {
                 [Op.or]: [{
-                        CustomerID: customerID
-                    },
-                    {
-                        Phone: phone
-                    }
+                    CustomerID: customerID
+                },
+                {
+                    Phone: phone
+                }
                 ]
             }
         });
@@ -218,44 +179,44 @@ router.delete('/customers', async (req, res) => {
                 customerInfo.update({
                     Status: 0
                 }, {
-                    where: {
-                        CustomerID: customerID
-                    },
-                }).then(() => {
-                    res.json({
-                        data: {
-                            CustomerID: instance.dataValues.CustomerID,
-                            Name: instance.dataValues.Name,
-                            Address: instance.dataValues.Address,
-                            Status: 0,
-                            Phone: instance.dataValues.Phone,
-                            Sex: instance.dataValues.Sex,
-                            Age: instance.dataValues.Age,
-                            ShopInfoShopID: instance.dataValues.ShopInfoShopID,
-                        }
-                    }).end();
-                })
+                        where: {
+                            CustomerID: customerID
+                        },
+                    }).then(() => {
+                        res.json({
+                            data: {
+                                CustomerID: instance.dataValues.CustomerID,
+                                Name: instance.dataValues.Name,
+                                Address: instance.dataValues.Address,
+                                Status: 0,
+                                Phone: instance.dataValues.Phone,
+                                Sex: instance.dataValues.Sex,
+                                Age: instance.dataValues.Age,
+                                ShopInfoShopID: instance.dataValues.ShopInfoShopID,
+                            }
+                        }).end();
+                    })
             } else {
                 customerInfo.update({
                     Status: 0
                 }, {
-                    where: {
-                        Phone: phone
-                    }
-                }).then(() => {
-                    res.json({
-                        data: {
-                            CustomerID: instance.dataValues.CustomerID,
-                            Name: instance.dataValues.Name,
-                            Address: instance.dataValues.Address,
-                            Status: 0,
-                            Phone: instance.dataValues.Phone,
-                            Sex: instance.dataValues.Sex,
-                            Age: instance.dataValues.Age,
-                            ShopInfoShopID: instance.dataValues.ShopInfoShopID,
+                        where: {
+                            Phone: phone
                         }
-                    }).end();
-                })
+                    }).then(() => {
+                        res.json({
+                            data: {
+                                CustomerID: instance.dataValues.CustomerID,
+                                Name: instance.dataValues.Name,
+                                Address: instance.dataValues.Address,
+                                Status: 0,
+                                Phone: instance.dataValues.Phone,
+                                Sex: instance.dataValues.Sex,
+                                Age: instance.dataValues.Age,
+                                ShopInfoShopID: instance.dataValues.ShopInfoShopID,
+                            }
+                        }).end();
+                    })
             }
         } else {
             res.json({

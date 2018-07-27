@@ -1,21 +1,18 @@
 'use strict';
+var util = require('../../../../util/util');
 var express = require('express');
 var router = express.Router();
 const Op = require('sequelize').Op;
 //TODO: add role control!
 
 router.get('/shops', async (req, res, next) => {
-    var operateShopID = res.locals.ShopID ;
+    var operateShopID = res.locals.ShopID;
     var shopInfo = res.locals.db.ShopInfo;
     var logger = res.locals.logger;
-    if (!req.query) {
-        res.end('hello');
-    } else {
-        logger.info(req.query);
-        var shopID = req.query.ShopID || '';
-        var phone = req.query.Phone || '';
-        if (shopID == '' && phone == '') {
-            logger.info("返回所有Shop信息列表");
+    var queryShopID = req.query.ShopID || '';
+    var phone = req.query.Phone || '';
+    if (util.isAdminShop(operateShopID)) {
+        if (queryShopID == '' && phone == '') {
             var json = {
                 data: []
             };
@@ -44,14 +41,19 @@ router.get('/shops', async (req, res, next) => {
                     json["Size"] = pageSize;
                     res.json(json).end();
                 })
-        } else if (shopID != '') {
+        } else { // !queryShopID == '' && phone == ''
+            var whereObj = {};
+            if (queryShopID != '') {
+                whereObj.ShopID = queryShopID;
+            }
+            if (phone != '') {
+                whereObj.Phone = phone;
+            }
             shopInfo.findOne({
-                where: {
-                    ShopID: shopID
-                }
+                where: whereObj
             }).then(info => {
                 if (info == null) {
-                    logger.warn(shopID + ": 分店不存在");
+                    logger.warn(queryShopID + ": 分店不存在");
                     res.json({
                         error: {
                             message: "分店不存在"
@@ -62,15 +64,26 @@ router.get('/shops', async (req, res, next) => {
                         data: [info.dataValues]
                     }).end();
                 }
-            })
+            });
+        }
+    } else { //!isAdminShop
+        if (queryShopID != '' && queryShopID != operateShopID) {
+            res.json({
+                error: {
+                    message: "无权限查询其它分店."
+                }
+            }).end();
+            return;
         } else {
+            var whereObj = {ShopID:operateShopID};
+            if (phone !=''){
+                whereObj.Phone = phone;
+            }
             shopInfo.findOne({
-                where: {
-                    Phone: phone
-                }
+                where: whereObj
             }).then(info => {
                 if (info == null) {
-                    logger.warn(shopID + ": 分店不存在");
+                    logger.warn(queryShopID + ": 分店不存在");
                     res.json({
                         error: {
                             message: "分店不存在"
@@ -81,38 +94,46 @@ router.get('/shops', async (req, res, next) => {
                         data: [info.dataValues]
                     }).end();
                 }
-            })
+            });
         }
     }
 });
 
 router.delete('/shops', async (req, res, next) => {
-    var operateShopID = res.locals.ShopID ;
+    var operateShopID = res.locals.ShopID;
+    if (!util.isAdminShop(operateShopID)) {
+        res.json({
+            error: {
+                message: "该用户无权关闭店面"
+            }
+        }).end();
+        return;
+    }
     var shopInfo = res.locals.db.ShopInfo;
     var logger = res.locals.logger;
-    var shopID = req.body.ShopID || '';
+    var queryShopID = req.body.ShopID || '';
     var phone = req.body.Phone || '';
-    if (shopID == '' && phone == '') {
+    if (queryShopID == '' && phone == '') {
         res.json({
             error: {
                 message: "未指定店面。"
             }
         }).end();
     } else {
-        if (shopID != ''){
+        if (queryShopID != '') {
             var instance = await shopInfo.findOne({
                 where: {
-                    ShopID: shopID
+                    ShopID: queryShopID
                 }
             });
-        }else {
+        } else {
             var instance = await shopInfo.findOne({
                 where: {
                     Phone: phone
                 }
             });
         }
-        
+
         if (instance) {
             if (instance.dataValues.Status == 0) {
                 res.json({
@@ -122,12 +143,12 @@ router.delete('/shops', async (req, res, next) => {
                 }).end();
                 return;
             }
-            if (shopID != '') {
+            if (queryShopID != '') {
                 shopInfo.update({
                     Status: 0
                 }, {
                     where: {
-                        ShopID: shopID
+                        ShopID: queryShopID
                     },
                 }).then(() => {
                     res.json({
@@ -139,8 +160,12 @@ router.delete('/shops', async (req, res, next) => {
                             Phone: instance.dataValues.Phone
                         }
                     }).end();
-                },(err)=>{
-                    res.json({error:{message:err}}).end();
+                }, (err) => {
+                    res.json({
+                        error: {
+                            message: err
+                        }
+                    }).end();
                 })
             } else {
                 shopInfo.update({
@@ -172,7 +197,15 @@ router.delete('/shops', async (req, res, next) => {
 });
 
 router.post('/shops', (req, res, next) => {
-    var operateShopID = res.locals.ShopID ;
+    var operateShopID = res.locals.ShopID;
+    if (!util.isAdminShop(operateShopID)) {
+        res.json({
+            error: {
+                message: "该用户无权新建分店"
+            }
+        }).end();
+        return;
+    }
     var shopInfo = res.locals.db.ShopInfo;
     var logger = res.locals.logger;
     var phone = req.body.Phone || '';
@@ -214,47 +247,55 @@ router.post('/shops', (req, res, next) => {
     });
 });
 
-router.patch('/shops',async (req, res, next)=>{
-    var operateShopID = res.locals.ShopID ;
+router.patch('/shops', async (req, res, next) => {
+    var operateShopID = res.locals.ShopID;
+    if (!util.isAdminShop(operateShopID)) {
+        res.json({
+            error: {
+                message: "该用户无权修改分店信息"
+            }
+        }).end();
+        return;
+    }
     var shopInfo = res.locals.db.ShopInfo;
     var logger = res.locals.logger;
-    var shopID = req.body.ShopID || '';
+    var queryShopID = req.body.ShopID || '';
     var phone = req.body.Phone || '';
     var status = req.body.Status || '';
     var name = req.body.Name || '';
     var address = req.body.Address || '';
 
-    if (shopID == '' && phone == '') {
+    if (queryShopID == '' && phone == '') {
         res.json({
             error: {
                 message: "未指定店面。"
             }
         }).end();
     } else {
-        if (shopID != ''){
+        if (queryShopID != '') {
             var instance = await shopInfo.findOne({
                 where: {
-                    ShopID: shopID
+                    ShopID: queryShopID
                 }
             });
-        }else {
+        } else {
             var instance = await shopInfo.findOne({
                 where: {
                     Phone: phone
                 }
             });
         }
-        if (instance){
-            if (status){
-                instance.set('Status',parseInt(status));
+        if (instance) {
+            if (status) {
+                instance.set('Status', parseInt(status));
             }
-            if (name){
-                instance.set("Name",name);
+            if (name) {
+                instance.set("Name", name);
             }
-            if (address){
-                instance.set("Address",address);
+            if (address) {
+                instance.set("Address", address);
             }
-            instance.save().then(()=>{
+            instance.save().then(() => {
                 res.json({
                     data: {
                         ShopID: instance.dataValues.ShopID,
@@ -264,10 +305,14 @@ router.patch('/shops',async (req, res, next)=>{
                         Phone: instance.dataValues.Phone
                     }
                 }).end();
-            },(err)=>{
-                res.json({error:{message:err}}).end();
+            }, (err) => {
+                res.json({
+                    error: {
+                        message: err
+                    }
+                }).end();
             });
-        }else{
+        } else {
             res.json({
                 error: {
                     message: "店面不存在"

@@ -5,6 +5,10 @@ module.exports = async (models)=>{
         ID:"123",
         Password:"hello"
     });
+    await models.Login.create({
+        ID:"012",
+        Password:"hello"
+    });
    await models.ShopInfo.create({
         ShopID:"123",
         Name:"春华路",

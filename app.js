@@ -10,7 +10,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('./log/');
 var LoginRouter = require('./controllers/routes/login');
 var ApiRouter = require('./controllers/routes/api/');
-
 var app = express();
 app.db = db;
 app.use(bodyParser.json());

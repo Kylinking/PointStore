@@ -2,6 +2,7 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('../app');
 const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJTaG9wSUQiOjEyM30.7f9YHrKohwNUajhlGB1RPzGTjBt0eOcOA30KknLRugI';
+const tokenAdmin = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJTaG9wSUQiOiIwMTIifQ.WjAXQ_WFM95fd2c5keiFZrduOWc1SOzc8q4Y-zjKUYo";
 chai.use(chaiHttp);
 
 describe('Create customerinfo', () => {
@@ -99,6 +100,38 @@ describe('delete customerinfo with deleted customer', () => {
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('error');
                 res.body.error.should.have.property('message');
+                done();
+            });
+    });
+});
+
+describe('get customerinfo', () => {
+    it('it should return 2 users', (done) => {
+        chai.request(server)
+            .get('/api/v1/customers')
+            .set("TOKEN",tokenAdmin)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.should.be.a('array');
+                res.body.data.should.have.length(2);
+                done();
+            });
+    });
+});
+
+describe('get customerinfo', () => {
+    it('it should return 1 user', (done) => {
+        chai.request(server)
+            .get('/api/v1/customers')
+            .set("TOKEN",token)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.should.be.a('array');
+                res.body.data.should.have.length(1);
                 done();
             });
     });
