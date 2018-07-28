@@ -32,6 +32,26 @@ describe('Login with correct ShopID & Password', () => {
             });
     });
 });
+describe('Login with correct ShopID & Password', () => {
+    it('it should get token', (done) => {
+        let info = {
+            ShopID: "012",
+            Password: "hello"
+        };
+        chai.request(server)
+            .post('/login')
+            .send(info)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.should.have.property('token');
+                res.body.data.token.length.should.be.gt(0);
+                res.body.data.should.have.property('message');
+                done();
+            });
+    });
+});
 describe('Login with correct ShopID & fake Password', () => {
     it('it should return error', (done) => {
         let info = {

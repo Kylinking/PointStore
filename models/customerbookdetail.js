@@ -1,8 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
-    var ShopAccountInfo = sequelize.define('ShopAccountInfo', {
-        ConsumedBounus: {
+    var CustomerBookingDetails = sequelize.define('CustomerBookingDetails', {
+        CustomerBookingSeq: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            primaryKey:true,
+            autoIncrement:true,
         },
         RecommentBounus: {
             type: DataTypes.INTEGER,
@@ -24,19 +25,20 @@ module.exports = (sequelize, DataTypes) => {
             type:DataTypes.INTEGER,
             allowNull:false,
         },
-        LastdayConsumedBounus:{
+        Date:{
             type:DataTypes.INTEGER,
             allowNull:false,
         }
     });
 
-    ShopAccountInfo.associate = function (models) {
-        models.ShopAccountInfo.belongsTo(models.ShopInfo, {
+    CustomerBookingDetails.associate = function (models) {
+        models.CustomerBookingDetails.belongsTo(models.ShopInfo, {
           onDelete: "CASCADE",
           foreignKey: {
+            name: 'ShopID',
             allowNull: false
           }
         });
       };
-   return ShopAccountInfo;
+   return CustomerBookingDetails;
 }

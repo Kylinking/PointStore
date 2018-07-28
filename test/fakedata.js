@@ -30,6 +30,6 @@ module.exports = async (models)=>{
             Phone: 123987,
             Sex: "女",
             Age: 13,
-            ShopInfoShopID:124
+            ShopID:124
     });
 }

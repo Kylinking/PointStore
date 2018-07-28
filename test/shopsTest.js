@@ -1,3 +1,4 @@
+require('./loginTest');
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('../app');
@@ -22,7 +23,7 @@ describe('Get shopInfos',()=>{
 });
 
 describe('Create shopInfo', () => {
-    it('it should create a shopInfo and return info', (done) => {
+    it('it should return error', (done) => {
         let data = {
             Name: "test分店",
             Address: "市中区",
@@ -43,7 +44,7 @@ describe('Create shopInfo', () => {
 });
 
 describe('delete shopInfo', () => {
-    it('it should set a shopInfo status=0 and return shopInfo', (done) => {
+    it('it should return error', (done) => {
         let data = {
             ShopID:124
         };
@@ -84,7 +85,7 @@ describe('patch shopInfo fields', () => {
     it('it should return error', (done) => {
         let data = {
             ShopID:124,
-            Name:"testNameChange"
+            Name:"testNameChang"
         };
         chai.request(server)
             .patch('/api/v1/shops')
@@ -100,7 +101,7 @@ describe('patch shopInfo fields', () => {
 });
 
 //admin
-describe('Get shopInfos',()=>{
+describe('admin Get shopInfos',()=>{
     it('it should return array', done=>{
         chai.request(server)
             .get('/api/v1/shops')
@@ -119,10 +120,10 @@ describe('Get shopInfos',()=>{
     })
 });
 
-describe('Create shopInfo', () => {
+describe('admin Create shopInfo', () => {
     it('it should create a shopInfo and return info', (done) => {
         let data = {
-            Name: "test分店",
+            Name: "test分店admin",
             Address: "市中区",
             Status: 1,
             Phone: 143431,
@@ -145,7 +146,7 @@ describe('Create shopInfo', () => {
     });
 });
 
-describe('delete shopInfo', () => {
+describe(' admin delete shopInfo', () => {
     it('it should set a shopInfo status=0 and return shopInfo', (done) => {
         let data = {
             ShopID:124
@@ -168,7 +169,7 @@ describe('delete shopInfo', () => {
     });
 });
 
-describe('delete shopInfo twice', () => {
+describe('admin delete shopInfo twice', () => {
     it('it should return error', (done) => {
         let data = {
             ShopID:124
@@ -187,7 +188,7 @@ describe('delete shopInfo twice', () => {
     });
 });
 
-describe('patch shopInfo fields', () => {
+describe('admin patch shopInfo fields', () => {
     it('it should return info', (done) => {
         let data = {
             ShopID:124,

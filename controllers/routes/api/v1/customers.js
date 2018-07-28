@@ -31,7 +31,7 @@ router.get('/customers', async (req, res) => {
             res.json({error:{message:"无权限查询其它分店客户."}}).end();
             return;
         }
-        var whereObj = { ShopInfoShopID: operateShopID };
+        var whereObj = { ShopID: operateShopID };
         if (userPhone != '') {
             whereObj.Phone = userPhone;
         }
@@ -60,7 +60,7 @@ router.get('/customers', async (req, res) => {
             whereObj.Phone = userPhone;
         }
         if (queryShopID != '') {
-            whereObj.ShopInfoShopID = queryShopID;
+            whereObj.ShopID = queryShopID;
         }
         customerInfo.findAll({
             where: whereObj,
@@ -110,7 +110,7 @@ router.post('/customers', (req, res) => {
         Phone: phone,
         Sex: sex,
         Age: age,
-        ShopInfoShopID: shopID
+        ShopID: shopID
     }).then((row) => {
         logger.info("CustomerInfo insert Values(" +
             row.dataValues.CustomerID + " " +
@@ -128,7 +128,7 @@ router.post('/customers', (req, res) => {
                 Phone: phone,
                 Sex: sex,
                 Age: parseInt(age),
-                ShopInfoShopID: shopID
+                ShopID: shopID
             }
         }).end();
     },
@@ -192,7 +192,7 @@ router.delete('/customers', async (req, res) => {
                                 Phone: instance.dataValues.Phone,
                                 Sex: instance.dataValues.Sex,
                                 Age: instance.dataValues.Age,
-                                ShopInfoShopID: instance.dataValues.ShopInfoShopID,
+                                ShopID: instance.dataValues.ShopID,
                             }
                         }).end();
                     })
@@ -213,7 +213,7 @@ router.delete('/customers', async (req, res) => {
                                 Phone: instance.dataValues.Phone,
                                 Sex: instance.dataValues.Sex,
                                 Age: instance.dataValues.Age,
-                                ShopInfoShopID: instance.dataValues.ShopInfoShopID,
+                                ShopID: instance.dataValues.ShopID,
                             }
                         }).end();
                     })
