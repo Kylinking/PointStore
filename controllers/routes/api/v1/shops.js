@@ -10,8 +10,57 @@ router.get('/shops', async (req, res, next) => {
     var shopInfo = res.locals.db.ShopInfo;
     var logger = res.locals.logger;
     var queryShopID = req.query.ShopID || '';
+    var queryType = req.query.Type || 0;
     var phone = req.query.Phone || '';
-    if (util.isAdminShop(operateShopID)) {
+
+
+    if (util.isSuperman(operateShopID)) {
+        var json = {
+            data: []
+        };
+        var whereObj = {};
+        if (queryType == 0) {
+            if (queryShopID != '') {
+                whereObj.ParentShopID = queryShopID;
+            } else {
+                whereObj.ParentShopID = operateShopID;
+            }
+        } else {
+            if (queryShopID != '') {
+                whereObj.ShopID = queryShopID;
+            }
+        }
+        if (phone != '') {
+            whereObj.Phone = phone;
+        }
+        var page = parseInt(req.query.Page || 1);
+        var pageSize = parseInt(req.query.Size || 20);
+        var offset = (page - 1) * pageSize;
+        var pages = Math.ceil(await shopInfo.count({
+                where: whereObj
+            }) / pageSize);
+        if (page > pages) {
+            logger.warn("查询分页溢出");
+            json["Pages"] = Math.ceil(pages);
+            json["Size"] = pageSize;
+            json["Message"] = "查询分页溢出";
+            res.json(json).end();
+            return;
+        }
+        shopInfo.findAll({
+            where: whereObj,
+            limit: pageSize,
+            offset: offset
+        })
+        .then(results => {
+            results.forEach(result => {
+                json.data.push(result);
+            });
+            json["Pages"] = Math.ceil(pages);
+            json["Size"] = pageSize;
+            res.json(json).end();
+        })
+    } else if (util.isAdminShop(operateShopID)) {
         if (queryShopID == '' && phone == '') {
             var json = {
                 data: []
@@ -30,6 +79,9 @@ router.get('/shops', async (req, res, next) => {
                 return;
             }
             shopInfo.findAll({
+                    where: {
+                        ParentShopID: operateShopID
+                    },
                     limit: pageSize,
                     offset: offset
                 })
@@ -42,7 +94,9 @@ router.get('/shops', async (req, res, next) => {
                     res.json(json).end();
                 })
         } else { // !queryShopID == '' && phone == ''
-            var whereObj = {};
+            var whereObj = {
+                ParentShopID: operateShopID
+            };
             if (queryShopID != '') {
                 whereObj.ShopID = queryShopID;
             }
@@ -66,7 +120,7 @@ router.get('/shops', async (req, res, next) => {
                 }
             });
         }
-    } else { //!isAdminShop
+    } else { //!分店
         if (queryShopID != '' && queryShopID != operateShopID) {
             res.json({
                 error: {
@@ -75,8 +129,10 @@ router.get('/shops', async (req, res, next) => {
             }).end();
             return;
         } else {
-            var whereObj = {ShopID:operateShopID};
-            if (phone !=''){
+            var whereObj = {
+                ShopID: operateShopID
+            };
+            if (phone != '') {
                 whereObj.Phone = phone;
             }
             shopInfo.findOne({
@@ -249,7 +305,8 @@ router.post('/shops', (req, res, next) => {
 
 router.patch('/shops', async (req, res, next) => {
     var operateShopID = res.locals.ShopID;
-    if (!util.isAdminShop(operateShopID)) {
+    if (!util.isAdminShop(operateShopID) &&
+        !util.isSuperman(operateShopID)) {
         res.json({
             error: {
                 message: "该用户无权修改分店信息"

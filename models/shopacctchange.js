@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    var CustomerAccountChange = sequelize.define('CustomerAccountChange', {
+    var ShopAccountChange = sequelize.define('ShopAccountChange', {
         PointsAmount: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -9,12 +9,12 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         Date:{
-            type:DataTypes.INTEGER,
+            type:DataTypes.DATE,
             allowNull:false,
         }
     });
-    CustomerAccountChange.associate = function (models) {
-        models.CustomerAccountChange.belongsTo(models.ShopInfo, {
+    ShopAccountChange.associate = function (models) {
+        models.ShopAccountChange.belongsTo(models.ShopInfo, {
           onDelete: "CASCADE",
           foreignKey: {
             name: 'ShopID',
@@ -22,8 +22,8 @@ module.exports = (sequelize, DataTypes) => {
           }
         });
       };
-      CustomerAccountChange.associate = function (models) {
-        models.CustomerAccountChange.belongsTo(models.CustomerInfo, {
+      ShopAccountChange.associate = function (models) {
+        models.ShopAccountChange.belongsTo(models.CustomerBookingDetails, {
           onDelete: "CASCADE",
           foreignKey: {
             name: 'CustomerID',
@@ -31,5 +31,5 @@ module.exports = (sequelize, DataTypes) => {
           }
         });
       };
-   return CustomerAccountChange;
+   return ShopAccountChange;
 }

@@ -25,7 +25,19 @@ module.exports = (sequelize, DataTypes)=>{
             type:DataTypes.INTEGER,
             allowNull:false,
         },
+        Type:{
+            type:DataTypes.INTEGER,
+            allowNull:false
+        }
     });
-
+    ShopInfo.associate = function (models) {
+        models.ShopInfo.belongsTo(models.ShopInfo, {
+          onDelete: "CASCADE",
+          foreignKey: {
+            name: 'ParentShopID',
+            allowNull: true
+          }
+        });
+      };
     return ShopInfo;
 }

@@ -15,7 +15,7 @@ before(async ()=>{
 describe('Login with correct ShopID & Password', () => {
     it('it should get token', (done) => {
         let info = {
-            ShopID: "123",
+            ShopID: 123,
             Password: "hello"
         };
         chai.request(server)
@@ -35,7 +35,7 @@ describe('Login with correct ShopID & Password', () => {
 describe('Login with correct ShopID & Password', () => {
     it('it should get token', (done) => {
         let info = {
-            ShopID: "012",
+            ShopID: 12,
             Password: "hello"
         };
         chai.request(server)
@@ -55,7 +55,7 @@ describe('Login with correct ShopID & Password', () => {
 describe('Login with correct ShopID & fake Password', () => {
     it('it should return error', (done) => {
         let info = {
-            ShopID: "123",
+            ShopID: 123,
             Password: "fake password"
         };
         chai.request(server)
@@ -75,7 +75,7 @@ describe('Login with correct ShopID & fake Password', () => {
 describe('Login with fake ShopID & fake Password', () => {
     it('it should return error', (done) => {
         let info = {
-            ShopID: "fake ID",
+            ShopID: 1000,
             Password: "fake password"
         };
         chai.request(server)

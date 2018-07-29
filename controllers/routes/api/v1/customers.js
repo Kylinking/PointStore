@@ -92,7 +92,15 @@ router.post('/customers', (req, res) => {
     var address = req.body.Address || '';
     var sex = req.body.Sex || '';
     var age = req.body.Age || '';
-    var shopID = res.locals.ShopID;
+    var operateShopID = res.locals.ShopID;
+    if (util.isAdminShop(operateShopID)) {
+        res.json({
+            error: {
+                message: "无权修改客户信息"
+            }
+        }).end();
+        return;
+    }
     [phone, status, sex, name].forEach(elem => {
         if (elem == '') {
             res.json({
@@ -110,7 +118,7 @@ router.post('/customers', (req, res) => {
         Phone: phone,
         Sex: sex,
         Age: age,
-        ShopID: shopID
+        ShopID: operateShopID
     }).then((row) => {
         logger.info("CustomerInfo insert Values(" +
             row.dataValues.CustomerID + " " +
@@ -128,7 +136,7 @@ router.post('/customers', (req, res) => {
                 Phone: phone,
                 Sex: sex,
                 Age: parseInt(age),
-                ShopID: shopID
+                ShopID: operateShopID
             }
         }).end();
     },
@@ -144,9 +152,17 @@ router.post('/customers', (req, res) => {
 router.delete('/customers', async (req, res) => {
     var customerInfo = res.locals.db.CustomerInfo;
     var logger = res.locals.logger;
-    var shopID = res.locals.ShopID;
+    var operateShopID = res.locals.ShopID;
     var customerID = req.body.CustomerID || '';
     var phone = req.body.Phone || '';
+    if (util.isAdminShop(operateShopID)) {
+        res.json({
+            error: {
+                message: "无权修改客户信息"
+            }
+        }).end();
+        return;
+    }
     if (customerID == '' && phone == '') {
         res.json({
             error: {
@@ -228,9 +244,64 @@ router.delete('/customers', async (req, res) => {
     }
 });
 
-router.patch('/customers', (req, res) => {
-    var shopID = res.locals.ShopID;
-    res.end('customers');
+router.patch('/customers', async (req, res) => {
+    var customerInfo = res.locals.db.CustomerInfo;
+    var logger = res.locals.logger;
+    var operateShopID = res.locals.ShopID;
+    var phone = req.body.Phone || '';
+    var status = req.body.Status || '';
+    var name = req.body.Name || '';
+    var address = req.body.Address || '';
+    var sex = req.body.Sex || '';
+    var age = req.body.Age || '';
+    if (util.isAdminShop(operateShopID)) {
+        res.json({
+            error: {
+                message: "无权修改客户信息"
+            }
+        }).end();
+        return;
+    }
+    if (phone == ''){
+        res.json({
+            error: {
+                message: "电话不能为空"
+            }
+        }).end();
+        return;
+    }
+    var instance = await customerInfo.findOne({
+        where:{
+            Phone:phone
+        }
+    });
+    if (instance){
+        if (status != '') instance.set('Status',status);
+        if (address != '') instance.set('Address',address);
+        if (name != '') instance.set('Name',name);
+        if (sex != '') instance.set('Sex',sex);
+        if (age !='') instance.set('Age',age);
+        instance.save().then(() => {
+            res.json({
+                data: {
+                    CustomerID: instance.dataValues.ShopID,
+                    Name: instance.dataValues.Name,
+                    Address: instance.dataValues.Address,
+                    Status: instance.dataValues.Status,
+                    Phone: instance.dataValues.Phone,
+                    Sex: instance.dataValues.Sex,
+                    Age: instance.dataValues.Age,
+                    ShopID: instance.dataValues.ShopID,
+                }
+            }).end();
+        }).catch((err)=>{
+            res.json({
+                error: {
+                    message: err
+                }
+            }).end();
+        })
+    }
 });
 
 
@@ -238,7 +309,7 @@ router.use('/customers', (req, res) => {
     res.status(401);
     res.json({
         error: {
-            message: "No Service with " + req.method
+            message: "无服务： " + req.method
         }
     }).end();
 })

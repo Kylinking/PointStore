@@ -5,23 +5,23 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey:true,
             autoIncrement:true,
         },
-        RecommentBounus: {
+        PointsAmount: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        LastdayShopBounus:{
+        RecommentPoints: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        IndirectRecommentPoints: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        ShopBounus:{
             type:DataTypes.INTEGER,
             allowNull:false,
         },
-        LastdayRecommentBounus:{
-            type:DataTypes.INTEGER,
-            allowNull:false,
-        },
-        ChargedPoints:{
-            type:DataTypes.INTEGER,
-            allowNull:false,
-        },
-        LastdayChargedBounus:{
+        Type:{
             type:DataTypes.INTEGER,
             allowNull:false,
         },
@@ -36,6 +36,33 @@ module.exports = (sequelize, DataTypes) => {
           onDelete: "CASCADE",
           foreignKey: {
             name: 'ShopID',
+            allowNull: false
+          }
+        });
+      };
+    CustomerBookingDetails.associate = function (models) {
+        models.CustomerBookingDetails.belongsTo(models.CustomerInfo, {
+          onDelete: "CASCADE",
+          foreignKey: {
+            name: 'CustomerID',
+            allowNull: false
+          }
+        });
+      };
+      CustomerBookingDetails.associate = function (models) {
+        models.CustomerBookingDetails.belongsTo(models.CustomerInfo, {
+          onDelete: "CASCADE",
+          foreignKey: {
+            name: 'RecommendCustomerID',
+            allowNull: false
+          }
+        });
+      };
+      CustomerBookingDetails.associate = function (models) {
+        models.CustomerBookingDetails.belongsTo(models.CustomerInfo, {
+          onDelete: "CASCADE",
+          foreignKey: {
+            name: 'IndirectRecommendCustomerID',
             allowNull: false
           }
         });

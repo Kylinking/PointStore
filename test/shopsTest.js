@@ -2,8 +2,10 @@ require('./loginTest');
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('../app');
-const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJTaG9wSUQiOjEyM30.7f9YHrKohwNUajhlGB1RPzGTjBt0eOcOA30KknLRugI';
-const tokenAdmin = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJTaG9wSUQiOiIwMTIifQ.WjAXQ_WFM95fd2c5keiFZrduOWc1SOzc8q4Y-zjKUYo";
+const token = require('../config/test.json').token;
+const tokenAdmin = require('../config/test.json').tokenAdmin;
+const tokenSuperman = require('../config/test.json').tokenSuperman;
+const tokenOtherAdmin = require('../config/test.json').tokenOtherAdmin;
 chai.use(chaiHttp);
 
 describe('Get shopInfos',()=>{
@@ -22,86 +24,7 @@ describe('Get shopInfos',()=>{
     })
 });
 
-describe('Create shopInfo', () => {
-    it('it should return error', (done) => {
-        let data = {
-            Name: "test分店",
-            Address: "市中区",
-            Status: 1,
-            Phone: 143431,
-        };
-        chai.request(server)
-            .post('/api/v1/shops')
-            .set("TOKEN",token)
-            .send(data)
-            .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object'); 
-                res.body.should.have.property('error');
-                done();
-            });
-    });
-});
-
-describe('delete shopInfo', () => {
-    it('it should return error', (done) => {
-        let data = {
-            ShopID:124
-        };
-        chai.request(server)
-            .delete('/api/v1/shops')
-            .set("TOKEN",token)
-            .send(data)
-            .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object'); 
-                res.body.should.have.property('error');
-  
-                done();
-            });
-    });
-});
-
-describe('delete shopInfo twice', () => {
-    it('it should return error', (done) => {
-        let data = {
-            ShopID:124
-        };
-        chai.request(server)
-            .delete('/api/v1/shops')
-            .set("TOKEN",token)
-            .send(data)
-            .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object'); 
-                res.body.should.have.property('error');
-                res.body.error.should.have.property('message');
-                done();
-            });
-    });
-});
-
-describe('patch shopInfo fields', () => {
-    it('it should return error', (done) => {
-        let data = {
-            ShopID:124,
-            Name:"testNameChang"
-        };
-        chai.request(server)
-            .patch('/api/v1/shops')
-            .set("TOKEN",token)
-            .send(data)
-            .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object'); 
-                res.body.should.have.property('error');
-                done();
-            });
-    });
-});
-
-//admin
-describe('admin Get shopInfos',()=>{
+describe('Admin Get shopInfos',()=>{
     it('it should return array', done=>{
         chai.request(server)
             .get('/api/v1/shops')
@@ -115,18 +38,82 @@ describe('admin Get shopInfos',()=>{
                 res.body.should.have.property('Size');
                 res.body.Pages.should.be.gt(0);
                 res.body.Size.should.be.gt(0);
+                res.body.data.should.have.length(2);
                 done(); 
             })
     })
 });
 
-describe('admin Create shopInfo', () => {
-    it('it should create a shopInfo and return info', (done) => {
+describe('Super Get shopInfos',()=>{
+    it('it should return array', done=>{
+        chai.request(server)
+            .get('/api/v1/shops')
+            .query({Type:1})
+            .set("TOKEN",tokenSuperman)
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.should.be.a('array');
+                res.body.should.have.property('Pages');
+                res.body.should.have.property('Size');
+                res.body.Pages.should.be.gt(0);
+                res.body.Size.should.be.gt(0);
+                res.body.data.should.have.length(6);
+                done(); 
+            })
+    })
+});
+
+describe('Super Get some shopInfos',()=>{
+    it('it should return array', done=>{
+        chai.request(server)
+            .get('/api/v1/shops')
+            .query({ShopID:12})
+            .set("TOKEN",tokenSuperman)
+            .end((err,res)=>{
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.should.be.a('array');
+                res.body.should.have.property('Pages');
+                res.body.should.have.property('Size');
+                res.body.Pages.should.be.gt(0);
+                res.body.Size.should.be.gt(0);
+                res.body.data.should.have.length(2);
+                done(); 
+            })
+    })
+});
+
+describe('分店建分店', () => {
+    it('it should return error', (done) => {
         let data = {
-            Name: "test分店admin",
+            Name: "test分店",
             Address: "市中区",
             Status: 1,
-            Phone: 143431,
+            Phone: 143431
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('error');
+                done();
+            });
+    });
+});
+
+describe('总店建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "125分店",
+            Address: "市中区",
+            Status: 1,
+            Phone: '125125125'
         };
         chai.request(server)
             .post('/api/v1/shops')
@@ -141,13 +128,106 @@ describe('admin Create shopInfo', () => {
                 res.body.data.should.have.property('Address');
                 res.body.data.should.have.property('Status');
                 res.body.data.should.have.property('Phone');
+                res.body.data.should.have.property('ParentShopID');
                 done();
             });
     });
 });
 
-describe(' admin delete shopInfo', () => {
-    it('it should set a shopInfo status=0 and return shopInfo', (done) => {
+describe('Superman建总店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "013总店",
+            Address: "市中区",
+            Status: 1,
+            Phone: '013013013',
+            Type:1
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.should.have.property('ShopID');
+                res.body.data.should.have.property('Name');
+                res.body.data.should.have.property('Address');
+                res.body.data.should.have.property('Status');
+                res.body.data.should.have.property('Phone');
+                res.body.data.should.have.property('ParentShopID');
+                done();
+            });
+    });
+});
+
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "113分店",
+            Address: "市中区",
+            Status: 1,
+            Phone: '113113113',
+            ParentShopID:11,
+            Type:2
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.should.have.property('ShopID');
+                res.body.data.should.have.property('Name');
+                res.body.data.should.have.property('Address');
+                res.body.data.should.have.property('Status');
+                res.body.data.should.have.property('Phone');
+                res.body.data.should.have.property('ParentShopID');
+                done();
+            });
+    });
+});
+
+describe('分店关分店', () => {
+    it('it should return error', (done) => {
+        let data = {
+            ShopID:124
+        };
+        chai.request(server)
+            .delete('/api/v1/shops')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('error');
+                done();
+            });
+    });
+});
+
+describe('别的总店关分店', () => {
+    it('it should return error', (done) => {
+        let data = {
+            ShopID:124
+        };
+        chai.request(server)
+            .delete('/api/v1/shops')
+            .set("TOKEN",tokenOtherAdmin)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('error');
+                done();
+            });
+    });
+});
+describe('总店关分店', () => {
+    it('it should return error', (done) => {
         let data = {
             ShopID:124
         };
@@ -169,7 +249,7 @@ describe(' admin delete shopInfo', () => {
     });
 });
 
-describe('admin delete shopInfo twice', () => {
+describe('总店重复关分店', () => {
     it('it should return error', (done) => {
         let data = {
             ShopID:124
@@ -188,11 +268,72 @@ describe('admin delete shopInfo twice', () => {
     });
 });
 
-describe('admin patch shopInfo fields', () => {
+describe('Superman关分店', () => {
+    it('it should return info', (done) => {
+        let data = {
+            ShopID:123
+        };
+        chai.request(server)
+            .delete('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.should.have.property('ShopID');
+                res.body.data.should.have.property('Name');
+                res.body.data.should.have.property('Address');
+                res.body.data.should.have.property('Status');
+                res.body.data.should.have.property('Phone');
+                done();
+            });
+    });
+});
+
+describe('Superman重复关分店', () => {
+    it('it should return error', (done) => {
+        let data = {
+            ShopID:123
+        };
+        chai.request(server)
+            .delete('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('error');
+                res.body.error.should.have.property('message');
+                done();
+            });
+    });
+});
+
+describe('分店改分店', () => {
+    it('it should return error', (done) => {
+        let data = {
+            ShopID:124,
+            Name:"改名"
+        };
+        chai.request(server)
+            .patch('/api/v1/shops')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('error');
+                done();
+            });
+    });
+});
+
+describe('总店改分店', () => {
     it('it should return info', (done) => {
         let data = {
             ShopID:124,
-            Name:"testNameChange"
+            Name:"改名"
         };
         chai.request(server)
             .patch('/api/v1/shops')
@@ -207,3 +348,44 @@ describe('admin patch shopInfo fields', () => {
             });
     });
 });
+
+describe('别的总店改分店', () => {
+    it('it should return info', (done) => {
+        let data = {
+            ShopID:124,
+            Name:"改名"
+        };
+        chai.request(server)
+            .patch('/api/v1/shops')
+            .set("TOKEN",tokenOtherAdmin)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('error');
+                done();
+            });
+    });
+});
+
+describe('Superman改分店', () => {
+    it('it should return info', (done) => {
+        let data = {
+            ShopID:124,
+            Name:"改名"
+        };
+        chai.request(server)
+            .patch('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('error');
+                done();
+            });
+    });
+});
+
+
+
