@@ -176,7 +176,9 @@ router.delete('/customers', async (req, res) => {
                     CustomerID: customerID
                 },
                 {
-                    Phone: phone
+                    Phone: {
+                        [Op.like]:'%'+phone+'%'
+                    }
                 }
                 ]
             }

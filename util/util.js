@@ -6,6 +6,13 @@ var util = {
     },
     isSuperman:function(shopID){
         return shopID === 1 ? true:false;
+    },
+    formString:function(...args){
+        let string = '';
+        for (let s of args){
+            string += ' '+String(s); 
+        }
+        return string;
     }
 
 }
