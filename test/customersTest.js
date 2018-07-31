@@ -129,7 +129,7 @@ describe('分店建用户', () => {
             Name: "分店建1号",
             Address: "市中区",
             Status: 1,
-            Phone: 111111,
+            Phone: 111222229,
             Sex: "男",
             Age: 11,
         };
@@ -159,7 +159,7 @@ describe('分店建用户手机重号', () => {
             Name: "分店建2",
             Address: "市中区",
             Status: 1,
-            Phone: 111222,
+            Phone: 111222229,
             Sex: "男",
             Age: 11,
         };
@@ -183,7 +183,7 @@ describe('分店建用户传不同的ShopID', () => {
             Name: "分店建3",
             Address: "市中区",
             Status: 1,
-            Phone: 111333,
+            Phone: 111333339,
             Sex: "男",
             Age: 11,
             ShopID:124
@@ -208,7 +208,7 @@ describe('总店建用户', () => {
             Name: "总店建1号",
             Address: "市中区",
             Status: 1,
-            Phone: 111444,
+            Phone: 111444449,
             Sex: "男",
             Age: 11,
             ShopID:123
@@ -219,7 +219,7 @@ describe('总店建用户', () => {
             .send(customer)
             .end((err, res) => {
                 res.should.have.status(200);
-                res.body.should.be.a('error'); 
+                res.body.should.have.property('error'); 
                 done();
             });
     });
@@ -231,7 +231,7 @@ describe('Superman建用户无ShopID', () => {
             Name: "Superman建1号",
             Address: "市中区",
             Status: 1,
-            Phone: 111555,
+            Phone: 111555559,
             Sex: "男",
             Age: 11,
         };
@@ -254,7 +254,7 @@ describe('Superman建用户带总店ShopID', () => {
             Name: "Superman建2号",
             Address: "市中区",
             Status: 1,
-            Phone: 111666,
+            Phone: 111666669,
             Sex: "男",
             Age: 11,
             ShopID:11
@@ -278,14 +278,14 @@ describe('Superman建用户带分店ShopID', () => {
             Name: "Superman建3号",
             Address: "市中区",
             Status: 1,
-            Phone: 111777,
+            Phone: 111777779,
             Sex: "男",
             Age: 11,
             ShopID:112
         };
         chai.request(server)
             .post('/api/v1/customers')
-            .set("TOKEN",token)
+            .set("TOKEN",tokenSuperman)
             .send(customer)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -306,7 +306,7 @@ describe('Superman建用户带分店ShopID', () => {
 describe('分店删用户', () => {
     it('it should set a customerinfo status=0 and return customerinfo', (done) => {
         let customer = {
-            CustomerID:1
+            Phone:111111
         };
         chai.request(server)
             .delete('/api/v1/customers')
@@ -331,7 +331,26 @@ describe('分店删用户', () => {
 describe('分店重复删用户', () => {
     it('it should return error', (done) => {
         let customer = {
-            CustomerID:1
+            Phone:111111
+        };
+        chai.request(server)
+            .delete('/api/v1/customers')
+            .set("TOKEN",token)
+            .send(customer)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('error');
+                res.body.error.should.have.property('message');
+                done();
+            });
+    });
+});
+
+describe('分店删别家分店用户', () => {
+    it('it should return error', (done) => {
+        let customer = {
+            Phone:111777779
         };
         chai.request(server)
             .delete('/api/v1/customers')
@@ -350,7 +369,7 @@ describe('分店重复删用户', () => {
 describe('总店删用户', () => {
     it('it should return error', (done) => {
         let customer = {
-            CustomerID:2
+            Phone:144444
         };
         chai.request(server)
             .delete('/api/v1/customers')
@@ -369,11 +388,11 @@ describe('总店删用户', () => {
 describe('Superman删用户', () => {
     it('it should return error', (done) => {
         let customer = {
-            CustomerID:2
+            Phone:144444
         };
         chai.request(server)
             .delete('/api/v1/customers')
-            .set("TOKEN",tokenAdmin)
+            .set("TOKEN",tokenSuperman)
             .send(customer)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -388,11 +407,11 @@ describe('Superman删用户', () => {
 describe('Superman重复删用户', () => {
     it('it should return error', (done) => {
         let customer = {
-            CustomerID:2
+            Phone:144444
         };
         chai.request(server)
             .delete('/api/v1/customers')
-            .set("TOKEN",tokenAdmin)
+            .set("TOKEN",tokenSuperman)
             .send(customer)
             .end((err, res) => {
                 res.should.have.status(200);

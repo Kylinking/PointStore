@@ -44,7 +44,7 @@ router.get('/customers', async (req, res) => {
                     where: whereObj,
                     include: [{
                         model: shopInfo,
-                        required:true
+                        required: true
                     }],
                     limit: pageSize,
                     offset: offset
@@ -56,7 +56,7 @@ router.get('/customers', async (req, res) => {
                 where: whereObj,
                 include: [{
                     model: shopInfo,
-                    required:true
+                    required: true
                 }],
                 limit: pageSize,
                 offset: offset
@@ -113,7 +113,7 @@ router.get('/customers', async (req, res) => {
                         where: whereObj,
                         include: [{
                             model: shopInfo,
-                            required:true
+                            required: true
                         }],
                         limit: pageSize,
                         offset: offset
@@ -150,7 +150,7 @@ router.get('/customers', async (req, res) => {
                 where: whereObj,
                 include: [{
                     model: shopInfo,
-                    required:true
+                    required: true
                 }],
                 limit: pageSize,
                 offset: offset
@@ -168,64 +168,88 @@ router.get('/customers', async (req, res) => {
     json["Size"] = pageSize;
     res.json(json).end();
 });
-     
+
 router.post('/customers', (req, res) => {
     var customerInfo = res.locals.db.CustomerInfo;
     var logger = res.locals.logger;
     var phone = req.body.Phone || '';
-    var status = req.body.Status || '';
+    var status = req.body.Status || 1;
     var name = req.body.Name || '';
     var address = req.body.Address || '';
     var sex = req.body.Sex || '';
     var age = req.body.Age || '';
     var operateShopID = res.locals.ShopID;
-    if (util.isAdminShop(operateShopID)) {
-        res.json({
-            error: {
-                message: "无权修改客户信息"
-            }
-        }).end();
-        return;
-    }
-    [phone, status, sex, name].forEach(elem => {
+    var shopID = req.body.ShopID || '';
+    [phone, sex].forEach(elem => {
         if (elem == '') {
             res.json({
                 error: {
-                    Message: "CustomerID,Phone,Sex,Status不能为空！"
+                    Message: "Phone,Sex不能为空！"
                 }
             });
             return;
         }
-    })
-    customerInfo.create({
+    });
+    var createCondition = {
         Name: name,
         Address: address,
-        Status: parseInt(status),
+        Status: status,
         Phone: phone,
         Sex: sex,
         Age: age,
-        ShopID: operateShopID
-    }).then((row) => {
-            logger.info("CustomerInfo insert Values(" +
-                row.dataValues.CustomerID + " " +
-                name + " " +
-                address + " " +
-                phone + " " +
-                sex + " " +
-                age + ')');
+    };
+    if (util.isAdminShop(operateShopID)) {
+        res.json({
+            error: {
+                message: "无权创建客户信息"
+            }
+        }).end();
+        return;
+    } else if (util.isSuperman(operateShopID)) {
+        if (shopID == '' || util.isAdminShop(shopID)) {
             res.json({
-                data: {
-                    CustomerID: row.dataValues.CustomerID,
-                    Name: name,
-                    Address: address,
-                    Status: parseInt(status),
-                    Phone: phone,
-                    Sex: sex,
-                    Age: parseInt(age),
-                    ShopID: operateShopID
+                error: {
+                    message: "需要客户归属分店ID"
                 }
             }).end();
-        },
+            return;
+        } else {
+            createCondition.ShopID = shopID;
+        }
+    } else {
+        if (shopID !== '' && shopID != operateShopID) {
+            res.json({
+                error: {
+                    message: "无权创建其它店面客户信息"
+                }
+            }).end();
+            return;
+        }
+        createCondition.ShopID = operateShopID;
+    }
+
+
+    customerInfo.create(createCondition).then((row) => {
+        logger.info("CustomerInfo insert Values(" +
+            row.dataValues.CustomerID + " " +
+            name + " " +
+            address + " " +
+            phone + " " +
+            sex + " " +
+            age + ')');
+        res.json({
+            data: {
+                CustomerID: row.dataValues.CustomerID,
+                Name: row.dataValues.Name,
+                Address: row.dataValues.Address,
+                Status: row.dataValues.Status,
+                Phone: row.dataValues.Phone,
+                Sex: row.dataValues.Sex,
+                Age: row.dataValues.Age,
+                ShopID: row.dataValues.ShopID
+            }
+        }).end();
+    }).catch(
         error => {
             res.json({
                 error: {
@@ -239,7 +263,6 @@ router.delete('/customers', async (req, res) => {
     var customerInfo = res.locals.db.CustomerInfo;
     var logger = res.locals.logger;
     var operateShopID = res.locals.ShopID;
-    var customerID = req.body.CustomerID || '';
     var phone = req.body.Phone || '';
     if (util.isAdminShop(operateShopID)) {
         res.json({
@@ -249,86 +272,71 @@ router.delete('/customers', async (req, res) => {
         }).end();
         return;
     }
-    if (customerID == '' && phone == '') {
+    if (phone == '') {
         res.json({
             error: {
-                message: "CustomerID and Phone can't be NULL at sametime"
+                message: "客户电话不能为空"
             }
         }).end();
-    } else {
-        var instance = await customerInfo.findOne({
-            where: {
-                [Op.or]: [{
-                        CustomerID: customerID
-                    },
-                    {
-                        Phone: {
-                            [Op.like]: '%' + phone + '%'
-                        }
-                    }
-                ]
-            }
-        });
-        if (instance) {
-            //console.log(instance);
-            if (instance.dataValues.Status == 0) {
+        return;
+    }
+    var instance = await customerInfo.findOne({
+        where: {
+            Phone: phone
+        }
+    });
+    if (instance) {
+        if (instance.dataValues.Status == 0) {
+            res.json({
+                error: {
+                    message: "该客户已注销"
+                }
+            }).end();
+            return;
+        }
+        if (!util.isSuperman(operateShopID)) {
+            if (instance.ShopID != operateShopID) {
                 res.json({
                     error: {
-                        message: "该客户已注销"
+                        message: "无权注销别家分店客户"
                     }
                 }).end();
                 return;
             }
-            if (customerID != '') {
-                customerInfo.update({
-                    Status: 0
-                }, {
-                    where: {
-                        CustomerID: customerID
-                    },
-                }).then(() => {
-                    res.json({
-                        data: {
-                            CustomerID: instance.dataValues.CustomerID,
-                            Name: instance.dataValues.Name,
-                            Address: instance.dataValues.Address,
-                            Status: 0,
-                            Phone: instance.dataValues.Phone,
-                            Sex: instance.dataValues.Sex,
-                            Age: instance.dataValues.Age,
-                            ShopID: instance.dataValues.ShopID,
-                        }
-                    }).end();
-                })
-            } else {
-                customerInfo.update({
-                    Status: 0
-                }, {
-                    where: {
-                        Phone: phone
-                    }
-                }).then(() => {
-                    res.json({
-                        data: {
-                            CustomerID: instance.dataValues.CustomerID,
-                            Name: instance.dataValues.Name,
-                            Address: instance.dataValues.Address,
-                            Status: 0,
-                            Phone: instance.dataValues.Phone,
-                            Sex: instance.dataValues.Sex,
-                            Age: instance.dataValues.Age,
-                            ShopID: instance.dataValues.ShopID,
-                        }
-                    }).end();
-                })
+        }
+        customerInfo.update({
+            Status: 0
+        }, {
+            where: {
+                Phone: phone
             }
-        } else {
+        }).then(() => {
             res.json({
-                error: {
-                    message: "客户不存在"
+                data: {
+                    CustomerID: instance.dataValues.CustomerID,
+                    Name: instance.dataValues.Name,
+                    Address: instance.dataValues.Address,
+                    Status: 0,
+                    Phone: instance.dataValues.Phone,
+                    Sex: instance.dataValues.Sex,
+                    Age: instance.dataValues.Age,
+                    ShopID: instance.dataValues.ShopID,
                 }
             }).end();
-        }
+        }).catch(
+            error => {
+                res.json({
+                    error: {
+                        message: error
+                    }
+                }).end();
+            });
+    } else {
+        res.json({
+            error: {
+                message: "客户不存在"
+            }
+        }).end();
     }
 });
 
@@ -342,6 +350,7 @@ router.patch('/customers', async (req, res) => {
     var address = req.body.Address || '';
     var sex = req.body.Sex || '';
     var age = req.body.Age || '';
+    var shopID = req.body.ShopID || '';
     if (util.isAdminShop(operateShopID)) {
         res.json({
             error: {
@@ -364,6 +373,28 @@ router.patch('/customers', async (req, res) => {
         }
     });
     if (instance) {
+        if (!util.isSuperman(operateShopID)) {
+            if (instance.ShopID != operateShopID) {
+                res.json({
+                    error: {
+                        message: "无权修改别家分店客户信息"
+                    }
+                }).end();
+                return;
+            }
+            if (shopID != '') {
+                res.json({
+                    error: {
+                        message: "无权修改客户归属信息"
+                    }
+                }).end();
+                return;
+            }
+        } else {
+            if (shopID != '') {
+                instance.set('ShopID', shopID);
+            }
+        }
         if (status != '') instance.set('Status', status);
         if (address != '') instance.set('Address', address);
         if (name != '') instance.set('Name', name);
