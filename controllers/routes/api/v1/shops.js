@@ -12,9 +12,8 @@ router.get('/shops', async (req, res, next) => {
     var queryShopID = req.query.ShopID || '';
     var queryType = req.query.Type || 0;
     var phone = req.query.Phone || '';
-
-
-    if (util.isSuperman(operateShopID)) {
+     
+    if (await util.isSuperman(operateShopID)) {
         var json = {
             data: []
         };
@@ -62,7 +61,7 @@ router.get('/shops', async (req, res, next) => {
                 json["Size"] = pageSize;
                 res.json(json).end();
             })
-    } else if (util.isAdminShop(operateShopID)) {
+    } else if (await util.isAdminShop(operateShopID)) {
         if (queryShopID == '' && phone == '') {
             var json = {
                 data: []
@@ -175,8 +174,8 @@ router.delete('/shops', async (req, res, next) => {
         }).end();
         return;
     }
-    if (!(util.isAdminShop(operateShopID) ||
-            util.isSuperman(operateShopID))) {
+    if (!(await util.isAdminShop(operateShopID) ||
+    await util.isSuperman(operateShopID))) {
         res.json({
             error: {
                 message: "该用户无权关闭店面"
@@ -195,7 +194,7 @@ router.delete('/shops', async (req, res, next) => {
         }).end();
         return;
     }
-    if (util.isAdminShop(operateShopID)) {
+    if (await util.isAdminShop(operateShopID)) {
         if (instance.ParentShopID != operateShopID) {
             res.json({
                 error: {
@@ -233,12 +232,12 @@ router.delete('/shops', async (req, res, next) => {
     });
 });
 
-router.post('/shops', (req, res, next) => {
+router.post('/shops',async (req, res, next) => {
     var logger = res.locals.logger;
     logger.info('enter post /shops');
     var operateShopID = res.locals.ShopID;
-    if (!(util.isAdminShop(operateShopID) ||
-            util.isSuperman(operateShopID))) {
+    if (!(await util.isAdminShop(operateShopID) ||
+    await util.isSuperman(operateShopID))) {
         res.json({
             error: {
                 message: "该用户无权新建分店"
@@ -264,12 +263,12 @@ router.post('/shops', (req, res, next) => {
             return;
         }
     })
-    if (util.isSuperman(operateShopID)) {
+    if (await util.isSuperman(operateShopID)) {
         if (parentShopID == operateShopID) {
             type = 1;
         }
     }
-    if (util.isAdminShop(operateShopID)) {
+    if (await util.isAdminShop(operateShopID)) {
 
     }
     shopInfo.create({
@@ -304,8 +303,8 @@ router.patch('/shops', async (req, res, next) => {
     var logger = res.locals.logger;
     logger.info("enter patch shops");
     var operateShopID = res.locals.ShopID;
-    if (!util.isAdminShop(operateShopID) &&
-        !util.isSuperman(operateShopID)) {
+    if (!await util.isAdminShop(operateShopID) &&
+        !await util.isSuperman(operateShopID)) {
         res.json({
             error: {
                 message: "该用户无权修改分店信息"
@@ -345,7 +344,7 @@ router.patch('/shops', async (req, res, next) => {
         }).end();
         return;
     }
-    if (util.isAdminShop(operateShopID)){
+    if (await util.isAdminShop(operateShopID)){
         if (instance.ParentShopID != operateShopID){
             res.json({
                 error: {

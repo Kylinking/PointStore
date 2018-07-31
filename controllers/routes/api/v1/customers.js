@@ -22,9 +22,9 @@ router.get('/customers', async (req, res) => {
     };
 
     var instance = undefined;
-    if (util.isSuperman(operateShopID)) {
+    if (await util.isSuperman(operateShopID)) {
         if (queryShopID != '' && queryShopID != operateShopID) {
-            if (util.isAdminShop(queryShopID)) {
+            if (await util.isAdminShop(queryShopID)) {
                 //取总店下所有分店的客户信息
                 instance = await customerInfo.findAndCountAll({
                     where: whereObj,
@@ -62,9 +62,9 @@ router.get('/customers', async (req, res) => {
                 offset: offset
             })
         }
-    } else if (util.isAdminShop(operateShopID)) {
+    } else if (await util.isAdminShop(operateShopID)) {
         if (queryShopID != '') {
-            if (util.isSuperman(queryShopID)) {
+            if (await util.isSuperman(queryShopID)) {
                 // 报错
                 res.json({
                     error: {
@@ -72,7 +72,7 @@ router.get('/customers', async (req, res) => {
                     }
                 }).end();
                 return;
-            } else if (util.isAdminShop(queryShopID)) {
+            } else if (await util.isAdminShop(queryShopID)) {
                 if (queryShopID != operateShopID) {
                     //报错
                     res.json({
@@ -169,7 +169,7 @@ router.get('/customers', async (req, res) => {
     res.json(json).end();
 });
 
-router.post('/customers', (req, res) => {
+router.post('/customers', async (req, res) => {
     var customerInfo = res.locals.db.CustomerInfo;
     var logger = res.locals.logger;
     var phone = req.body.Phone || '';
@@ -198,15 +198,15 @@ router.post('/customers', (req, res) => {
         Sex: sex,
         Age: age,
     };
-    if (util.isAdminShop(operateShopID)) {
+    if (await util.isAdminShop(operateShopID)) {
         res.json({
             error: {
                 message: "无权创建客户信息"
             }
         }).end();
         return;
-    } else if (util.isSuperman(operateShopID)) {
-        if (shopID == '' || util.isAdminShop(shopID)) {
+    } else if (await util.isSuperman(operateShopID)) {
+        if (shopID == '' || await util.isAdminShop(shopID)) {
             res.json({
                 error: {
                     message: "需要客户归属分店ID"
@@ -264,7 +264,7 @@ router.delete('/customers', async (req, res) => {
     var logger = res.locals.logger;
     var operateShopID = res.locals.ShopID;
     var phone = req.body.Phone || '';
-    if (util.isAdminShop(operateShopID)) {
+    if (await util.isAdminShop(operateShopID)) {
         res.json({
             error: {
                 message: "无权修改客户信息"
@@ -294,7 +294,7 @@ router.delete('/customers', async (req, res) => {
             }).end();
             return;
         }
-        if (!util.isSuperman(operateShopID)) {
+        if (!await util.isSuperman(operateShopID)) {
             if (instance.ShopID != operateShopID) {
                 res.json({
                     error: {
@@ -351,7 +351,7 @@ router.patch('/customers', async (req, res) => {
     var sex = req.body.Sex || '';
     var age = req.body.Age || '';
     var shopID = req.body.ShopID || '';
-    if (util.isAdminShop(operateShopID)) {
+    if (await util.isAdminShop(operateShopID)) {
         res.json({
             error: {
                 message: "无权修改客户信息"
@@ -373,7 +373,7 @@ router.patch('/customers', async (req, res) => {
         }
     });
     if (instance) {
-        if (!util.isSuperman(operateShopID)) {
+        if (!await util.isSuperman(operateShopID)) {
             if (instance.ShopID != operateShopID) {
                 res.json({
                     error: {
