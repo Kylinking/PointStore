@@ -108,4 +108,44 @@ module.exports = async (models) => {
         Age: 13,
         ShopID: 112
     });
+    await models.CustomerAccountInfo.create({
+        RemainPoints:100,
+        ShopBounusPoints:20,
+        ChargedPoints:60,
+        RecommentBounusPoints:30,
+        IndirectRecommendBounusPoints:10,
+        CustomedPoints:20,
+        CustomerID:1
+    });
+    await models.CustomerAccountInfo.create({
+        RemainPoints:120,
+        ShopBounusPoints:30,
+        ChargedPoints:70,
+        RecommentBounusPoints:30,
+        IndirectRecommendBounusPoints:10,
+        CustomedPoints:20,
+        CustomerID:2
+    });
+    await models.CustomerAccountInfo.create({
+        RemainPoints:120,
+        ShopBounusPoints:30,
+        ChargedPoints:70,
+        RecommentBounusPoints:30,
+        IndirectRecommendBounusPoints:10,
+        CustomedPoints:20,
+        CustomerID:3
+    });
+    await models.CustomerAccountInfo.create({
+        RemainPoints:120,
+        ShopBounusPoints:30,
+        ChargedPoints:70,
+        RecommentBounusPoints:30,
+        IndirectRecommendBounusPoints:10,
+        CustomedPoints:20,
+        CustomerID:4
+    });
+
+
+
+
 }

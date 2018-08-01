@@ -28,9 +28,9 @@ module.exports = (sequelize, DataTypes) => {
 
     CustomerAccountInfo.associate = function (models) {
         models.CustomerAccountInfo.belongsTo(models.CustomerInfo, {
-            as: 'CustomerID',
             onDelete: "CASCADE",
             foreignKey: {
+                name: 'CustomerID',
                 allowNull: false
             }
         });

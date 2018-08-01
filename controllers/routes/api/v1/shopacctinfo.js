@@ -7,6 +7,8 @@ const Op = require('sequelize').Op;
 router.get('/shoppoints', (req, res) => {
     var shopInfo = res.locals.db.ShopInfo;
     var logger = res.locals.logger;
+    var customerInfo = res.locals.db.CustomerInfo;
+    
 });
 
 
