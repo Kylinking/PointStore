@@ -33,8 +33,22 @@ var util = {
             string += ' ' + String(s);
         }
         return string;
+    },
+    isBelongsTo:async function(parentShopID,childShopID){
+        if (!parentShopID || !childShopID){
+            return false;
+        }
+        var instance = await db.ShopInfo.findOne({
+            where:{
+                ShopID:childShopID
+            }
+        });
+        if (!instance) return false;
+        if (instance.ParentShopID == parentShopID){
+            return true;
+        }
+        return false;
     }
-
 }
 
 module.exports = util;
