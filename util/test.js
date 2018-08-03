@@ -5,7 +5,8 @@ var shopInfo = db.ShopInfo;
 var customerInfo = db.CustomerInfo;
 var custacctInfo = db.CustomerAccountInfo;
 
-(async ()=>{
-    var b = await util.isBelongsTo(1,112);
-      console.log(b);
-})();
+(async (phone,shopId)=>{
+    console.log(await util.isBelongsTo(phone,shopId));
+})(111111,1);
+
+

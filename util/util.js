@@ -34,10 +34,11 @@ var util = {
         }
         return string;
     },
-    isBelongsTo:async function(parentShopID,childShopID){
+    isSubordinate:async function(parentShopID,childShopID){
         if (!parentShopID || !childShopID){
             return false;
         }
+        if (parentShopID == childShopID) return true;
         var instance = await db.ShopInfo.findOne({
             where:{
                 ShopID:childShopID
@@ -47,6 +48,19 @@ var util = {
         if (instance.ParentShopID == parentShopID){
             return true;
         }
+        return false;
+    },
+    isBelongsTo:async function(customerPhone,shopID){
+        if (!customerPhone || !shopID) return false;
+        if (await this.isSuperman(shopID)) return true;
+        var instance = await db.CustomerInfo.findOne({
+            where:{
+                Phone:customerPhone
+            }
+        });
+        if (!instance) return false;
+        if (instance.ShopID == shopID) return true;
+        if (await this.isSubordinate(shopID,instance.ShopID)) return true;
         return false;
     }
 }
