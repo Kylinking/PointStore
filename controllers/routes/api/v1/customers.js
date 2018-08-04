@@ -18,7 +18,7 @@ router.get('/customers', async (req, res) => {
 
     var whereObj = {};
     if (phone != '') whereObj.Phone = {
-        [Op.like]: '%' + phone + '%'
+        [Op.like]: `%${phone}%`
     };
 
     var instance = undefined;
@@ -33,6 +33,10 @@ router.get('/customers', async (req, res) => {
                         where: {
                             ParentShopID: queryShopID
                         }
+                    }, {
+                        model: customerInfo,
+                        as: "RecommendCustomerInfo",
+                        required: false
                     }],
                     limit: pageSize,
                     offset: offset
@@ -45,6 +49,10 @@ router.get('/customers', async (req, res) => {
                     include: [{
                         model: shopInfo,
                         required: true
+                    }, {
+                        model: customerInfo,
+                        as: "RecommendCustomerInfo",
+                        required: false
                     }],
                     limit: pageSize,
                     offset: offset
@@ -57,6 +65,10 @@ router.get('/customers', async (req, res) => {
                 include: [{
                     model: shopInfo,
                     required: true
+                }, {
+                    model: customerInfo,
+                    as: "RecommendCustomerInfo",
+                    required: false
                 }],
                 limit: pageSize,
                 offset: offset
@@ -89,6 +101,10 @@ router.get('/customers', async (req, res) => {
                             where: {
                                 ParentShopID: operateShopID
                             }
+                        }, , {
+                            model: customerInfo,
+                            as: "RecommendCustomerInfo",
+                            required: false
                         }],
                         limit: pageSize,
                         offset: offset
@@ -114,6 +130,10 @@ router.get('/customers', async (req, res) => {
                         include: [{
                             model: shopInfo,
                             required: true
+                        }, , {
+                            model: customerInfo,
+                            as: "RecommendCustomerInfo",
+                            required: false
                         }],
                         limit: pageSize,
                         offset: offset
@@ -129,6 +149,10 @@ router.get('/customers', async (req, res) => {
                     where: {
                         ParentShopID: operateShopID
                     }
+                }, {
+                    model: customerInfo,
+                    as: "RecommendCustomerInfo",
+                    required: false
                 }],
                 limit: pageSize,
                 offset: offset
@@ -151,6 +175,10 @@ router.get('/customers', async (req, res) => {
                 include: [{
                     model: shopInfo,
                     required: true
+                }, {
+                    model: customerInfo,
+                    as: "RecommendCustomerInfo",
+                    required: false
                 }],
                 limit: pageSize,
                 offset: offset
@@ -180,6 +208,8 @@ router.post('/customers', async (req, res) => {
     var age = req.body.Age || '';
     var operateShopID = res.locals.ShopID;
     var shopID = req.body.ShopID || '';
+    var recommendCustomerID = req.body.RecommendCustomerID || '';
+    logger.info(recommendCustomerID);
     [phone, sex].forEach(elem => {
         if (elem == '') {
             res.json({
@@ -213,9 +243,13 @@ router.post('/customers', async (req, res) => {
                 }
             }).end();
             return;
-        } else {
-            createCondition.ShopID = shopID;
         }
+        if (!await util.isBelongsToByID(recommendCustomerID, shopID)) {
+            createCondition.RecommendCustomerID = null;
+        } else {
+            createCondition.RecommendCustomerID = recommendCustomerID;
+        }
+        createCondition.ShopID = shopID;
     } else {
         if (shopID !== '' && shopID != operateShopID) {
             res.json({
@@ -225,38 +259,46 @@ router.post('/customers', async (req, res) => {
             }).end();
             return;
         }
+        if (!await util.isBelongsToByID(recommendCustomerID, operateShopID)) {
+            createCondition.RecommendCustomerID = null;
+        } else {
+            createCondition.RecommendCustomerID = recommendCustomerID;
+        }
         createCondition.ShopID = operateShopID;
     }
 
+    res.locals.db.sequelize.transaction(transaction => {
+        return customerInfo.create(createCondition, {
+                transaction: transaction
+            })
+            .then((row) => {
+                res.json({
+                    data: row
+                }).end();
+                //logger.info(row);
+                return res.locals.db.CustomerAccountInfo.create({
+                    CustomerID: row.CustomerID,
+                    ShopBounusPoints: 0,
+                    ChargedPoints: 0,
+                    RecommendPoints: 0,
+                    IndirectRecommendPoints: 0,
+                    CustomedPoints: 0,
+                    RemainPoints: 0
+                }, {
+                    transaction: transaction
+                });
 
-    customerInfo.create(createCondition).then((row) => {
-        logger.info("CustomerInfo insert Values(" +
-            row.dataValues.CustomerID + " " +
-            name + " " +
-            address + " " +
-            phone + " " +
-            sex + " " +
-            age + ')');
-        res.json({
-            data: {
-                CustomerID: row.dataValues.CustomerID,
-                Name: row.dataValues.Name,
-                Address: row.dataValues.Address,
-                Status: row.dataValues.Status,
-                Phone: row.dataValues.Phone,
-                Sex: row.dataValues.Sex,
-                Age: row.dataValues.Age,
-                ShopID: row.dataValues.ShopID
-            }
-        }).end();
-    }).catch(
-        error => {
-            res.json({
-                error: {
-                    message: error
-                }
-            }).end();
-        });
+            })
+            .catch(
+                error => {
+                    //  console.log(error);
+                    res.json({
+                        error: {
+                            message: error
+                        }
+                    }).end();
+                });
+    });
 });
 
 router.delete('/customers', async (req, res) => {

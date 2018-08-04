@@ -42,7 +42,15 @@ module.exports = (sequelize, DataTypes)=>{
             allowNull: false
           }
         });
-      };
 
+        models.CustomerInfo.belongsTo(models.CustomerInfo, {
+            onDelete: "CASCADE",
+            as:"RecommendCustomerInfo",
+            foreignKey: {
+              name: 'RecommendCustomerID',
+              allowNull: true
+            }
+          });
+      };
     return CustomerInfo;
 }

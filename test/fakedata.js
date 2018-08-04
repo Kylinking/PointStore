@@ -70,8 +70,6 @@ module.exports = async (models) => {
         Type:2,
         ParentShopID: 12
     });
-
-
     await models.CustomerInfo.create({
         Name: "小红",
         Address: "市中区",
@@ -79,7 +77,7 @@ module.exports = async (models) => {
         Phone: 111111,
         Sex: "女",
         Age: 13,
-        ShopID: 123
+        ShopID: 123,
     });
     await models.CustomerInfo.create({
         Name: "小张",
@@ -88,7 +86,8 @@ module.exports = async (models) => {
         Phone: 144444,
         Sex: "女",
         Age: 13,
-        ShopID: 123
+        ShopID: 123,
+        RecommendCustomerID:1
     });
     await models.CustomerInfo.create({
         Name: "小明",
@@ -97,7 +96,7 @@ module.exports = async (models) => {
         Phone: 122222,
         Sex: "女",
         Age: 13,
-        ShopID: 124
+        ShopID: 124,
     });
     await models.CustomerInfo.create({
         Name: "小强",
@@ -106,14 +105,14 @@ module.exports = async (models) => {
         Phone: 1333333,
         Sex: "男",
         Age: 13,
-        ShopID: 112
+        ShopID: 112,
     });
     await models.CustomerAccountInfo.create({
         RemainPoints:100,
         ShopBounusPoints:20,
         ChargedPoints:60,
-        RecommentBounusPoints:30,
-        IndirectRecommendBounusPoints:10,
+        RecommendPoints:30,
+        IndirectRecommendPoints:10,
         CustomedPoints:20,
         CustomerID:1
     });
@@ -121,8 +120,8 @@ module.exports = async (models) => {
         RemainPoints:120,
         ShopBounusPoints:30,
         ChargedPoints:70,
-        RecommentBounusPoints:30,
-        IndirectRecommendBounusPoints:10,
+        RecommendPoints:30,
+        IndirectRecommendPoints:10,
         CustomedPoints:20,
         CustomerID:2
     });
@@ -130,8 +129,8 @@ module.exports = async (models) => {
         RemainPoints:120,
         ShopBounusPoints:30,
         ChargedPoints:70,
-        RecommentBounusPoints:30,
-        IndirectRecommendBounusPoints:10,
+        RecommendPoints:30,
+        IndirectRecommendPoints:10,
         CustomedPoints:20,
         CustomerID:3
     });
@@ -139,11 +138,18 @@ module.exports = async (models) => {
         RemainPoints:120,
         ShopBounusPoints:30,
         ChargedPoints:70,
-        RecommentBounusPoints:30,
-        IndirectRecommendBounusPoints:10,
+        RecommendPoints:30,
+        IndirectRecommendPoints:10,
         CustomedPoints:20,
         CustomerID:4
     });
+    await models.ShopAccountInfo.create({
+        CustomedPoints:40,
+        RecommendPoints:80,
+        ChargedPoints:130,
+        ShopBounusPoints:50,
+        ShopID:123
+    })
 
 
 

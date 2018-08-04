@@ -132,6 +132,7 @@ describe('分店建用户', () => {
             Phone: 111222229,
             Sex: "男",
             Age: 11,
+            RecommendCustomerID:2
         };
         chai.request(server)
             .post('/api/v1/customers')

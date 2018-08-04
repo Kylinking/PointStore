@@ -50,7 +50,7 @@ var util = {
         }
         return false;
     },
-    isBelongsTo:async function(customerPhone,shopID){
+    isBelongsToByPhone:async function(customerPhone,shopID){
         if (!customerPhone || !shopID) return false;
         if (await this.isSuperman(shopID)) return true;
         var instance = await db.CustomerInfo.findOne({
@@ -62,6 +62,33 @@ var util = {
         if (instance.ShopID == shopID) return true;
         if (await this.isSubordinate(shopID,instance.ShopID)) return true;
         return false;
+    },
+    isBelongsToByID:async function(customerID,shopID){
+        if (!customerID || !shopID) return false;
+        if (await this.isSuperman(shopID)) return true;
+        var instance = await db.CustomerInfo.findOne({
+            where:{
+                CustomerID:customerID
+            }
+        });
+        if (!instance) return false;
+        if (instance.ShopID == shopID) return true;
+        if (await this.isSubordinate(shopID,instance.ShopID)) return true;
+        return false;
+    },
+    getRole: async function (shopID){
+        if (!shopID)return undefined;
+        var instance = await db.ShopInfo.findOne({
+            where:{
+                ShopID:shopID
+            }
+        });
+        if (!instance)return undefined;
+        switch(instance.Type){
+            case 0: return "superman";
+            case 1: return "admin";
+            default: return "normal";
+        }
     }
 }
 

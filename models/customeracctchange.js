@@ -1,35 +1,54 @@
 module.exports = (sequelize, DataTypes) => {
-    var CustomerAccountChange = sequelize.define('CustomerAccountChange', {
-        PointsAmount: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        Type: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        Date:{
-            type:DataTypes.INTEGER,
-            allowNull:false,
-        }
+  var CustomerAccountChange = sequelize.define('CustomerAccountChange', {
+    ChargedPoints: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    CustomedPoints: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    Date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    ShopBounusPoints: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    RecommendPoints: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    IndirectRecommendPoints: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+  });
+  CustomerAccountChange.associate = function (models) {
+    models.CustomerAccountChange.belongsTo(models.ShopInfo, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: 'ShopID',
+        allowNull: false
+      }
     });
-    CustomerAccountChange.associate = function (models) {
-        models.CustomerAccountChange.belongsTo(models.ShopInfo, {
-          onDelete: "CASCADE",
-          foreignKey: {
-            name: 'ShopID',
-            allowNull: false
-          }
-        });
-      };
-      CustomerAccountChange.associate = function (models) {
-        models.CustomerAccountChange.belongsTo(models.CustomerInfo, {
-          onDelete: "CASCADE",
-          foreignKey: {
-            name: 'CustomerID',
-            allowNull: false
-          }
-        });
-      };
-   return CustomerAccountChange;
+
+    models.CustomerAccountChange.belongsTo(models.CustomerInfo, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: 'CustomerID',
+        allowNull: false
+      }
+    });
+    
+    models.CustomerAccountChange.belongsTo(models.TransactionDetail, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: 'TransactionSeq',
+        allowNull: false
+      }
+    });
+  };
+  return CustomerAccountChange;
 }

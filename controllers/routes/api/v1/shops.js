@@ -3,6 +3,7 @@ var util = require('../../../../util/util');
 var express = require('express');
 var router = express.Router();
 const Op = require('sequelize').Op;
+
 //TODO: add role control!
 
 router.get('/shops', async (req, res, next) => {
@@ -12,8 +13,9 @@ router.get('/shops', async (req, res, next) => {
     var queryShopID = req.query.ShopID || '';
     var queryType = req.query.Type || 0;
     var phone = req.query.Phone || '';
-     
-    if (await util.isSuperman(operateShopID)) {
+    var roleOfOperatedShopID = await util.getRole(operateShopID);
+    logger.info(roleOfOperatedShopID);
+    if (roleOfOperatedShopID == 'superman') {
         var json = {
             data: []
         };
@@ -31,7 +33,7 @@ router.get('/shops', async (req, res, next) => {
         }
         if (phone != '') {
             whereObj.Phone = {
-                [Op.like]: '%' + phone + '%'
+                [Op.like]: `%${phone}%`
             }
         }
         var page = parseInt(req.query.Page || 1);
@@ -61,7 +63,7 @@ router.get('/shops', async (req, res, next) => {
                 json["Size"] = pageSize;
                 res.json(json).end();
             })
-    } else if (await util.isAdminShop(operateShopID)) {
+    } else if (roleOfOperatedShopID == 'admin') {
         if (queryShopID == '' && phone == '') {
             var json = {
                 data: []
@@ -163,6 +165,8 @@ router.delete('/shops', async (req, res, next) => {
     var queryShopID = req.body.ShopID || '';
     var phone = req.body.Phone || '';
     var operateShopID = res.locals.ShopID;
+    var roleOfOperatedShopID = await util.getRole(operateShopID);
+    logger.info(roleOfOperatedShopID);
     var whereObj = {};
     if (phone != '') whereObj.Phone = phone;
     if (queryShopID != '') whereObj.ShopID = queryShopID;
@@ -174,8 +178,8 @@ router.delete('/shops', async (req, res, next) => {
         }).end();
         return;
     }
-    if (!(await util.isAdminShop(operateShopID) ||
-    await util.isSuperman(operateShopID))) {
+    if (!(roleOfOperatedShopID == 'admin' ||
+            roleOfOperatedShopID == 'superman')) {
         res.json({
             error: {
                 message: "该用户无权关闭店面"
@@ -194,7 +198,7 @@ router.delete('/shops', async (req, res, next) => {
         }).end();
         return;
     }
-    if (await util.isAdminShop(operateShopID)) {
+    if (roleOfOperatedShopID == 'admin') {
         if (instance.ParentShopID != operateShopID) {
             res.json({
                 error: {
@@ -232,12 +236,14 @@ router.delete('/shops', async (req, res, next) => {
     });
 });
 
-router.post('/shops',async (req, res, next) => {
+router.post('/shops', async (req, res, next) => {
     var logger = res.locals.logger;
     logger.info('enter post /shops');
     var operateShopID = res.locals.ShopID;
-    if (!(await util.isAdminShop(operateShopID) ||
-    await util.isSuperman(operateShopID))) {
+    var roleOfOperatedShopID = await util.getRole(operateShopID);
+    logger.info(roleOfOperatedShopID);
+    if (!(roleOfOperatedShopID == 'admin' ||
+            roleOfOperatedShopID == 'superman')) {
         res.json({
             error: {
                 message: "该用户无权新建分店"
@@ -263,39 +269,42 @@ router.post('/shops',async (req, res, next) => {
             return;
         }
     })
-    if (await util.isSuperman(operateShopID)) {
+    if (roleOfOperatedShopID == 'superman') {
         if (parentShopID == operateShopID) {
             type = 1;
         }
     }
-    if (await util.isAdminShop(operateShopID)) {
-
-    }
-    shopInfo.create({
-        Name: name,
-        Address: address,
-        Status: parseInt(status),
-        Phone: phone,
-        Type: type,
-        ParentShopID: parentShopID
-    }).then((row) => {
-        res.json({
-            data: {
-                ShopID: row.dataValues.ShopID,
-                Name: row.dataValues.Name,
-                Address: row.dataValues.Address,
-                Status: row.dataValues.Status,
-                Phone: row.dataValues.Phone,
-                ParentShopID: row.dataValues.ParentShopID,
-                Type: row.dataValues.Type
-            }
-        }).end();
-    }).catch(error => {
-        res.json({
-            error: {
-                message: error
-            }
-        }).end();
+    res.locals.db.sequelize.transaction(transaction => {
+        return shopInfo.create({
+                Name: name,
+                Address: address,
+                Status: parseInt(status),
+                Phone: phone,
+                Type: type,
+                ParentShopID: parentShopID
+            }, {
+                transaction: transaction
+            })
+            .then((row) => {
+                res.json({
+                    data: row
+                }).end();
+                return res.locals.db.ShopAccountInfo.create({
+                    CustomedPoints: 0,
+                    RecommendPoints: 0,
+                    ChargedPoints: 0,
+                    ShopBounusPoints: 0,
+                    ShopID: row.ShopID,
+                }, {
+                    transaction: transaction
+                })
+            }).catch(error => {
+                res.json({
+                    error: {
+                        message: error
+                    }
+                }).end();
+            });
     });
 });
 
@@ -303,8 +312,10 @@ router.patch('/shops', async (req, res, next) => {
     var logger = res.locals.logger;
     logger.info("enter patch shops");
     var operateShopID = res.locals.ShopID;
-    if (!await util.isAdminShop(operateShopID) &&
-        !await util.isSuperman(operateShopID)) {
+    var roleOfOperatedShopID = await util.getRole(operateShopID);
+    logger.info(roleOfOperatedShopID);
+    if (roleOfOperatedShopID != "admin" &&
+        roleOfOperatedShopID != "superman") {
         res.json({
             error: {
                 message: "该用户无权修改分店信息"
@@ -344,8 +355,8 @@ router.patch('/shops', async (req, res, next) => {
         }).end();
         return;
     }
-    if (await util.isAdminShop(operateShopID)){
-        if (instance.ParentShopID != operateShopID){
+    if (roleOfOperatedShopID == "admin") {
+        if (instance.ParentShopID != operateShopID) {
             res.json({
                 error: {
                     message: "该用户无权修改此分店信息"

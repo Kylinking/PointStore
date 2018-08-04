@@ -12,11 +12,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        RecommentBounusPoints: {
+        RecommendPoints: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        IndirectRecommendBounusPoints: {
+        IndirectRecommendPoints: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
