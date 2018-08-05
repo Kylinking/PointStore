@@ -20,10 +20,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    IndirectRecommendPoints: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
   });
   CustomerAccountChange.associate = function (models) {
     models.CustomerAccountChange.belongsTo(models.ShopInfo, {

@@ -1,17 +1,25 @@
 module.exports = (sequelize, DataTypes) => {
   var ShopAccountChange = sequelize.define('ShopAccountChange', {
-    PointsAmount: {
+    ChargedPoints: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
-    Type: {
+    CustomedPoints: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     Date: {
       type: DataTypes.DATE,
       allowNull: false,
-    }
+    },
+    ShopBounusPoints: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    RecommendPoints: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   });
   ShopAccountChange.associate = function (models) {
     models.ShopAccountChange.belongsTo(models.ShopInfo, {
