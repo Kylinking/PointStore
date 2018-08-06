@@ -7,8 +7,8 @@ router.get('/userpoints', async (req, res) => {
     var logger = res.locals.logger;
     var phone = req.query.Phone || '';
     var shopID = req.query.ShopID || '';
-    var page = parseInt(req.query.Page || 1);
-    var pageSize = parseInt(req.query.Size || 20);
+    var page = parseInt(req.query.Page) || 1;
+    var pageSize = parseInt(req.query.Size) || 20;
     var offset = (page - 1) * pageSize;
     var acctInfo = res.locals.db.CustomerAccountInfo;
     var operateShopID = res.locals.ShopID;
@@ -144,7 +144,7 @@ router.post('/userpoints', async (req, res) => {
     var customerInfo = null;
     var recommendCustomerInfo = null;
     var indirectRecommendCustomerInfo = null;
-    var date = Date.now();
+    var date = Date.parse(Date());
     //用户账户表、用户账户变动表、店铺账户表、店铺账户变动表、明细表
     sequelize.transaction(transaction => {
             return db.CustomerInfo.findOne({

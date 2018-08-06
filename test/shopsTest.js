@@ -292,7 +292,7 @@ describe('Superman关分店', () => {
 describe('Superman重复关分店', () => {
     it('it should return error', (done) => {
         let data = {
-            ShopID:123
+            ShopID:'123'
         };
         chai.request(server)
             .delete('/api/v1/shops')
@@ -331,7 +331,8 @@ describe('总店改分店', () => {
     it('it should return info', (done) => {
         let data = {
             ShopID:124,
-            Name:"总店改名"
+            Name:"总店改名",
+            Status:'a'
         };
         chai.request(server)
             .patch('/api/v1/shops')
@@ -374,7 +375,8 @@ describe('Superman改分店', () => {
     it('it should return info', (done) => {
         let data = {
             ShopID:123,
-            Name:"Superman改名"
+            Name:"Superman改名",
+            Status:0
         };
         chai.request(server)
             .patch('/api/v1/shops')

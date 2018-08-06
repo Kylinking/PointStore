@@ -46,7 +46,7 @@ describe('Superman取客户账户信息', () => {
 });
 
 describe('Superman取客户账户信息', () => {
-    it('返回6条数据', (done) => {
+    it('返回7条数据', (done) => {
         chai.request(server)
             .get('/api/v1/userpoints')
             .set("TOKEN",tokenSuperman)
@@ -55,7 +55,7 @@ describe('Superman取客户账户信息', () => {
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('data');
                 res.body.data.should.be.a('array');
-                res.body.data.should.have.length(6);
+                res.body.data.should.have.length(7);
                 res.body.should.have.property('Pages');
                 done();
             });

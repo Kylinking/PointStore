@@ -2,6 +2,7 @@ var db = require('../models').db;
 
 var util = {
      isAdminShop: async function (shopID) {
+        if (isNaN(shopID)) return false;
         var shopInfo = db.ShopInfo;
         var instance = await shopInfo.findOne({
             where: {
@@ -15,6 +16,7 @@ var util = {
         return false;
     },
     isSuperman: async function (shopID) {
+        if (isNaN(shopID)) return false;
         var shopInfo = db.ShopInfo;
         var instance = await shopInfo.findOne({
             where: {
@@ -38,6 +40,7 @@ var util = {
         if (!parentShopID || !childShopID){
             return false;
         }
+        if (isNaN(parentShopID) || isNaN(childShopID)) return false;
         if (parentShopID == childShopID) return true;
         var instance = await db.ShopInfo.findOne({
             where:{
@@ -89,7 +92,12 @@ var util = {
             case 1: return "admin";
             default: return "normal";
         }
-    }
+    },
+    checkInt : function(value) {
+        if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value))
+          return Number(value);
+        return NaN;
+      }
 }
 
 module.exports = util;

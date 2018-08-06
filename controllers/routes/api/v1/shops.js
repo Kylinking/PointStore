@@ -4,15 +4,45 @@ var express = require('express');
 var router = express.Router();
 const Op = require('sequelize').Op;
 
-//TODO: add role control!
+router.use('/shops',(req,res,next)=>{
+    var logger = res.locals.logger;
+    var queryShopID,phone,queryType;
+    logger.info(req.method);
+    if (req.method == 'GET'){
+        queryShopID = req.query.ShopID;
+        phone = req.query.Phone;
+        queryType = req.query.Type;
+    }else{
+        queryShopID = req.body.ShopID;
+        phone = req.body.Phone;
+        queryType = req.body.Type;
+    }
+    logger.info(`queryShopID:${queryShopID},phone:${phone},queryType:${queryType}`);
+    if (queryShopID!=null && isNaN(util.checkInt(queryShopID))){
+        logger.info(`queryShopID 不能转换为Number`);
+        res.json({error:{message:`queryShopID:${queryShopID}不能转换为Number`}}).end();
+        return;
+    }
+    if (queryType!=null && isNaN(util.checkInt(queryType))){
+        logger.info(`queryType 不能转换为Number`);
+        res.json({error:{message:`queryType:${queryType}不能转换为Number`}}).end();
+        return;
+    }
+    if (phone!=null && isNaN(util.checkInt(phone))){
+        logger.info(`phone 不能转换为Number`);
+        res.json({error:{message:`phone:${phone}不能转换为Number`}}).end();
+        return;
+    }
+    next();
+});
 
 router.get('/shops', async (req, res, next) => {
     var operateShopID = res.locals.ShopID;
     var shopInfo = res.locals.db.ShopInfo;
     var logger = res.locals.logger;
-    var queryShopID = req.query.ShopID || '';
+    var queryShopID = req.query.ShopID || null;
     var queryType = req.query.Type || 0;
-    var phone = req.query.Phone || '';
+    var phone = req.query.Phone || null;
     var roleOfOperatedShopID = await util.getRole(operateShopID);
     logger.info(roleOfOperatedShopID);
     if (roleOfOperatedShopID == 'superman') {
@@ -21,23 +51,23 @@ router.get('/shops', async (req, res, next) => {
         };
         var whereObj = {};
         if (queryType !== 0) {
-            if (queryShopID != '') {
+            if (queryShopID != null) {
                 whereObj.ParentShopID = queryShopID;
             } else {
                 whereObj.ParentShopID = operateShopID;
             }
         } else {
-            if (queryShopID != '') {
+            if (queryShopID != null) {
                 whereObj.ShopID = queryShopID;
             }
         }
-        if (phone != '') {
+        if (phone != null) {
             whereObj.Phone = {
                 [Op.like]: `%${phone}%`
             }
         }
-        var page = parseInt(req.query.Page || 1);
-        var pageSize = parseInt(req.query.Size || 20);
+        var page = util.checkInt(req.query.Page) || 1;
+        var pageSize = util.checkInt(req.query.Size )|| 20;
         var offset = (page - 1) * pageSize;
         var pages = Math.ceil(await shopInfo.count({
             where: whereObj
@@ -64,13 +94,13 @@ router.get('/shops', async (req, res, next) => {
                 res.json(json).end();
             })
     } else if (roleOfOperatedShopID == 'admin') {
-        if (queryShopID == '' && phone == '') {
+        if (queryShopID == null && phone == null) {
             var json = {
                 data: []
             };
             //无ShopID和Phone则返回所有分店信息，默认按20条分页，返回字段增加Pages表示总页数，Size表示每页条数
-            var page = parseInt(req.query.Page || 1);
-            var pageSize = parseInt(req.query.Size || 20);
+            var page = util.checkInt(req.query.Page) || 1;
+            var pageSize = util.checkInt(req.query.Size) || 20;
             var offset = (page - 1) * pageSize;
             var pages = Math.ceil(await shopInfo.count() / pageSize);
             if (page > pages) {
@@ -96,14 +126,14 @@ router.get('/shops', async (req, res, next) => {
                     json["Size"] = pageSize;
                     res.json(json).end();
                 })
-        } else { // !queryShopID == '' && phone == ''
+        } else { // !queryShopID == null && phone == null
             var whereObj = {
                 ParentShopID: operateShopID
             };
-            if (queryShopID != '') {
+            if (queryShopID != null) {
                 whereObj.ShopID = queryShopID;
             }
-            if (phone != '') {
+            if (phone != null) {
                 whereObj.Phone = phone;
             }
             shopInfo.findOne({
@@ -124,7 +154,7 @@ router.get('/shops', async (req, res, next) => {
             });
         }
     } else { //!分店
-        if (queryShopID != '' && queryShopID != operateShopID) {
+        if (queryShopID != null && queryShopID != operateShopID) {
             res.json({
                 error: {
                     message: "无权限查询其它分店."
@@ -135,7 +165,7 @@ router.get('/shops', async (req, res, next) => {
             var whereObj = {
                 ShopID: operateShopID
             };
-            if (phone != '') {
+            if (phone != null) {
                 whereObj.Phone = phone;
             }
             shopInfo.findOne({
@@ -162,15 +192,15 @@ router.delete('/shops', async (req, res, next) => {
 
     var shopInfo = res.locals.db.ShopInfo;
     var logger = res.locals.logger;
-    var queryShopID = req.body.ShopID || '';
-    var phone = req.body.Phone || '';
+    var queryShopID = req.body.ShopID || null;
+    var phone = req.body.Phone || null;
     var operateShopID = res.locals.ShopID;
     var roleOfOperatedShopID = await util.getRole(operateShopID);
     logger.info(roleOfOperatedShopID);
     var whereObj = {};
-    if (phone != '') whereObj.Phone = phone;
-    if (queryShopID != '') whereObj.ShopID = queryShopID;
-    if (queryShopID == '' && phone == '') {
+    if (phone != null) whereObj.Phone = phone;
+    if (queryShopID != null) whereObj.ShopID = queryShopID;
+    if (queryShopID == null && phone == null) {
         res.json({
             error: {
                 message: "未指定店面。"
@@ -252,15 +282,15 @@ router.post('/shops', async (req, res, next) => {
         return;
     }
     var shopInfo = res.locals.db.ShopInfo;
-    var phone = req.body.Phone || '';
+    var phone = req.body.Phone || null;
     var status = req.body.Status || 0;
-    var name = req.body.Name || '';
-    var address = req.body.Address || '';
+    var name = req.body.Name || null;
+    var address = req.body.Address || null;
     var parentShopID = req.body.ParentShopID || operateShopID;
     var type = 2;
     logger.info(util.formString(phone, status, address, name, parentShopID));
     [phone, name, address].forEach(elem => {
-        if (elem == '') {
+        if (elem == null) {
             res.json({
                 error: {
                     message: "Phone,Name,Address不能为空！"
@@ -278,7 +308,7 @@ router.post('/shops', async (req, res, next) => {
         return shopInfo.create({
                 Name: name,
                 Address: address,
-                Status: parseInt(status),
+                Status: util.checkInt(status),
                 Phone: phone,
                 Type: type,
                 ParentShopID: parentShopID
@@ -324,13 +354,14 @@ router.patch('/shops', async (req, res, next) => {
         return;
     }
     var shopInfo = res.locals.db.ShopInfo;
-    var queryShopID = req.body.ShopID || '';
-    var phone = req.body.Phone || '';
-    var status = req.body.Status || '';
-    var name = req.body.Name || '';
-    var address = req.body.Address || '';
+    var queryShopID = req.body.ShopID || null;
+    var phone = req.body.Phone || null;
+    var status = isNaN(util.checkInt(req.body.Status)) ? null :util.checkInt(req.body.Status);
+    logger.info(status);
+    var name = req.body.Name || null;
+    var address = req.body.Address || null;
     var parentShopID = req.body.ParentShopID;
-    if (queryShopID == '' && phone == '') {
+    if (queryShopID == null && phone == null) {
         res.json({
             error: {
                 message: "未指定店面。"
@@ -338,10 +369,10 @@ router.patch('/shops', async (req, res, next) => {
         }).end();
     }
     var whereObj = {};
-    if (queryShopID != '') {
+    if (queryShopID != null) {
         whereObj.ShopID = queryShopID;
     }
-    if (phone != '') {
+    if (phone != null) {
         whereObj.Phone = phone;
     }
     var instance = await shopInfo.findOne({
@@ -365,8 +396,11 @@ router.patch('/shops', async (req, res, next) => {
             return;
         }
     }
-    if (status) {
-        instance.set('Status', parseInt(status));
+try{
+    logger.info(status)
+    if (status != null) {
+        logger.info(status)
+        instance.set('Status', status);
     }
     if (name) {
         instance.set("Name", name);
@@ -379,23 +413,20 @@ router.patch('/shops', async (req, res, next) => {
     }
     instance.save().then((row) => {
         res.json({
-            data: {
-                ShopID: row.dataValues.ShopID,
-                Name: row.dataValues.Name,
-                Address: row.dataValues.Address,
-                Status: row.dataValues.Status,
-                Phone: row.dataValues.Phone,
-                ParentShopID: row.dataValues.ParentShopID,
-                Type: row.dataValues.Type
-            }
+            data: row
         }).end();
     }).catch(err => {
+        logger.info(err)
         res.json({
             error: {
                 message: err
             }
         }).end();
     });
+}catch(err){
+    logger.info(err);
+    throw(err);
+}
 
 });
 

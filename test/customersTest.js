@@ -231,7 +231,7 @@ describe('Superman建用户无ShopID', () => {
         let customer = {
             Name: "Superman建1号",
             Address: "市中区",
-            Status: 1,
+            Status: 0,
             Phone: 111555559,
             Sex: "男",
             Age: 11,
@@ -254,7 +254,7 @@ describe('Superman建用户带总店ShopID', () => {
         let customer = {
             Name: "Superman建2号",
             Address: "市中区",
-            Status: 1,
+            Status: 0,
             Phone: 111666669,
             Sex: "男",
             Age: 11,
@@ -273,12 +273,12 @@ describe('Superman建用户带总店ShopID', () => {
     });
 });
 
-describe('Superman建用户带分店ShopID', () => {
+describe('Superman建用户带分店ShopID Status 0', () => {
     it('it should create a customerinfo and return info', (done) => {
         let customer = {
             Name: "Superman建3号",
             Address: "市中区",
-            Status: 1,
+            Status: 0,
             Phone: 111777779,
             Sex: "男",
             Age: 11,
@@ -299,6 +299,39 @@ describe('Superman建用户带分店ShopID', () => {
                 res.body.data.should.have.property('Address');
                 res.body.data.should.have.property('Status');
                 res.body.data.should.have.property('Phone');
+                res.body.data.Status.should.eq(0);
+                done();
+            });
+    });
+});
+
+describe('Superman建用户带分店ShopID Status 1', () => {
+    it('it should create a customerinfo and return info', (done) => {
+        let customer = {
+            Name: "Superman建4号",
+            Address: "市中区",
+            Status: 1,
+            Phone: 111777780,
+            Sex: "男",
+            Age: 11,
+            ShopID:'112'
+        };
+        chai.request(server)
+            .post('/api/v1/customers')
+            .set("TOKEN",tokenSuperman)
+            .send(customer)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.should.have.property('CustomerID');
+                res.body.data.should.have.property('Name');
+                res.body.data.should.have.property('Sex');
+                res.body.data.should.have.property('Age');
+                res.body.data.should.have.property('Address');
+                res.body.data.should.have.property('Status');
+                res.body.data.should.have.property('Phone');
+                res.body.data.Status.should.eq(1);
                 done();
             });
     });

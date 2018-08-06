@@ -4,26 +4,80 @@ var express = require('express');
 var router = express.Router();
 const Op = require('sequelize').Op;
 
+router.use('/customers',(req,res,next)=>{
+    var logger = res.locals.logger;
+    var queryShopID,phone,queryType,page,pageSize,age;
+    logger.info(req.method);
+    if (req.method == 'GET'){
+        queryShopID = req.query.ShopID;
+        phone = req.query.Phone;
+        queryType = req.query.Type;
+        page = req.query.Page;
+        pageSize = req.query.Size;
+        age = req.query.Age;
+    }else{
+        queryShopID = req.body.ShopID;
+        phone = req.body.Phone;
+        queryType = req.body.Type;
+        page = req.body.Page;
+        pageSize = req.body.Size;
+        age = req.body.Age;
+    }
+    logger.info(`queryShopID:${queryShopID},phone:${phone},queryType:${queryType}`);
+    if (queryShopID!=null && isNaN(util.checkInt(queryShopID))){
+        logger.info(`queryShopID 不能转换为Number`);
+        res.json({error:{message:`queryShopID:${queryShopID}不能转换为Number`}}).end();
+        return;
+    }
+    if (queryType!=null && isNaN(util.checkInt(queryType))){
+        logger.info(`queryType 不能转换为Number`);
+        res.json({error:{message:`queryType:${queryType}不能转换为Number`}}).end();
+        return;
+    }
+    if (phone!=null && isNaN(util.checkInt(phone))){
+        logger.info(`phone 不能转换为Number`);
+        res.json({error:{message:`phone:${phone}不能转换为Number`}}).end();
+        return;
+    }
+    if (page!=null && isNaN(util.checkInt(page))){
+        logger.info(`page 不能转换为Number`);
+        res.json({error:{message:`page:${page}不能转换为Number`}}).end();
+        return;
+    }
+    if (pageSize!=null && isNaN(util.checkInt(pageSize))){
+        logger.info(`pageSize 不能转换为Number`);
+        res.json({error:{message:`pageSize:${pageSize}不能转换为Number`}}).end();
+        return;
+    }
+    if (age!=null && isNaN(util.checkInt(age))){
+        logger.info(`age 不能转换为Number`);
+        res.json({error:{message:`age:${age}不能转换为Number`}}).end();
+        return;
+    }
+
+    next();
+});
+
 
 router.get('/customers', async (req, res) => {
     var customerInfo = res.locals.db.CustomerInfo;
     var shopInfo = res.locals.db.ShopInfo;
     var logger = res.locals.logger;
     var operateShopID = res.locals.ShopID;
-    var queryShopID = req.query.ShopID || '';
-    var phone = req.query.Phone || '';
-    var page = parseInt(req.query.Page || 1);
-    var pageSize = parseInt(req.query.Size || 20);
+    var queryShopID = req.query.ShopID || null;
+    var phone = req.query.Phone || null;
+    var page = parseInt(req.query.Page) || 1;
+    var pageSize = parseInt(req.query.Size) || 20;
     var offset = (page - 1) * pageSize;
 
     var whereObj = {};
-    if (phone != '') whereObj.Phone = {
+    if (phone != null) whereObj.Phone = {
         [Op.like]: `%${phone}%`
     };
 
     var instance = undefined;
     if (await util.isSuperman(operateShopID)) {
-        if (queryShopID != '' && queryShopID != operateShopID) {
+        if (queryShopID != null && queryShopID != operateShopID) {
             if (await util.isAdminShop(queryShopID)) {
                 //取总店下所有分店的客户信息
                 instance = await customerInfo.findAndCountAll({
@@ -75,7 +129,7 @@ router.get('/customers', async (req, res) => {
             })
         }
     } else if (await util.isAdminShop(operateShopID)) {
-        if (queryShopID != '') {
+        if (queryShopID != null) {
             if (await util.isSuperman(queryShopID)) {
                 // 报错
                 res.json({
@@ -159,7 +213,7 @@ router.get('/customers', async (req, res) => {
             });
         }
     } else {
-        if (queryShopID != '' && queryShopID != operateShopID) {
+        if (queryShopID != null && queryShopID != operateShopID) {
             // 报错
             res.json({
                 error: {
@@ -200,18 +254,18 @@ router.get('/customers', async (req, res) => {
 router.post('/customers', async (req, res) => {
     var customerInfo = res.locals.db.CustomerInfo;
     var logger = res.locals.logger;
-    var phone = req.body.Phone || '';
-    var status = req.body.Status || 1;
-    var name = req.body.Name || '';
-    var address = req.body.Address || '';
-    var sex = req.body.Sex || '';
-    var age = req.body.Age || '';
+    var phone = req.body.Phone || null;
+    var status = isNaN(parseInt(req.body.Status))?1:parseInt(req.body.Status);
+    var name = req.body.Name || null;
+    var address = req.body.Address || null;
+    var sex = req.body.Sex || null;
+    var age = req.body.Age || null;
     var operateShopID = res.locals.ShopID;
-    var shopID = req.body.ShopID || '';
-    var recommendCustomerID = req.body.RecommendCustomerID || '';
+    var shopID = isNaN(parseInt(req.body.ShopID))?null:parseInt(req.body.ShopID)
+    var recommendCustomerID = req.body.RecommendCustomerID || null;
     logger.info(recommendCustomerID);
     [phone, sex].forEach(elem => {
-        if (elem == '') {
+        if (elem == null) {
             res.json({
                 error: {
                     Message: "Phone,Sex不能为空！"
@@ -236,7 +290,7 @@ router.post('/customers', async (req, res) => {
         }).end();
         return;
     } else if (await util.isSuperman(operateShopID)) {
-        if (shopID == '' || await util.isAdminShop(shopID)) {
+        if (shopID == null || await util.isAdminShop(shopID)) {
             res.json({
                 error: {
                     message: "需要客户归属分店ID"
@@ -251,7 +305,7 @@ router.post('/customers', async (req, res) => {
         }
         createCondition.ShopID = shopID;
     } else {
-        if (shopID !== '' && shopID != operateShopID) {
+        if (shopID !== null && shopID != operateShopID) {
             res.json({
                 error: {
                     message: "无权创建其它店面客户信息"
@@ -305,7 +359,7 @@ router.delete('/customers', async (req, res) => {
     var customerInfo = res.locals.db.CustomerInfo;
     var logger = res.locals.logger;
     var operateShopID = res.locals.ShopID;
-    var phone = req.body.Phone || '';
+    var phone = req.body.Phone || null;
     if (await util.isAdminShop(operateShopID)) {
         res.json({
             error: {
@@ -314,7 +368,7 @@ router.delete('/customers', async (req, res) => {
         }).end();
         return;
     }
-    if (phone == '') {
+    if (phone == null) {
         res.json({
             error: {
                 message: "客户电话不能为空"
@@ -386,13 +440,13 @@ router.patch('/customers', async (req, res) => {
     var customerInfo = res.locals.db.CustomerInfo;
     var logger = res.locals.logger;
     var operateShopID = res.locals.ShopID;
-    var phone = req.body.Phone || '';
-    var status = req.body.Status || '';
-    var name = req.body.Name || '';
-    var address = req.body.Address || '';
-    var sex = req.body.Sex || '';
-    var age = req.body.Age || '';
-    var shopID = req.body.ShopID || '';
+    var phone = req.body.Phone || null;
+    var status = req.body.Status || null;
+    var name = req.body.Name || null;
+    var address = req.body.Address || null;
+    var sex = req.body.Sex || null;
+    var age = req.body.Age || null;
+    var shopID = req.body.ShopID || null;
     if (await util.isAdminShop(operateShopID)) {
         res.json({
             error: {
@@ -401,7 +455,7 @@ router.patch('/customers', async (req, res) => {
         }).end();
         return;
     }
-    if (phone == '') {
+    if (phone == null) {
         res.json({
             error: {
                 message: "电话不能为空"
@@ -424,7 +478,7 @@ router.patch('/customers', async (req, res) => {
                 }).end();
                 return;
             }
-            if (shopID != '') {
+            if (shopID != null) {
                 res.json({
                     error: {
                         message: "无权修改客户归属信息"
@@ -433,15 +487,15 @@ router.patch('/customers', async (req, res) => {
                 return;
             }
         } else {
-            if (shopID != '') {
+            if (shopID != null) {
                 instance.set('ShopID', shopID);
             }
         }
-        if (status != '') instance.set('Status', status);
-        if (address != '') instance.set('Address', address);
-        if (name != '') instance.set('Name', name);
-        if (sex != '') instance.set('Sex', sex);
-        if (age != '') instance.set('Age', age);
+        if (status != null) instance.set('Status', status);
+        if (address != null) instance.set('Address', address);
+        if (name != null) instance.set('Name', name);
+        if (sex != null) instance.set('Sex', sex);
+        if (age != null) instance.set('Age', age);
         instance.save().then(() => {
             res.json({
                 data: {
