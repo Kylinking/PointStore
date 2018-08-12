@@ -5,7 +5,7 @@ var router = express.Router();
 var moment = require('moment')
 const Op = require('sequelize').Op;
 
-router.use('/shops',(req,res,next)=>{
+router.use('/shophistory',(req,res,next)=>{
     var logger = res.locals.logger;
     var queryShopID,phone,queryType,page,pageSize,age;
     logger.info(req.method);
@@ -60,7 +60,7 @@ router.use('/shops',(req,res,next)=>{
 });
 
 
-router.get('/history',async (req,res)=>{
+router.get('/shophistory',async (req,res)=>{
     var logger = res.locals.logger;
     var operateShopID = res.locals.ShopID;
     var queryShopID = req.query.ShopID || null;
@@ -69,16 +69,38 @@ router.get('/history',async (req,res)=>{
     var pageSize = util.checkInt(req.query.Size) || 20;
     var offset = (page - 1) * pageSize;
     var type = req.query.Type || null;
-
-    var endDate = Date.parse(moment(req.query.End).format("MM DD YYYY"));
-    var startDate = Date.parse(moment(req.query.Start).format("MM DD YYYY"));
+    var startDate = req.query.Start || null;
+    var endDate = req.query.End || null;
+    const duration = moment.duration(30,"days");
+    logger.info(`startDate:${startDate},endDate:${endDate}`);
+    endDate = Date.parse(moment(endDate).format("MM DD YYYY"));
+    startDate = Date.parse(moment(startDate).format("MM DD YYYY"));
     
+    logger.info(`startDate:${moment(startDate).format("MM DD YYYY")},endDate:${moment(endDate).format("MM DD YYYY")}`);
     if (isNaN(endDate) && isNaN(startDate)){
         endDate = Date.parse(moment().format("MM DD YYYY"));
         startDate = Date.parse(moment().subtract(30,'days').format("MM DD YYYY"));
-    }else if(isNaN(endDate)){
-
+    }else if(isNaN(endDate) && !isNaN(startDate)){
+        endDate = Date.parse(moment(startDate).add(30,'days').format("MM DD YYYY"));
+    }else if (!isNaN(endDate) && isNaN(startDate)){
+        startDate = Date.parse(moment(endDate).subtract(30,'days').format("MM DD YYYY"));
+    }else{
+        if (endDate < startDate){
+            [endDate,startDate] = [startDate,endDate];
+        }
     }
+    logger.info(`startDate:${startDate},endDate:${endDate}`);
+
+    
+    
+    
+    
+    
+    
+    
+    
+    res.end();
+    
 
 
 
@@ -88,30 +110,12 @@ router.get('/history',async (req,res)=>{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // error 
-router.use('/shoppoints', (req, res) => {
-    res.status(404);
+router.use('/shophistory', (req, res) => {
+    res.status(400);
     res.json({
         error: {
-            message: "Not Found. \nNo Service with " + req.method
+            message: "No Service with " + req.method
         }
     }).end();
 })

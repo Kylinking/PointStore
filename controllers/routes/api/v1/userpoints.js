@@ -64,7 +64,6 @@ router.get('/userpoints', async (req, res) => {
         offset: offset,
         limit: pageSize
     }).then((instance) => {
-        // if (instance) {
         var pages = Math.ceil(instance.count / pageSize);
         var json = {
             data: []
@@ -75,7 +74,6 @@ router.get('/userpoints', async (req, res) => {
         json["Pages"] = pages;
         json["Size"] = pageSize;
         res.json(json).end();
-        // }
     }).catch(err => {
         res.json({
             error: {

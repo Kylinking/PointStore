@@ -217,7 +217,7 @@ router.get('/customers', async (req, res) => {
             // 报错
             res.json({
                 error: {
-                    message: "无权限"
+                    message: "无权限取其它分店客户信息"
                 }
             }).end();
             return;
