@@ -9,7 +9,10 @@ var fs = require('fs');
 var basename = path.basename(__filename);
 var apis = [];
 const version = 'v1';
+const util = require("../../../util/util");
 
+
+// Auto push routes into array apis, .js files in the vX folder will be treated as routes;  
 fs
     .readdirSync(path.join(__dirname, version))
     .filter(file => {
@@ -57,9 +60,65 @@ router.use('/' + version,
         } else {
             next();
         }
-    },
-    apis
+    }
 )
+
+// Check numeric data validation and route to apis
+router.use('/' + version,
+(req,res,next)=>{
+    var logger = res.locals.logger;
+    var queryShopID,phone,queryType,page,pageSize,age;
+    logger.info(req.method);
+    if (req.method == 'GET'){
+        queryShopID = req.query.ShopID || null;
+        phone = req.query.Phone|| null;
+        queryType = req.query.Type|| null;
+        page = req.query.Page|| null;
+        pageSize = req.query.Size|| null;
+        age = req.query.Age|| null;
+    }else{
+        queryShopID = req.body.ShopID|| null;
+        phone = req.body.Phone|| null;
+        queryType = req.body.Type|| null;
+        page = req.body.Page|| null;
+        pageSize = req.body.Size|| null;
+        age = req.body.Age|| null;
+    }
+    logger.info(`queryShopID:${queryShopID},phone:${phone},queryType:${queryType}`);
+    if (queryShopID!=null && isNaN(util.checkInt(queryShopID))){
+        logger.info(`queryShopID 不能转换为Number`);
+        res.json({error:{message:`queryShopID:${queryShopID}不能转换为Number`}}).end();
+        return;
+    }
+    if (queryType!=null && isNaN(util.checkInt(queryType))){
+        logger.info(`queryType 不能转换为Number`);
+        res.json({error:{message:`queryType:${queryType}不能转换为Number`}}).end();
+        return;
+    }
+    if (phone!=null && isNaN(util.checkInt(phone))){
+        logger.info(`phone 不能转换为Number`);
+        res.json({error:{message:`phone:${phone}不能转换为Number`}}).end();
+        return;
+    }
+    if (page!=null && isNaN(util.checkInt(page))){
+        logger.info(`page 不能转换为Number`);
+        res.json({error:{message:`page:${page}不能转换为Number`}}).end();
+        return;
+    }
+    if (pageSize!=null && isNaN(util.checkInt(pageSize))){
+        logger.info(`pageSize 不能转换为Number`);
+        res.json({error:{message:`pageSize:${pageSize}不能转换为Number`}}).end();
+        return;
+    }
+    if (age!=null && isNaN(util.checkInt(age))){
+        logger.info(`age 不能转换为Number`);
+        res.json({error:{message:`age:${age}不能转换为Number`}}).end();
+        return;
+    }
+    next();
+}
+,apis);
+
 
 router.use((err, req, res, next) => {
     //res.status(err.status || 500);

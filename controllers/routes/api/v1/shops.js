@@ -4,38 +4,6 @@ var express = require('express');
 var router = express.Router();
 const Op = require('sequelize').Op;
 
-router.use('/shops',(req,res,next)=>{
-    var logger = res.locals.logger;
-    var queryShopID,phone,queryType;
-    logger.info(req.method);
-    if (req.method == 'GET'){
-        queryShopID = req.query.ShopID;
-        phone = req.query.Phone;
-        queryType = req.query.Type;
-    }else{
-        queryShopID = req.body.ShopID;
-        phone = req.body.Phone;
-        queryType = req.body.Type;
-    }
-    logger.info(`queryShopID:${queryShopID},phone:${phone},queryType:${queryType}`);
-    if (queryShopID!=null && isNaN(util.checkInt(queryShopID))){
-        logger.info(`queryShopID 不能转换为Number`);
-        res.json({error:{message:`queryShopID:${queryShopID}不能转换为Number`}}).end();
-        return;
-    }
-    if (queryType!=null && isNaN(util.checkInt(queryType))){
-        logger.info(`queryType 不能转换为Number`);
-        res.json({error:{message:`queryType:${queryType}不能转换为Number`}}).end();
-        return;
-    }
-    if (phone!=null && isNaN(util.checkInt(phone))){
-        logger.info(`phone 不能转换为Number`);
-        res.json({error:{message:`phone:${phone}不能转换为Number`}}).end();
-        return;
-    }
-    next();
-});
-
 router.get('/shops', async (req, res, next) => {
     var operateShopID = res.locals.ShopID;
     var shopInfo = res.locals.db.ShopInfo;

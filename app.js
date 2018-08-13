@@ -32,7 +32,7 @@ app.all('*', function (req, res, next) {
     ' body:' + req.body + 
     ' params:' + req.params);
   }catch(error){
-    console.log(error);
+    logger.error(error);
   }
   next();
 })
@@ -42,13 +42,12 @@ app.use('/login', LoginRouter);
 app.use('/api', ApiRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  console.log("before createError");
   next(createError(404));
   
 });
 // error handler
 app.use(function (err, req, res, next) {
-  console.log("before app.js error");
+  logger.error(err);
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
