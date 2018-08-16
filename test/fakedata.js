@@ -6,6 +6,10 @@ module.exports = async (models) => {
         Password: "hello"
     });
     await models.Login.create({
+        ID: 124,
+        Password: "hello"
+    });
+    await models.Login.create({
         ID: 12,
         Password: "hello"
     });

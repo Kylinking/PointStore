@@ -26,11 +26,11 @@ app.all('*', function (req, res, next) {
   res.locals.db = db;
   res.locals.redisClient = redisClient;
   res.locals.redis = redis;
-  logger.info('ip:' + req.ip +
-    ' path:' + req.path +
-    ' headers:' + req.headers +
-    ' body:' + req.body + 
-    ' params:' + req.params);
+  logger.info(req.ip);
+  logger.info(req.path);
+  logger.info(req.headers);
+  logger.info(req.body);
+  logger.info(req.params);
   }catch(error){
     logger.error(error);
   }

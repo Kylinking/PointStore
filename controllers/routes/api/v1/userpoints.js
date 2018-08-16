@@ -3,6 +3,7 @@ var util = require('../../../../util/util');
 var express = require('express');
 var router = express.Router();
 const Op = require('sequelize').Op;
+
 router.get('/userpoints', async (req, res) => {
     var logger = res.locals.logger;
     var phone = req.query.Phone || '';
@@ -85,19 +86,19 @@ router.get('/userpoints', async (req, res) => {
 
 router.post('/userpoints', async (req, res) => {
     var logger = res.locals.logger;
-    var phone = req.body.Phone || '';
+    var phone = !isNaN(util.checkInt(req.body.Phone)) ? util.checkInt(req.body.Phone):0;
     var db = res.locals.db;
     var sequelize = db.sequelize;
     var operateShopID = res.locals.ShopID;
-    var cost = req.body.Cost || 0;
-    var recharged = req.body.Recharged || 0;
-    var bounus = req.body.ShopBounusPoints || 0;
-    var recommendPoints = req.body.RecommendPoints || 0;
-    var indirectRecommendPoints = req.body.IndirectRecommendPoints || 0;
+    var cost = !isNaN(util.checkInt(req.body.Cost))? util.checkInt(req.body.Cost):0;
+    var recharged = !isNaN(util.checkInt(req.body.Recharged)) ? util.checkInt(req.body.Recharged):0;
+    var bounus = !isNaN(util.checkInt(req.body.ShopBounusPoints))? util.checkInt(req.body.ShopBounusPoints):0;
+    var recommendPoints = !isNaN(util.checkInt(req.body.RecommendPoints))? util.checkInt(req.body.RecommendPoints):0;
+    var indirectRecommendPoints = !isNaN(util.checkInt(req.body.IndirectRecommendPoints))? util.checkInt(req.body.IndirectRecommendPoints):0;
     logger.info(`phone: ${phone}, operateShopID: ${operateShopID}, 
          cost: ${cost},recharged:${recharged}, bounus: ${bounus}, 
          recommendPoints: ${recommendPoints}, indirectRecommendPoints: ${indirectRecommendPoints}`);
-    if (phone == '') {
+    if (phone == null) {
         res.json({
             error: {
                 message: '无客户电话信息'
@@ -143,6 +144,7 @@ router.post('/userpoints', async (req, res) => {
     var recommendCustomerInfo = null;
     var indirectRecommendCustomerInfo = null;
     var date = Date.parse(Date());
+    logger.info(date);
     //用户账户表、用户账户变动表、店铺账户表、店铺账户变动表、明细表
     sequelize.transaction(transaction => {
             return db.CustomerInfo.findOne({
@@ -154,6 +156,9 @@ router.post('/userpoints', async (req, res) => {
                 })
                 .then(async (row) => {
                     customerInfo = row;
+                    if (customerInfo.Status != 1){
+                        throw "用户状态不正确，本次交易拒绝。";
+                    }
                     recommendCustomerInfo = await customerInfo.getRecommendCustomerInfo();
                     logger.info(customerInfo.dataValues);
 
@@ -178,7 +183,19 @@ router.post('/userpoints', async (req, res) => {
                         ShopBounusPoints: bounus
                     };
                     var shopAcctChangeRecommendPointAmount = 0;
-                    
+                    var custAcctInfo = await db.CustomerAccountInfo.findOne(
+                        {
+                            where: {
+                                CustomerID: customerInfo.CustomerID
+                            }
+                        }, {
+                            transaction: transaction
+                        }
+                    )
+                    if (custAcctInfo.RemainPoints + recharged + bounus < cost){
+                        //res.json({error:{message:"本次消费积分余额不足"}}).end();
+                        throw "本次消费积分余额不足" ;
+                    }
                     await db.CustomerAccountInfo.increment({
                         RemainPoints: recharged - cost + bounus,
                         ShopBounusPoints: bounus,
@@ -301,18 +318,16 @@ router.post('/userpoints', async (req, res) => {
                         }
                     },{transaction:transaction});
                 })
-                .catch(error=>{
-                    res.json({error:{message:error}}).end();
-                })
         })
         .then(result=>{
+            logger.info(result);
             res.json({data:result}).end();
         })
         .catch(err => {
             // Rolled back
-            console.error(err);
+            logger.error(err);
+            res.json({error:{message:err}}).end();
         });
-
 });
 
 module.exports = router;

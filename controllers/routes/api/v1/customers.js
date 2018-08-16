@@ -100,7 +100,7 @@ router.get('/customers', async (req, res) => {
                             where: {
                                 ParentShopID: operateShopID
                             }
-                        }, , {
+                        }, {
                             model: customerInfo,
                             as: "RecommendCustomerInfo",
                             required: false
