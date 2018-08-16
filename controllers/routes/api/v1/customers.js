@@ -21,9 +21,9 @@ router.get('/customers', async (req, res) => {
     };
 
     var instance = undefined;
-    if (await util.isSuperman(operateShopID)) {
+    if (await util.isSupermanAsync(operateShopID)) {
         if (queryShopID != null && queryShopID != operateShopID) {
-            if (await util.isAdminShop(queryShopID)) {
+            if (await util.isAdminShopAsync(queryShopID)) {
                 //取总店下所有分店的客户信息
                 instance = await customerInfo.findAndCountAll({
                     where: whereObj,
@@ -73,9 +73,9 @@ router.get('/customers', async (req, res) => {
                 offset: offset
             })
         }
-    } else if (await util.isAdminShop(operateShopID)) {
+    } else if (await util.isAdminShopAsync(operateShopID)) {
         if (queryShopID != null) {
-            if (await util.isSuperman(queryShopID)) {
+            if (await util.isSupermanAsync(queryShopID)) {
                 // 报错
                 res.json({
                     error: {
@@ -83,7 +83,7 @@ router.get('/customers', async (req, res) => {
                     }
                 }).end();
                 return;
-            } else if (await util.isAdminShop(queryShopID)) {
+            } else if (await util.isAdminShopAsync(queryShopID)) {
                 if (queryShopID != operateShopID) {
                     //报错
                     res.json({
@@ -227,15 +227,15 @@ router.post('/customers', async (req, res) => {
         Sex: sex,
         Age: age,
     };
-    if (await util.isAdminShop(operateShopID)) {
+    if (await util.isAdminShopAsync(operateShopID)) {
         res.json({
             error: {
                 message: "无权创建客户信息"
             }
         }).end();
         return;
-    } else if (await util.isSuperman(operateShopID)) {
-        if (shopID == null || await util.isAdminShop(shopID)) {
+    } else if (await util.isSupermanAsync(operateShopID)) {
+        if (shopID == null || await util.isAdminShopAsync(shopID)) {
             res.json({
                 error: {
                     message: "需要客户归属分店ID"
@@ -243,7 +243,7 @@ router.post('/customers', async (req, res) => {
             }).end();
             return;
         }
-        if (!await util.isBelongsToByID(recommendCustomerID, shopID)) {
+        if (!await util.isBelongsToByIDAsync(recommendCustomerID, shopID)) {
             createCondition.RecommendCustomerID = null;
         } else {
             createCondition.RecommendCustomerID = recommendCustomerID;
@@ -258,7 +258,7 @@ router.post('/customers', async (req, res) => {
             }).end();
             return;
         }
-        if (!await util.isBelongsToByID(recommendCustomerID, operateShopID)) {
+        if (!await util.isBelongsToByIDAsync(recommendCustomerID, operateShopID)) {
             createCondition.RecommendCustomerID = null;
         } else {
             createCondition.RecommendCustomerID = recommendCustomerID;
@@ -305,7 +305,7 @@ router.delete('/customers', async (req, res) => {
     var logger = res.locals.logger;
     var operateShopID = res.locals.ShopID;
     var phone = req.body.Phone || null;
-    if (await util.isAdminShop(operateShopID)) {
+    if (await util.isAdminShopAsync(operateShopID)) {
         res.json({
             error: {
                 message: "无权修改客户信息"
@@ -335,7 +335,7 @@ router.delete('/customers', async (req, res) => {
             }).end();
             return;
         }
-        if (!await util.isSuperman(operateShopID)) {
+        if (!await util.isSupermanAsync(operateShopID)) {
             if (instance.ShopID != operateShopID) {
                 res.json({
                     error: {
@@ -392,7 +392,7 @@ router.patch('/customers', async (req, res) => {
     var sex = req.body.Sex || null;
     var age = req.body.Age || null;
     var shopID = req.body.ShopID || null;
-    if (await util.isAdminShop(operateShopID)) {
+    if (await util.isAdminShopAsync(operateShopID)) {
         res.json({
             error: {
                 message: "无权修改客户信息"
@@ -414,7 +414,7 @@ router.patch('/customers', async (req, res) => {
         }
     });
     if (instance) {
-        if (!await util.isSuperman(operateShopID)) {
+        if (!await util.isSupermanAsync(operateShopID)) {
             if (instance.ShopID != operateShopID) {
                 res.json({
                     error: {

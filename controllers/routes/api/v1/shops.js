@@ -3,7 +3,7 @@ var util = require('../../../../util/util');
 var express = require('express');
 var router = express.Router();
 const Op = require('sequelize').Op;
-
+const defaultPassword = "hello";
 router.get('/shops', async (req, res, next) => {
     var operateShopID = res.locals.ShopID;
     var shopInfo = res.locals.db.ShopInfo;
@@ -11,7 +11,7 @@ router.get('/shops', async (req, res, next) => {
     var queryShopID = req.query.ShopID || null;
     var queryType = req.query.Type || 0;
     var phone = req.query.Phone || null;
-    var roleOfOperatedShopID = await util.getRole(operateShopID);
+    var roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
     logger.info(roleOfOperatedShopID);
     if (roleOfOperatedShopID == 'superman') {
         var json = {
@@ -35,7 +35,7 @@ router.get('/shops', async (req, res, next) => {
             }
         }
         var page = util.checkInt(req.query.Page) || 1;
-        var pageSize = util.checkInt(req.query.Size )|| 20;
+        var pageSize = util.checkInt(req.query.Size) || 20;
         var offset = (page - 1) * pageSize;
         var pages = Math.ceil(await shopInfo.count({
             where: whereObj
@@ -163,7 +163,7 @@ router.delete('/shops', async (req, res, next) => {
     var queryShopID = req.body.ShopID || null;
     var phone = req.body.Phone || null;
     var operateShopID = res.locals.ShopID;
-    var roleOfOperatedShopID = await util.getRole(operateShopID);
+    var roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
     logger.info(roleOfOperatedShopID);
     var whereObj = {};
     if (phone != null) whereObj.Phone = phone;
@@ -238,7 +238,7 @@ router.post('/shops', async (req, res, next) => {
     var logger = res.locals.logger;
     logger.info('enter post /shops');
     var operateShopID = res.locals.ShopID;
-    var roleOfOperatedShopID = await util.getRole(operateShopID);
+    var roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
     logger.info(roleOfOperatedShopID);
     if (!(roleOfOperatedShopID == 'admin' ||
             roleOfOperatedShopID == 'superman')) {
@@ -272,45 +272,50 @@ router.post('/shops', async (req, res, next) => {
             type = 1;
         }
     }
-    res.locals.db.sequelize.transaction(transaction => {
-        return shopInfo.create({
-                Name: name,
-                Address: address,
-                Status: util.checkInt(status),
-                Phone: phone,
-                Type: type,
-                ParentShopID: parentShopID
-            }, {
-                transaction: transaction
-            })
-            .then((row) => {
-                res.json({
-                    data: row
-                }).end();
-                return res.locals.db.ShopAccountInfo.create({
-                    CustomedPoints: 0,
-                    RecommendPoints: 0,
-                    ChargedPoints: 0,
-                    ShopBounusPoints: 0,
-                    ShopID: row.ShopID,
-                }, {
-                    transaction: transaction
-                })
-            }).catch(error => {
-                res.json({
-                    error: {
-                        message: error
-                    }
-                }).end();
-            });
-    });
+    let newShop = undefined;
+    res.locals.db.sequelize.transaction(async transaction => {
+        newShop = await shopInfo.create({
+            Name: name,
+            Address: address,
+            Status: util.checkInt(status),
+            Phone: phone,
+            Type: type,
+            ParentShopID: parentShopID
+        }, {
+            transaction: transaction
+        })
+        let newAcctInfo = await res.locals.db.ShopAccountInfo.create({
+            CustomedPoints: 0,
+            RecommendPoints: 0,
+            ChargedPoints: 0,
+            ShopBounusPoints: 0,
+            ShopID: newShop.ShopID,
+        }, {
+            transaction: transaction
+        });
+        let newLogin = await res.locals.db.Login.create({
+            ID:newShop.ShopID,
+            Password:defaultPassword
+        }, {
+            transaction: transaction
+        });
+    })
+    .then(()=>{
+        res.json({
+            data: newShop
+        }).end();
+    })
+    .catch(error=>{
+        logger.error(error);
+        res.json({error:{message:error}});
+    })
 });
 
 router.patch('/shops', async (req, res, next) => {
     var logger = res.locals.logger;
     logger.info("enter patch shops");
     var operateShopID = res.locals.ShopID;
-    var roleOfOperatedShopID = await util.getRole(operateShopID);
+    var roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
     logger.info(roleOfOperatedShopID);
     if (roleOfOperatedShopID != "admin" &&
         roleOfOperatedShopID != "superman") {
@@ -324,7 +329,7 @@ router.patch('/shops', async (req, res, next) => {
     var shopInfo = res.locals.db.ShopInfo;
     var queryShopID = req.body.ShopID || null;
     var phone = req.body.Phone || null;
-    var status = isNaN(util.checkInt(req.body.Status)) ? null :util.checkInt(req.body.Status);
+    var status = isNaN(util.checkInt(req.body.Status)) ? null : util.checkInt(req.body.Status);
     logger.info(status);
     var name = req.body.Name || null;
     var address = req.body.Address || null;
@@ -364,37 +369,37 @@ router.patch('/shops', async (req, res, next) => {
             return;
         }
     }
-try{
-    logger.info(status)
-    if (status != null) {
+    try {
         logger.info(status)
-        instance.set('Status', status);
+        if (status != null) {
+            logger.info(status)
+            instance.set('Status', status);
+        }
+        if (name) {
+            instance.set("Name", name);
+        }
+        if (address) {
+            instance.set("Address", address);
+        }
+        if (parentShopID) {
+            instance.set("ParentShopID", parentShopID);
+        }
+        instance.save().then((row) => {
+            res.json({
+                data: row
+            }).end();
+        }).catch(err => {
+            logger.info(err)
+            res.json({
+                error: {
+                    message: err
+                }
+            }).end();
+        });
+    } catch (err) {
+        logger.info(err);
+        throw (err);
     }
-    if (name) {
-        instance.set("Name", name);
-    }
-    if (address) {
-        instance.set("Address", address);
-    }
-    if (parentShopID) {
-        instance.set("ParentShopID", parentShopID);
-    }
-    instance.save().then((row) => {
-        res.json({
-            data: row
-        }).end();
-    }).catch(err => {
-        logger.info(err)
-        res.json({
-            error: {
-                message: err
-            }
-        }).end();
-    });
-}catch(err){
-    logger.info(err);
-    throw(err);
-}
 
 });
 

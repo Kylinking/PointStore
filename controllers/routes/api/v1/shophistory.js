@@ -9,7 +9,6 @@ router.get('/shophistory', async (req, res) => {
     let logger = res.locals.logger;
     let operateShopID = res.locals.ShopID;
     let queryShopID = util.checkInt(req.query.ShopID) || null;
-    let phone = req.query.Phone || null;
     let page = util.checkInt(req.query.Page) || 1;
     let pageSize = util.checkInt(req.query.Size) || 20;
     let offset = (page - 1) * pageSize;
@@ -24,7 +23,7 @@ router.get('/shophistory', async (req, res) => {
 
     logger.info(`startDate:${moment(startDate).format("MM DD YYYY")},endDate:${moment(endDate).format("MM DD YYYY")}`);
     if (isNaN(endDate) && isNaN(startDate)) {
-        endDate = Date.parse(moment().format("MM DD YYYY hh:mm:ss a"));
+        endDate = Date.parse(moment().format());
         startDate = Date.parse(moment().subtract(30, 'days').format("MM DD YYYY"));
     } else if (isNaN(endDate) && !isNaN(startDate)) {
         endDate = Date.parse(moment(startDate).add(30, 'days').format("MM DD YYYY"));
@@ -43,8 +42,8 @@ router.get('/shophistory', async (req, res) => {
         }
     };
     let include = [];
-    let role = await util.getRole(operateShopID);
-    logger.info(role)
+    let role = await util.getRoleAsync(operateShopID);
+    logger.info(role);
     if (role == 'normal') {
         if (queryShopID != null && queryShopID != operateShopID) {
             res.json({
@@ -54,11 +53,9 @@ router.get('/shophistory', async (req, res) => {
             }).end();
             return;
         }
-        if (queryShopID != null) {
-            whereObj.ShopID = queryShopID;
-        }
+        whereObj.ShopID = operateShopID;
     } else if (role == "admin") {
-        if (queryShopID != null && !await util.isSubordinate(operateShopID, queryShopID)) {
+        if (queryShopID != null && !await util.isSubordinateAsync(operateShopID, queryShopID)) {
             res.json({
                 error: {
                     message: "无权查询其它总店下店面明细"
@@ -78,14 +75,14 @@ router.get('/shophistory', async (req, res) => {
             whereObj.ShopID = queryShopID;
         }
     } else if (role == 'superman') {
-        if (await util.isAdminShop(queryShopID)) {
+        if (await util.isAdminShopAsync(queryShopID)) {
             include.push({
                 model: db.ShopInfo,
                 where: {
                     ParentShopID: queryShopID
                 }
             })
-        } else if (queryShopID != operateShopID) {
+        } else if (queryShopID != operateShopID && queryShopID != null) {
             whereObj.ShopID = queryShopID;
         }
     }

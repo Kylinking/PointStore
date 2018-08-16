@@ -1,7 +1,7 @@
 var db = require('../models').db;
 
 var util = {
-     isAdminShop: async function (shopID) {
+     isAdminShopAsync: async function (shopID) {
         if (isNaN(shopID)) return false;
         var shopInfo = db.ShopInfo;
         var instance = await shopInfo.findOne({
@@ -15,7 +15,7 @@ var util = {
         }
         return false;
     },
-    isSuperman: async function (shopID) {
+    isSupermanAsync: async function (shopID) {
         if (isNaN(shopID)) return false;
         var shopInfo = db.ShopInfo;
         var instance = await shopInfo.findOne({
@@ -36,7 +36,7 @@ var util = {
         }
         return string;
     },
-    isSubordinate:async function(parentShopID,childShopID){
+    isSubordinateAsync:async function(parentShopID,childShopID){
         if (!parentShopID || !childShopID){
             return false;
         }
@@ -53,9 +53,9 @@ var util = {
         }
         return false;
     },
-    isBelongsToByPhone:async function(customerPhone,shopID){
+    isBelongsToByPhoneAsync:async function(customerPhone,shopID){
         if (!customerPhone || !shopID) return false;
-        if (await this.isSuperman(shopID)) return true;
+        if (await this.isSupermanAsync(shopID)) return true;
         var instance = await db.CustomerInfo.findOne({
             where:{
                 Phone:customerPhone
@@ -63,12 +63,12 @@ var util = {
         });
         if (!instance) return false;
         if (instance.ShopID == shopID) return true;
-        if (await this.isSubordinate(shopID,instance.ShopID)) return true;
+        if (await this.isSubordinateAsync(shopID,instance.ShopID)) return true;
         return false;
     },
-    isBelongsToByID:async function(customerID,shopID){
+    isBelongsToByIDAsync:async function(customerID,shopID){
         if (!customerID || !shopID) return false;
-        if (await this.isSuperman(shopID)) return true;
+        if (await this.isSupermanAsync(shopID)) return true;
         var instance = await db.CustomerInfo.findOne({
             where:{
                 CustomerID:customerID
@@ -76,10 +76,10 @@ var util = {
         });
         if (!instance) return false;
         if (instance.ShopID == shopID) return true;
-        if (await this.isSubordinate(shopID,instance.ShopID)) return true;
+        if (await this.isSubordinateAsync(shopID,instance.ShopID)) return true;
         return false;
     },
-    getRole: async function (shopID){
+    getRoleAsync: async function (shopID){
         if (!shopID)return undefined;
         var instance = await db.ShopInfo.findOne({
             where:{
@@ -97,7 +97,12 @@ var util = {
         if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value))
           return Number(value);
         return NaN;
-      }
+    },
+    makeNumericValue:function(originValue,defaultValue){
+       let temp = this.checkInt(originValue);
+       if (isNaN(temp)) return defaultValue;
+       return temp;
+    }
 }
 
 module.exports = util;

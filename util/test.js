@@ -29,6 +29,4 @@ var r1,r2,r3;
 // .catch(error=>{
 //     console.log(error);
 // })
-(async function(){
-    console.log(await util.isAdminShop("11a2"));
-})()
+console.log(util.makeNumericValue("1a2",null));

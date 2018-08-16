@@ -15,13 +15,13 @@ router.get('/userpoints', async (req, res) => {
     var operateShopID = res.locals.ShopID;
     var whereCustomerInfoObj = {};
     var whereShopInfoObj = {};
-    var roleOfOperatedShopID = await util.getRole(operateShopID);
+    var roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
     if (phone != '') {
         whereCustomerInfoObj.Phone = phone;
     }
     if (roleOfOperatedShopID == 'superman') {
         if (shopID != '' && shopID != operateShopID) {
-            if (await util.isAdminShop(shopID)) {
+            if (await util.isAdminShopAsync(shopID)) {
                 whereShopInfoObj.ParentShopID = shopID;
             } else {
                 whereShopInfoObj.ShopID = shopID;
@@ -29,8 +29,8 @@ router.get('/userpoints', async (req, res) => {
         }
     } else if (roleOfOperatedShopID == 'admin') {
         whereShopInfoObj.ParentShopID = operateShopID;
-        if ((shopID != '' && !await util.isSubordinate(operateShopID, shopID)) ||
-            (phone != '' && !await util.isBelongsToByPhone(phone, operateShopID))) {
+        if ((shopID != '' && !await util.isSubordinateAsync(operateShopID, shopID)) ||
+            (phone != '' && !await util.isBelongsToByPhoneAsync(phone, operateShopID))) {
             res.json({
                 error: {
                     message: "无权查询其它总店下用户账户"
@@ -40,7 +40,7 @@ router.get('/userpoints', async (req, res) => {
         }
     } else {
         if ((shopID != '' && shopID != operateShopID) ||
-            (phone != '' && !await util.isBelongsToByPhone(phone, operateShopID))) {
+            (phone != '' && !await util.isBelongsToByPhoneAsync(phone, operateShopID))) {
             res.json({
                 error: {
                     message: "无权查询其它店面用户账户"
@@ -122,7 +122,7 @@ router.post('/userpoints', async (req, res) => {
         }).end();
         return;
     }
-    var roleOfOperatedShopID = await util.getRole(operateShopID);
+    var roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
     logger.info(roleOfOperatedShopID);
     if (roleOfOperatedShopID != 'normal') {
         res.json({
@@ -132,7 +132,7 @@ router.post('/userpoints', async (req, res) => {
         }).end();
         return;
     }
-    if (!await util.isBelongsToByPhone(phone, operateShopID)) {
+    if (!await util.isBelongsToByPhoneAsync(phone, operateShopID)) {
         res.json({
             error: {
                 message: '无权操作其它分店客户账户'

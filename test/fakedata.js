@@ -153,7 +153,14 @@ module.exports = async (models) => {
         ChargedPoints:130,
         ShopBounusPoints:50,
         ShopID:123
-    })
+    });
+    await models.ShopAccountInfo.create({
+        CustomedPoints:40,
+        RecommendPoints:80,
+        ChargedPoints:130,
+        ShopBounusPoints:50,
+        ShopID:124
+    });
 
 
 

@@ -14,7 +14,7 @@ describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:122222,
-            Cost:20
+            Recharged:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -24,13 +24,36 @@ describe('客户充值', () => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('data');
-                res.body.data.RemainPoints.should.be.eq(100);
+                res.body.data.RemainPoints.should.be.eq(140);
                 done();
             });
     });
 });
 
 describe('客户充值', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:111222229,
+            Recharged:2000,
+            RecommendPoints:200,
+            IndirectRecommendPoints:130,
+            ShopBounusPoints:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.RemainPoints.should.be.eq(2020);
+                done();
+            });
+    });
+});
+
+describe('客户消费', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:122222,
@@ -44,6 +67,107 @@ describe('客户充值', () => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('data');
+                res.body.data.RemainPoints.should.be.eq(120);
+                done();
+            });
+    });
+});
+
+describe('客户推荐奖励', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:122222,
+            RecommendPoints:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token124)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.RemainPoints.should.be.eq(120);
+                done();
+            });
+    });
+});
+
+describe('客户二级推荐奖励', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:122222,
+            IndirectRecommendPoints:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token124)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.RemainPoints.should.be.eq(120);
+                done();
+            });
+    });
+});
+
+describe('店面奖励', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:122222,
+            ShopBounusPoints:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token124)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.RemainPoints.should.be.eq(140);
+                done();
+            });
+    });
+});
+
+describe('客户推荐奖励', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:111222229,
+            RecommendPoints:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.RemainPoints.should.be.eq(2020);
+                done();
+            });
+    });
+});
+
+describe('客户二级推荐奖励', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:111222229,
+            IndirectRecommendPoints:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('data');
+                res.body.data.RemainPoints.should.be.eq(2020);
                 done();
             });
     });
