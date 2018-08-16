@@ -271,6 +271,9 @@ router.post('/shops', async (req, res, next) => {
         if (parentShopID == operateShopID) {
             type = 1;
         }
+    }else{
+        parentShopID = operateShopID;
+        type = 2;
     }
     let newShop = undefined;
     res.locals.db.sequelize.transaction(async transaction => {
