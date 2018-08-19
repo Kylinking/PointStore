@@ -8,9 +8,9 @@ router.get('/shops', async (req, res, next) => {
     var operateShopID = res.locals.ShopID;
     var shopInfo = res.locals.db.ShopInfo;
     var logger = res.locals.logger;
-    var queryShopID = req.query.ShopID || null;
-    var queryType = req.query.Type || 0;
-    var phone = req.query.Phone || null;
+    var queryShopID = util.makeNumericValue(req.query.ShopID,null);
+    var queryType = util.makeNumericValue(req.query.Type, 0);
+    var phone = isNaN(util.checkPhone(req.query.Phone))? null:req.query.Phone;
     var roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
     logger.info(roleOfOperatedShopID);
     if (roleOfOperatedShopID == 'superman') {
@@ -408,7 +408,6 @@ router.patch('/shops', async (req, res, next) => {
 
 // error 
 router.use('/shops', (req, res) => {
-    res.status(404);
     res.json({
         error: {
             message: "Not Found. \nNo Service with " + req.method

@@ -1,9 +1,9 @@
-var db = require('../models').db;
+//var db = require('../models').db;
 var util = require('./util');
 
-var shopInfo = db.ShopInfo;
-var customerInfo = db.CustomerInfo;
-var custacctInfo = db.CustomerAccountInfo;
+// var shopInfo = db.ShopInfo;
+// var customerInfo = db.CustomerInfo;
+// var custacctInfo = db.CustomerAccountInfo;
 
 
 var phone = 144444;
@@ -29,4 +29,8 @@ var r1,r2,r3;
 // .catch(error=>{
 //     console.log(error);
 // })
-console.log(util.makeNumericValue("1a2",null));
+console.log(util.checkPhone("089-123"));
+console.log(util.checkPhone("089123"));
+console.log(util.checkPhone("089-1-23"));
+console.log(util.checkPhone("089123-"));
+console.log(util.checkPhone("-089123"));

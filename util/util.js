@@ -98,6 +98,11 @@ var util = {
           return Number(value);
         return NaN;
     },
+    checkPhone:function(value){
+        if (/^[0-9]{3,4}-?[0-9]+$/.test(value))
+          return value;
+        return NaN;
+    },
     makeNumericValue:function(originValue,defaultValue){
        let temp = this.checkInt(originValue);
        if (isNaN(temp)) return defaultValue;

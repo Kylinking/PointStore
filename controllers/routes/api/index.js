@@ -46,19 +46,38 @@ router.use('/' + version,
         let token = req.header('TOKEN');
         let redisClient = res.locals.redisClient;
         res.locals.logger.info("header token :" + token);
-        var decoded = jwt.decode(token, jwtSecret);
-        res.locals.logger.info(decoded);
-        res.locals.ShopID = decoded.ShopID;
-        const {
-            promisify
-        } = require('util');
-        const getAsync = promisify(redisClient.get).bind(redisClient);
-        var reply = await getAsync(decoded.ShopID);
-        console.log("replay: " + reply);
-        if (reply == null) {
-            next(new Error("登录失效"));
-        } else {
-            next();
+        let decoded = null;
+        try {
+            decoded = jwt.decode(token, jwtSecret);
+            res.locals.logger.info(decoded);
+            res.locals.ShopID = decoded.ShopID;
+        } catch (error) {
+            res.json({
+                error: {
+                    message: "Token 无效"
+                }
+            }).end();
+            return;
+        }
+        try {
+            const {
+                promisify
+            } = require('util');
+            const getAsync = promisify(redisClient.get).bind(redisClient);
+            var reply = await getAsync(decoded.ShopID);
+            console.log("replay: " + reply);
+            if (reply == null) {
+                next(new Error("登录失效"));
+            } else {
+                next();
+            }
+        } catch (error) {
+            res.json({
+                error: {
+                    message: "系统错误，请联系系统管理员。Redis Error!\n" + error.message
+                }
+            }).end();
+            return;
         }
     }
 )
@@ -95,9 +114,9 @@ router.use('/' + version,
         res.json({error:{message:`queryType:${queryType}不能转换为Number`}}).end();
         return;
     }
-    if (phone!=null && isNaN(util.checkInt(phone))){
-        logger.info(`phone 不能转换为Number`);
-        res.json({error:{message:`phone:${phone}不能转换为Number`}}).end();
+    if (phone!=null && isNaN(util.checkPhone(phone))){
+        logger.info(`phone 不是有效电话号码`);
+        res.json({error:{message:`phone:${phone}不是有效电话号码`}}).end();
         return;
     }
     if (page!=null && isNaN(util.checkInt(page))){
@@ -121,7 +140,6 @@ router.use('/' + version,
 
 
 router.use((err, req, res, next) => {
-    //res.status(err.status || 500);
     res.json({
         error: {
             message: err.message

@@ -116,7 +116,6 @@ router.get('/shoppoints', async (req, res) => {
 
 // error 
 router.use('/shoppoints', (req, res) => {
-    res.status(404);
     res.json({
         error: {
             message: "Not Found. \nNo Service with " + req.method

@@ -18,11 +18,15 @@ var db = {};
 client.on("error", function (err) {
     console.log("Error " + err);
 });
-
+try{
 var sequelize = new Sequelize(mysqlConfig.db, mysqlConfig.username, mysqlConfig.password, {
     host: mysqlConfig.host,
     dialect: mysqlConfig.dialect,
 });
+}catch(error){
+    console.log(error);
+    
+}
 
 fs  .readdirSync(__dirname)
     .filter(file => {

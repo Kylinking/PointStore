@@ -21,17 +21,20 @@ app.use(cookieParser());
 
 //log everything in the info level 
 app.all('*', function (req, res, next) {
-  try{
-  res.locals.logger = logger;
-  res.locals.db = db;
-  res.locals.redisClient = redisClient;
-  res.locals.redis = redis;
-  logger.info(req.ip);
-  logger.info(req.path);
-  logger.info(req.headers);
-  logger.info(req.body);
-  logger.info(req.params);
-  }catch(error){
+  try {
+    // 支持跨域请求
+    res.append('Access-Control-Allow-Origin', '*');
+
+    res.locals.logger = logger;
+    res.locals.db = db;
+    res.locals.redisClient = redisClient;
+    res.locals.redis = redis;
+    logger.info(req.ip);
+    logger.info(req.path);
+    logger.info(req.headers);
+    logger.info(req.body);
+    logger.info(req.params);
+  } catch (error) {
     logger.error(error);
   }
   next();
@@ -43,7 +46,7 @@ app.use('/api', ApiRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
-  
+
 });
 // error handler
 app.use(function (err, req, res, next) {

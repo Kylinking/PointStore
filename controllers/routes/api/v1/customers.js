@@ -466,7 +466,6 @@ router.patch('/customers', async (req, res) => {
 
 
 router.use('/customers', (req, res) => {
-    res.status(401);
     res.json({
         error: {
             message: "无服务： " + req.method
