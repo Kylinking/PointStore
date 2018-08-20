@@ -9,28 +9,146 @@ router.get('/customers', async (req, res) => {
     var shopInfo = res.locals.db.ShopInfo;
     var logger = res.locals.logger;
     var operateShopID = res.locals.ShopID;
-    var queryShopID = req.query.ShopID || null;
-    var phone = req.query.Phone || null;
-    var page = parseInt(req.query.Page) || 1;
-    var pageSize = parseInt(req.query.Size) || 20;
+    var queryShopID = util.makeNumericValue(req.query.ShopID, null);
+    var phone = isNaN(util.checkPhone(req.query.Phone)) ? null : req.query.Phone;
+    var page = util.makeNumericValue(req.query.Page, 1);
+    var pageSize = util.makeNumericValue(req.query.Size, 20);
     var offset = (page - 1) * pageSize;
 
     var whereObj = {};
     if (phone != null) whereObj.Phone = {
         [Op.like]: `%${phone}%`
     };
-
+    var role = await util.getRoleAsync(operateShopID);
+    logger.info(`role:${role},queryShopID${queryShopID}`);
     var instance = undefined;
-    if (await util.isSupermanAsync(operateShopID)) {
-        if (queryShopID != null && queryShopID != operateShopID) {
-            if (await util.isAdminShopAsync(queryShopID)) {
+    try {
+        if (role == 'superman') {
+            if (queryShopID != null && queryShopID != operateShopID) {
+                if (await util.isAdminShopAsync(queryShopID)) {
+                    //取总店下所有分店的客户信息
+                    instance = await customerInfo.findAndCountAll({
+                        where: whereObj,
+                        include: [{
+                            model: shopInfo,
+                            where: {
+                                ParentShopID: queryShopID
+                            }
+                        }, {
+                            model: customerInfo,
+                            as: "RecommendCustomerInfo",
+                            required: false
+                        }],
+                        limit: pageSize,
+                        offset: offset
+                    });
+                } else {
+                    //取分店下的所有客户信息
+                    whereObj.ShopID = queryShopID;
+                    instance = await customerInfo.findAndCountAll({
+                        where: whereObj,
+                        include: [{
+                            model: shopInfo,
+                            required: true
+                        }, {
+                            model: customerInfo,
+                            as: "RecommendCustomerInfo",
+                            required: false
+                        }],
+                        limit: pageSize,
+                        offset: offset
+                    });
+                }
+            } else {
+                //取全表所有客户
+                instance = await customerInfo.findAndCountAll({
+                    where: whereObj,
+                    include: [{
+                        model: shopInfo,
+                        required: true
+                    }, {
+                        model: customerInfo,
+                        as: "RecommendCustomerInfo",
+                        required: false
+                    }],
+                    limit: pageSize,
+                    offset: offset
+                })
+            }
+        } else if (role == 'admin') {
+            if (queryShopID != null) {
+                if (await util.isSupermanAsync(queryShopID)) {
+                    // 报错
+                    res.json({
+                        error: {
+                            message: "无权限"
+                        }
+                    }).end();
+                    return;
+                } else if (await util.isAdminShopAsync(queryShopID)) {
+                    if (queryShopID != operateShopID) {
+                        //报错
+                        res.json({
+                            error: {
+                                message: "无权限取其它总店客户信息"
+                            }
+                        }).end();
+                        return;
+                    } else {
+                        instance = await customerInfo.findAndCountAll({
+                            where: whereObj,
+                            include: [{
+                                model: shopInfo,
+                                where: {
+                                    ParentShopID: operateShopID
+                                }
+                            }, {
+                                model: customerInfo,
+                                as: "RecommendCustomerInfo",
+                                required: false
+                            }],
+                            limit: pageSize,
+                            offset: offset
+                        });
+                    }
+                } else {
+                    let shop = await shopInfo.findOne({
+                        where: {
+                            ShopID: queryShopID
+                        }
+                    });
+                    if (shop.ParentShopID != operateShopID) {
+                        res.json({
+                            error: {
+                                message: "无权限取其它总店客户信息"
+                            }
+                        }).end();
+                        return;
+                    } else {
+                        whereObj.ShopID = queryShopID;
+                        instance = await customerInfo.findAndCountAll({
+                            where: whereObj,
+                            include: [{
+                                model: shopInfo,
+                                required: true
+                            }, , {
+                                model: customerInfo,
+                                as: "RecommendCustomerInfo",
+                                required: false
+                            }],
+                            limit: pageSize,
+                            offset: offset
+                        });
+                    }
+                }
+            } else {
                 //取总店下所有分店的客户信息
                 instance = await customerInfo.findAndCountAll({
                     where: whereObj,
                     include: [{
                         model: shopInfo,
                         where: {
-                            ParentShopID: queryShopID
+                            ParentShopID: operateShopID
                         }
                     }, {
                         model: customerInfo,
@@ -40,9 +158,19 @@ router.get('/customers', async (req, res) => {
                     limit: pageSize,
                     offset: offset
                 });
+            }
+        } else {
+            if (queryShopID != null && queryShopID != operateShopID) {
+                // 报错
+                res.json({
+                    error: {
+                        message: "无权限取其它分店客户信息"
+                    }
+                }).end();
+                return;
             } else {
-                //取分店下的所有客户信息
-                whereObj.ShopID = queryShopID;
+                //取该分店客户信息
+                whereObj.ShopID = operateShopID;
                 instance = await customerInfo.findAndCountAll({
                     where: whereObj,
                     include: [{
@@ -57,132 +185,15 @@ router.get('/customers', async (req, res) => {
                     offset: offset
                 });
             }
-        } else {
-            //取全表所有客户
-            instance = await customerInfo.findAndCountAll({
-                where: whereObj,
-                include: [{
-                    model: shopInfo,
-                    required: true
-                }, {
-                    model: customerInfo,
-                    as: "RecommendCustomerInfo",
-                    required: false
-                }],
-                limit: pageSize,
-                offset: offset
-            })
         }
-    } else if (await util.isAdminShopAsync(operateShopID)) {
-        if (queryShopID != null) {
-            if (await util.isSupermanAsync(queryShopID)) {
-                // 报错
-                res.json({
-                    error: {
-                        message: "无权限"
-                    }
-                }).end();
-                return;
-            } else if (await util.isAdminShopAsync(queryShopID)) {
-                if (queryShopID != operateShopID) {
-                    //报错
-                    res.json({
-                        error: {
-                            message: "无权限取其它总店客户信息"
-                        }
-                    }).end();
-                    return;
-                } else {
-                    instance = await customerInfo.findAndCountAll({
-                        where: whereObj,
-                        include: [{
-                            model: shopInfo,
-                            where: {
-                                ParentShopID: operateShopID
-                            }
-                        }, {
-                            model: customerInfo,
-                            as: "RecommendCustomerInfo",
-                            required: false
-                        }],
-                        limit: pageSize,
-                        offset: offset
-                    });
-                }
-            } else {
-                let shop = await shopInfo.findOne({
-                    where: {
-                        ShopID: queryShopID
-                    }
-                });
-                if (shop.ParentShopID != operateShopID) {
-                    res.json({
-                        error: {
-                            message: "无权限取其它总店客户信息"
-                        }
-                    }).end();
-                    return;
-                } else {
-                    whereObj.ShopID = queryShopID;
-                    instance = await customerInfo.findAndCountAll({
-                        where: whereObj,
-                        include: [{
-                            model: shopInfo,
-                            required: true
-                        }, , {
-                            model: customerInfo,
-                            as: "RecommendCustomerInfo",
-                            required: false
-                        }],
-                        limit: pageSize,
-                        offset: offset
-                    });
-                }
+    } catch (error) {
+        logger.error(error);
+        res.json({
+            error: {
+                message: error
             }
-        } else {
-            //取总店下所有分店的客户信息
-            instance = await customerInfo.findAndCountAll({
-                where: whereObj,
-                include: [{
-                    model: shopInfo,
-                    where: {
-                        ParentShopID: operateShopID
-                    }
-                }, {
-                    model: customerInfo,
-                    as: "RecommendCustomerInfo",
-                    required: false
-                }],
-                limit: pageSize,
-                offset: offset
-            });
-        }
-    } else {
-        if (queryShopID != null && queryShopID != operateShopID) {
-            // 报错
-            res.json({
-                error: {
-                    message: "无权限取其它分店客户信息"
-                }
-            }).end();
-            return;
-        } else {
-            //取该分店客户信息
-            whereObj.ShopID = operateShopID;
-            instance = await customerInfo.findAndCountAll({
-                where: whereObj,
-                include: [{
-                    model: shopInfo,
-                    required: true
-                }, {
-                    model: customerInfo,
-                    as: "RecommendCustomerInfo",
-                    required: false
-                }],
-                limit: pageSize,
-                offset: offset
-            });
-        }
+        }).end();
+        return;
     }
     var json = {
         data: []
@@ -199,16 +210,16 @@ router.get('/customers', async (req, res) => {
 router.post('/customers', async (req, res) => {
     var customerInfo = res.locals.db.CustomerInfo;
     var logger = res.locals.logger;
-    var phone = req.body.Phone || null;
-    var status = isNaN(parseInt(req.body.Status))?1:parseInt(req.body.Status);
+    var phone = isNaN(util.checkPhone(req.body.Phone)) ? null : req.body.Phone;
+    var status = util.makeNumericValue(req.body.Status, 1);
     var name = req.body.Name || null;
     var address = req.body.Address || null;
     var sex = req.body.Sex || null;
-    var age = req.body.Age || null;
+    var age = util.makeNumericValue(req.body.Age, null);
     var operateShopID = res.locals.ShopID;
-    var shopID = isNaN(parseInt(req.body.ShopID))?null:parseInt(req.body.ShopID)
-    var recommendCustomerID = req.body.RecommendCustomerID || null;
-    logger.info(recommendCustomerID);
+    var shopID = util.makeNumericValue(req.body.ShopID, null);
+    var recommendCustomerID = util.makeNumericValue(req.body.RecommendCustomerID, null);
+    logger.info(`phone:${phone},status:${status},name:${name},sex:${sex},age:${age},recommend:${recommendCustomerID}`);
     [phone, sex].forEach(elem => {
         if (elem == null) {
             res.json({
@@ -219,6 +230,8 @@ router.post('/customers', async (req, res) => {
             return;
         }
     });
+
+    var role = await util.getRoleAsync(operateShopID);
     var createCondition = {
         Name: name,
         Address: address,
@@ -227,14 +240,14 @@ router.post('/customers', async (req, res) => {
         Sex: sex,
         Age: age,
     };
-    if (await util.isAdminShopAsync(operateShopID)) {
+    if (role == 'admin') {
         res.json({
             error: {
                 message: "无权创建客户信息"
             }
         }).end();
         return;
-    } else if (await util.isSupermanAsync(operateShopID)) {
+    } else if (role == 'superman') {
         if (shopID == null || await util.isAdminShopAsync(shopID)) {
             res.json({
                 error: {
@@ -290,13 +303,14 @@ router.post('/customers', async (req, res) => {
             })
             .catch(
                 error => {
-                    //  console.log(error);
+                    logger.error(error);
                     res.json({
                         error: {
                             message: error
                         }
                     }).end();
-                });
+                }
+            );
     });
 });
 
@@ -304,8 +318,9 @@ router.delete('/customers', async (req, res) => {
     var customerInfo = res.locals.db.CustomerInfo;
     var logger = res.locals.logger;
     var operateShopID = res.locals.ShopID;
-    var phone = req.body.Phone || null;
-    if (await util.isAdminShopAsync(operateShopID)) {
+    var phone = isNaN(util.checkPhone(req.body.Phone)) ? null : req.body.Phone;
+    var role = await util.getRoleAsync(operateShopID);
+    if (role == 'admin') {
         res.json({
             error: {
                 message: "无权修改客户信息"
@@ -335,7 +350,7 @@ router.delete('/customers', async (req, res) => {
             }).end();
             return;
         }
-        if (!await util.isSupermanAsync(operateShopID)) {
+        if (role != 'superman') {
             if (instance.ShopID != operateShopID) {
                 res.json({
                     error: {
@@ -366,6 +381,7 @@ router.delete('/customers', async (req, res) => {
             }).end();
         }).catch(
             error => {
+                logger.error(error);
                 res.json({
                     error: {
                         message: error
@@ -373,6 +389,7 @@ router.delete('/customers', async (req, res) => {
                 }).end();
             });
     } else {
+        logger.info(`客户不存在`);
         res.json({
             error: {
                 message: "客户不存在"
@@ -385,14 +402,16 @@ router.patch('/customers', async (req, res) => {
     var customerInfo = res.locals.db.CustomerInfo;
     var logger = res.locals.logger;
     var operateShopID = res.locals.ShopID;
-    var phone = req.body.Phone || null;
-    var status = req.body.Status || null;
+    var phone = isNaN(util.checkPhone(req.body.Phone)) ? null : req.body.Phone;
+    var status = util.makeNumericValue(req.body.Status, null);
     var name = req.body.Name || null;
     var address = req.body.Address || null;
     var sex = req.body.Sex || null;
-    var age = req.body.Age || null;
-    var shopID = req.body.ShopID || null;
-    if (await util.isAdminShopAsync(operateShopID)) {
+    var age = util.makeNumericValue(req.body.Age, null);
+    var shopID = util.makeNumericValue(req.body.ShopID, null);
+    var role = await util.getRoleAsync(operateShopID);
+    if (role == 'admin') {
+        logger.info(`总店无权修改客户信息`)
         res.json({
             error: {
                 message: "无权修改客户信息"
@@ -414,7 +433,7 @@ router.patch('/customers', async (req, res) => {
         }
     });
     if (instance) {
-        if (!await util.isSupermanAsync(operateShopID)) {
+        if (!role != 'superman') {
             if (instance.ShopID != operateShopID) {
                 res.json({
                     error: {
