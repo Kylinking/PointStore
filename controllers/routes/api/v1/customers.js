@@ -15,13 +15,16 @@ router.get('/customers', async (req, res) => {
     var pageSize = util.makeNumericValue(req.query.Size, 20);
     var name = req.query.Name || null;
     var offset = (page - 1) * pageSize;
-
+    var recommendID = util.makeNumericValue(req.query.RecommendCustomerID,null);
     var whereObj = {};
     if (phone != null) whereObj.Phone = {
         [Op.like]: `%${phone}%`
     };
     if (name != null) whereObj.Name = {
         [Op.like]: `%${name}%`
+    };
+    if (recommendID != null) {
+        whereObj.RecommendCustomerID = recommendID;
     };
     var role = await util.getRoleAsync(operateShopID);
     logger.info(`role:${role},queryShopID${queryShopID}`);
