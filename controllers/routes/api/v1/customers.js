@@ -416,7 +416,9 @@ router.patch('/customers', async (req, res) => {
     var sex = req.body.Sex || null;
     var age = util.makeNumericValue(req.body.Age, null);
     var shopID = util.makeNumericValue(req.body.ShopID, null);
+    var customerID = util.makeNumericValue(req.body.CustomerID, null);
     var role = await util.getRoleAsync(operateShopID);
+    var recommendCustomerID = util.makeNumericValue(req.body.RecommendCustomerID, null);
     if (role == 'admin') {
         logger.info(`总店无权修改客户信息`)
         res.json({
@@ -426,18 +428,22 @@ router.patch('/customers', async (req, res) => {
         }).end();
         return;
     }
-    if (phone == null) {
+    if (customerID == null && phone == null) {
         res.json({
             error: {
-                message: "电话不能为空"
+                message: "Phone和CustomerID不能同时为空"
             }
         }).end();
         return;
     }
+    var whereObj = {};
+    if (customerID != null){
+        whereObj.CustomerID = customerID;
+    }else{
+        whereObj.Phone = phone;
+    }
     var instance = await customerInfo.findOne({
-        where: {
-            Phone: phone
-        }
+        where: whereObj
     });
     if (instance) {
         if (!role != 'superman') {
@@ -459,9 +465,21 @@ router.patch('/customers', async (req, res) => {
             }
         } else {
             if (shopID != null) {
+                if (await util.getRoleAsync(shopID) != "normal"){
+                    res.json({
+                        error:{
+                            message:"客户归属只能修改为分店"
+                        }
+                    });
+                    return ;
+                }
                 instance.set('ShopID', shopID);
             }
         }
+        if (customerID != null && phone != null){
+            instance.set("Phone",phone);
+        }
+        if (recommendCustomerID != null) instance.set('RecommendCustomerID', recommendCustomerID);
         if (status != null) instance.set('Status', status);
         if (address != null) instance.set('Address', address);
         if (name != null) instance.set('Name', name);
