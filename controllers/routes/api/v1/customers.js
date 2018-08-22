@@ -13,11 +13,15 @@ router.get('/customers', async (req, res) => {
     var phone = isNaN(util.checkPhone(req.query.Phone)) ? null : req.query.Phone;
     var page = util.makeNumericValue(req.query.Page, 1);
     var pageSize = util.makeNumericValue(req.query.Size, 20);
+    var name = req.query.Name || null;
     var offset = (page - 1) * pageSize;
 
     var whereObj = {};
     if (phone != null) whereObj.Phone = {
         [Op.like]: `%${phone}%`
+    };
+    if (name != null) whereObj.Name = {
+        [Op.like]: `%${name}%`
     };
     var role = await util.getRoleAsync(operateShopID);
     logger.info(`role:${role},queryShopID${queryShopID}`);
