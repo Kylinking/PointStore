@@ -23,7 +23,10 @@ router.post('/', function (req, res, next) {
         message: "用户名、密码不能为空"
       }
     }).end();
-  } else {
+    return;
+  }  
+  
+  else {
     db.Login.findOne({
       where: {
         ID: shopID
@@ -36,14 +39,28 @@ router.post('/', function (req, res, next) {
             message: "用户不存在"
           }
         }).end();
-      } else if (login.dataValues.Password !== password) {
-        logger.warn(shopID + ": 密码错误");
-        res.json({
-          error: {
-            message: "密码错误"
-          }
-        }).end();
       } else {
+        // if (login.Status != 1) {
+        //   logger.warn(shopID + "状态不正常");
+        //   res.json({
+        //     error: {
+        //       message: `店面状态不正常 Status:${login.Status}`
+        //     }
+        //   }).end();
+        //   return;
+        // }
+        if (login.dataValues.Password !== password) {
+          logger.warn(shopID + ": 密码错误");
+          res.json({
+            error: {
+              message: "密码错误"
+            }
+          }).end();
+          return;
+        }
+
+
+
         var token = jwt.encode({
           ShopID: shopID
         }, jwtSecret);
@@ -56,6 +73,7 @@ router.post('/', function (req, res, next) {
             token: token
           }
         }).end();
+
       }
     }).then(() => {
       logger.info("exit post /login")

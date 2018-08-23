@@ -45,13 +45,37 @@ router.use('/' + version,
     async function Authentication(req, res, next) {
         let token = req.header('TOKEN');
         let redisClient = res.locals.redisClient;
+        let logger = res.locals.logger;
         res.locals.logger.info("header token :" + token);
         let decoded = null;
         try {
             decoded = jwt.decode(token, jwtSecret);
             res.locals.logger.info(decoded);
             res.locals.ShopID = decoded.ShopID;
+            var operatedShop = await res.locals.db.ShopInfo.findOne({
+                where: {
+                  ShopID: res.locals.ShopID
+                }
+            });
+            if (operatedShop){
+                if(operatedShop.Status != 1){
+                    res.json({
+                        error: {
+                            message: `店面状态异常，无权操作。Status:${operatedShop.Status}`
+                        }
+                    }).end();
+                    return;
+                }
+            }else{
+                res.json({
+                    error: {
+                        message: "店面不存在"
+                    }
+                }).end();
+                return;
+            }
         } catch (error) {
+            logger.error(error);
             res.json({
                 error: {
                     message: "Token 无效"
