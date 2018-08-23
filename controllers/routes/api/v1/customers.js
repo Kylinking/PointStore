@@ -374,18 +374,13 @@ router.delete('/customers', async (req, res) => {
                 Phone: phone
             }
         }).then(() => {
-            res.json({
-                data: {
-                    CustomerID: instance.dataValues.CustomerID,
-                    Name: instance.dataValues.Name,
-                    Address: instance.dataValues.Address,
-                    Status: 0,
-                    Phone: instance.dataValues.Phone,
-                    Sex: instance.dataValues.Sex,
-                    Age: instance.dataValues.Age,
-                    ShopID: instance.dataValues.ShopID,
-                }
-            }).end();
+            instance.reload().then(()=>{
+                res.json({
+                    data: instance
+                }).end();
+            }
+            )
+            
         }).catch(
             error => {
                 logger.error(error);
@@ -485,18 +480,9 @@ router.patch('/customers', async (req, res) => {
         if (name != null) instance.set('Name', name);
         if (sex != null) instance.set('Sex', sex);
         if (age != null) instance.set('Age', age);
-        instance.save().then(() => {
+        instance.save().then((row) => {
             res.json({
-                data: {
-                    CustomerID: instance.dataValues.ShopID,
-                    Name: instance.dataValues.Name,
-                    Address: instance.dataValues.Address,
-                    Status: instance.dataValues.Status,
-                    Phone: instance.dataValues.Phone,
-                    Sex: instance.dataValues.Sex,
-                    Age: instance.dataValues.Age,
-                    ShopID: instance.dataValues.ShopID,
-                }
+                data:row
             }).end();
         }).catch((err) => {
             res.json({

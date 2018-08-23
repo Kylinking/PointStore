@@ -13,10 +13,9 @@ router.get('/shoppoints', async (req, res) => {
     let page = util.makeNumericValue(req.query.Page, 1);
     let pageSize = util.makeNumericValue(req.query.Size, 20);
     let offset = (page - 1) * pageSize;
-    logger.info()
     let role = await util.getRoleAsync(operateShopID);
     let queryRole = await util.getRoleAsync(queryShopID);
-    logger.info(`role:${role},queryRole:${queryRole}`);
+    logger.info(`queryShopID:${queryShopID},page:${page},role:${role},queryRole:${queryRole}`);
     let whereObj = {};
     let includeObj = {
         model: db.ShopInfo,
@@ -39,7 +38,7 @@ router.get('/shoppoints', async (req, res) => {
     }
     if (role == 'superman') {
         if (queryShopID == operateShopID) {
-
+            
         } else if (queryRole == 'admin') {
             includeObj.where = {
                 ParentShopID: queryShopID,

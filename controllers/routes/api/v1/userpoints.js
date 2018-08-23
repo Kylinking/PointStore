@@ -6,21 +6,22 @@ const Op = require('sequelize').Op;
 
 router.get('/userpoints', async (req, res) => {
     var logger = res.locals.logger;
-    var phone = req.query.Phone || '';
-    var shopID = req.query.ShopID || '';
-    var page = parseInt(req.query.Page) || 1;
-    var pageSize = parseInt(req.query.Size) || 20;
+    var phone = isNaN(util.checkPhone(req.query.Phone))? null:req.query.Phone;
+    var shopID = util.makeNumericValue(req.query.ShopID,null);
+    let page = util.makeNumericValue(req.query.Page, 1);
+    let pageSize = util.makeNumericValue(req.query.Size, 20);
     var offset = (page - 1) * pageSize;
     var acctInfo = res.locals.db.CustomerAccountInfo;
     var operateShopID = res.locals.ShopID;
     var whereCustomerInfoObj = {};
     var whereShopInfoObj = {};
     var roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
-    if (phone != '') {
+    if (phone != null) {
         whereCustomerInfoObj.Phone = phone;
     }
+    logger.info(`Phone:${phone},`)
     if (roleOfOperatedShopID == 'superman') {
-        if (shopID != '' && shopID != operateShopID) {
+        if (shopID != null && shopID != operateShopID) {
             if (await util.isAdminShopAsync(shopID)) {
                 whereShopInfoObj.ParentShopID = shopID;
             } else {
@@ -29,8 +30,8 @@ router.get('/userpoints', async (req, res) => {
         }
     } else if (roleOfOperatedShopID == 'admin') {
         whereShopInfoObj.ParentShopID = operateShopID;
-        if ((shopID != '' && !await util.isSubordinateAsync(operateShopID, shopID)) ||
-            (phone != '' && !await util.isBelongsToByPhoneAsync(phone, operateShopID))) {
+        if ((shopID != null && !await util.isSubordinateAsync(operateShopID, shopID)) ||
+            (phone != null && !await util.isBelongsToByPhoneAsync(phone, operateShopID))) {
             res.json({
                 error: {
                     message: "无权查询其它总店下用户账户"
@@ -39,8 +40,8 @@ router.get('/userpoints', async (req, res) => {
             return;
         }
     } else {
-        if ((shopID != '' && shopID != operateShopID) ||
-            (phone != '' && !await util.isBelongsToByPhoneAsync(phone, operateShopID))) {
+        if ((shopID != null && shopID != operateShopID) ||
+            (phone != null && !await util.isBelongsToByPhoneAsync(phone, operateShopID))) {
             res.json({
                 error: {
                     message: "无权查询其它店面用户账户"
