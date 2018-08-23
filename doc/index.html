@@ -1,0 +1,351 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+    <title>API说明</title>
+    <link type="text/css" rel="stylesheet" href="assets/css/github-markdown.css">
+    <link type="text/css" rel="stylesheet" href="assets/css/pilcrow.css">
+    <link type="text/css" rel="stylesheet" href="assets/css/hljs-github.min.css"/>
+  </head>
+  <body>
+    <article class="markdown-body"><h1 id="api说明"><a class="header-link" href="#api说明"></a>API说明</h1>
+<ul class="list">
+<li><p><a href="#api%E8%AF%B4%E6%98%8E">API说明</a></p>
+<ul class="list">
+<li><a href="#%E7%99%BB%E5%BD%95">登录</a></li>
+<li><a href="#%E5%BA%97%E9%9D%A2%E4%BF%A1%E6%81%AF">店面信息</a><ul class="list">
+<li><a href="#1-%E5%88%9B%E5%BB%BA%E5%88%86%E5%BA%97">1 创建分店</a></li>
+<li><a href="#2-%E8%8E%B7%E5%8F%96%E5%BA%97%E9%9D%A2%E4%BF%A1%E6%81%AF">2 获取店面信息</a></li>
+<li><a href="#3-%E4%BF%AE%E6%94%B9%E5%BA%97%E9%9D%A2%E4%BF%A1%E6%81%AF">3 修改店面信息</a></li>
+<li><a href="#4-%E5%BA%97%E9%9D%A2%E6%B3%A8%E9%94%80">4 店面注销</a></li>
+</ul>
+</li>
+<li><a href="#%E5%AE%A2%E6%88%B7%E4%BF%A1%E6%81%AF">客户信息</a><ul class="list">
+<li><a href="#1-%E5%88%9B%E5%BB%BA%E5%AE%A2%E6%88%B7">1 创建客户</a></li>
+<li><a href="#2-%E8%8E%B7%E5%8F%96%E5%AE%A2%E6%88%B7%E4%BF%A1%E6%81%AF">2 获取客户信息</a></li>
+<li><a href="#3-%E4%BF%AE%E6%94%B9%E5%AE%A2%E6%88%B7%E4%BF%A1%E6%81%AF">3 修改客户信息</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>BaseURL: #################</p>
+</li>
+<li>Request Data Structure: JSON</li>
+<li>Response Data Structure: JSON</li>
+<li>GET请求使用Query参数，其它请求参数放在Body中<pre class="hljs"><code>  Correct Response:
+  {
+      <span class="hljs-attr">"data"</span>:{
+          <span class="hljs-attr">"key"</span>:<span class="hljs-string">"value"</span>
+      }
+  } 
+  OR
+  {
+      <span class="hljs-attr">"data"</span>:[
+          {<span class="hljs-attr">"keys"</span>:<span class="hljs-string">"values"</span>},
+          {<span class="hljs-attr">"keys"</span>:<span class="hljs-string">"values"</span>},
+          {<span class="hljs-attr">"keys"</span>:<span class="hljs-string">"values"</span>}
+      ]
+  }
+  Error Response:
+  {
+      <span class="hljs-attr">"error"</span>:{
+          <span class="hljs-attr">"message"</span>:<span class="hljs-string">"information of the error."</span>
+      }
+  }</code></pre><h2 id="登录"><a class="header-link" href="#登录"></a>登录</h2>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">URL</th>
+<th style="text-align:center">METHOD</th>
+<th style="text-align:center">PARAMS</th>
+<th style="text-align:center">RESPONSE TYPE</th>
+<th style="text-align:left">RESPONSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/login</td>
+<td style="text-align:center">POST</td>
+<td style="text-align:center"><font color=red>ShopID:Integer,<br />Password:String</font></td>
+<td style="text-align:center">Object</td>
+<td style="text-align:left">token:String</td>
+</tr>
+</tbody>
+</table>
+<ul class="list">
+<li>操作权限：Superman，总店，分店</li>
+<li>需要保存token作为所有API调用的验证，token有效期8小时，每次成功调用会刷新有效期</li>
+<li>后续所有接口调用，Header中需要设置请求字段TOKEN，值是登录成功后返回的token值</li>
+<li>超级权限 ShopID 为 1</li>
+<li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
+</ul>
+<h2 id="店面信息"><a class="header-link" href="#店面信息"></a>店面信息</h2>
+<h3 id="1-创建分店"><a class="header-link" href="#1-创建分店"></a>1 创建分店</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">URL</th>
+<th style="text-align:center">METHOD</th>
+<th style="text-align:center">PARAMS</th>
+<th style="text-align:center">RESPONSE TYPE</th>
+<th style="text-align:left">RESPONSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/api/v1/shops</td>
+<td style="text-align:center">POST</td>
+<td style="text-align:center"><font color=red>Name:String,<br />Address:String,<br />Phone:Integer<br /></font>Status:Integer,<br />ParentShopID:Integer</td>
+<td style="text-align:center">Object</td>
+<td style="text-align:left">{ShopID,Name,<br />Address,Status,<br />Phone,ParentShopID,<br />Type:Integer}</td>
+</tr>
+</tbody>
+</table>
+<ul class="list">
+<li>操作权限：Superman，总店，分店</li>
+<li>请求参数：<ul class="list">
+<li>Name,Address,Phone 为必输字段</li>
+<li>操作ID只能是总店或Superman，操作ID是分店，则报错。</li>
+<li>ParentShopID 表示店面归属。<ul class="list">
+<li>若操作ID是Superman, ParentShopID 输入 Superman ID，则创建的是总店。输入总店ID，将创建该总店下的分店，输入分店ID或无对应分店信息存在，将报错。</li>
+<li>若操作ID是总店，将忽略ParentShopID字段，创建该总店下的分店</li>
+</ul>
+</li>
+<li>Status 表示店面状态 1 为正常 0 为注销</li>
+</ul>
+</li>
+<li>返回参数：<ul class="list">
+<li>Type 表示类型 0为Superman 1为总店 2为分店 （后续可能扩展 3客户）</li>
+</ul>
+</li>
+<li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
+</ul>
+<h3 id="2-获取店面信息"><a class="header-link" href="#2-获取店面信息"></a>2 获取店面信息</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">URL</th>
+<th style="text-align:center">METHOD</th>
+<th style="text-align:center">PARAMS</th>
+<th style="text-align:center">RESPONSE TYPE</th>
+<th style="text-align:left">RESPONSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/api/v1/shops</td>
+<td style="text-align:center">GET</td>
+<td style="text-align:center">ShopID,Type,<br />Phone,Page,Size</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:left">[{ShopID,Name,<br /> Phone,Address,<br />Status,Type,<br />ParentShopID，ParentShopInfo:Object<br />Pages:Integer,Size:Integer}]</td>
+</tr>
+</tbody>
+</table>
+<ul class="list">
+<li>操作权限：Superman，总店，分店</li>
+<li>请求参数<ul class="list">
+<li>全部为可选参数</li>
+<li>Type 字段只有在操作ID是Superman时会起作用<ul class="list">
+<li>1：表示取总店信息，如果有总店ShopID，则只返回该总店信息</li>
+<li>2：表示取分店信息，如果有总店ShopID，则返回该总店下所有分店信息
+    * Page 表示取第几页，默认为 1</li>
+</ul>
+</li>
+<li>Size 表示每页最多记录数量，默认为 20</li>
+<li>ShopID 表示按ShopID查询</li>
+<li>Phone 支持子串匹配</li>
+</ul>
+</li>
+<li>响应参数<ul class="list">
+<li>ParentShopID 表示该店面的归属，分店归属为总店，总店归属为Superman，Superman该字段为空</li>
+<li>ParentShopInfo 为归属店的信息对象，对象内容包含响应参数的所有字段</li>
+<li>Size 表示每页最多记录数量</li>
+<li>Pages 表示在Size下，总量数据的页数</li>
+</ul>
+</li>
+<li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
+</ul>
+<h3 id="3-修改店面信息"><a class="header-link" href="#3-修改店面信息"></a>3 修改店面信息</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">URL</th>
+<th style="text-align:center">METHOD</th>
+<th style="text-align:center">PARAMS</th>
+<th style="text-align:center">RESPONSE TYPE</th>
+<th style="text-align:left">RESPONSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/api/v1/shops</td>
+<td style="text-align:center">PATCH</td>
+<td style="text-align:center"><font color=red>ShopID,</font><br />Phone,Address,<br />Status,ParentShopID</td>
+<td style="text-align:center">Object</td>
+<td style="text-align:left">{ShopID,Name,<br /> Phone,Address<br />,Status,Type,<br />ParentShopID}</td>
+</tr>
+</tbody>
+</table>
+<ul class="list">
+<li>操作权限：Superman，总店</li>
+<li>请求参数：<ul class="list">
+<li>ShopID 为必输字段</li>
+<li>店面信息可部分更新</li>
+</ul>
+</li>
+<li>返回参数：<ul class="list">
+<li>修改后店面信息</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-店面注销"><a class="header-link" href="#4-店面注销"></a>4 店面注销</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">URL</th>
+<th style="text-align:center">METHOD</th>
+<th style="text-align:center">PARAMS</th>
+<th style="text-align:center">RESPONSE TYPE</th>
+<th style="text-align:left">RESPONSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/api/v1/shops</td>
+<td style="text-align:center">PATCH</td>
+<td style="text-align:center"><font color=red>ShopID</td>
+<td style="text-align:center">Object</td>
+<td style="text-align:left">{ShopID,Name,<br /> Phone,Address<br />,Status,Type,<br />ParentShopID}</td>
+</tr>
+</tbody>
+</table>
+<ul class="list">
+<li>操作权限：Superman，总店</li>
+<li>请求字段：<ul class="list">
+<li>ShopID为必输字段</li>
+</ul>
+</li>
+<li>返回字段<ul class="list">
+<li>注销后店面信息</li>
+</ul>
+</li>
+<li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
+</ul>
+<h2 id="客户信息"><a class="header-link" href="#客户信息"></a>客户信息</h2>
+<h3 id="1-创建客户"><a class="header-link" href="#1-创建客户"></a>1 创建客户</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">URL</th>
+<th style="text-align:center">METHOD</th>
+<th style="text-align:center">PARAMS</th>
+<th style="text-align:center">RESPONSE TYPE</th>
+<th style="text-align:left">RESPONSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/api/v1/customers</td>
+<td style="text-align:center">POST</td>
+<td style="text-align:center"><font color=red>Phone,Sex:String,</font><br /><font color=green>ShopID,</font><br />Name,Address,Status,<br />Age:Integer,<br />RecommendCustomerID</td>
+<td style="text-align:center">Object</td>
+<td style="text-align:left">{CustomerID,Name,<br />Address,Status,Phone,<br />Sex,Age,<br />RecommendCustomerID}</td>
+</tr>
+</tbody>
+</table>
+<ul class="list">
+<li>操作权限：Superman,分店</li>
+<li>请求参数：<ul class="list">
+<li>Phone，Sex为必输字段</li>
+<li>当操作ID是Superman时，ShopID也是必输字段，使客户归属于某一分店</li>
+<li>RecommendCustomerID 表示推荐客户ID</li>
+</ul>
+</li>
+<li>响应参数：<ul class="list">
+<li>新建客户信息</li>
+</ul>
+</li>
+<li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
+</ul>
+<h3 id="2-获取客户信息"><a class="header-link" href="#2-获取客户信息"></a>2 获取客户信息</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">URL</th>
+<th style="text-align:center">METHOD</th>
+<th style="text-align:center">PARAMS</th>
+<th style="text-align:center">RESPONSE TYPE</th>
+<th style="text-align:left">RESPONSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/api/v1/customers</td>
+<td style="text-align:center">GET</td>
+<td style="text-align:center">Phone,ShopID,Name,<br />RecommendCustomerID</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:left">[{CustomerID,Name,<br />Address,Status,Phone,<br />Sex,Age,ShopInfo,<br />RecommendCustomerInfo}]</td>
+</tr>
+</tbody>
+</table>
+<ul class="list">
+<li>操作权限 Superman,总店,分店</li>
+<li>请求参数<ul class="list">
+<li>所有参数都是可选参数</li>
+<li>ShopID 在操作ID是Superman和总店的时候用于限定查询归属于特定分店的客户信息</li>
+<li>Phone、Name支持部分匹配查询</li>
+<li>RecommendCustomerID 查询同一推荐人推荐的客户信息</li>
+</ul>
+</li>
+<li>响应参数<ul class="list">
+<li>客户信息</li>
+<li>ShopInfo:Object 表示客户归属的分店信息</li>
+<li>RecommendCustomerInfo:Object 表示推荐人信息</li>
+</ul>
+</li>
+<li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
+</ul>
+<h3 id="3-修改客户信息"><a class="header-link" href="#3-修改客户信息"></a>3 修改客户信息</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">URL</th>
+<th style="text-align:center">METHOD</th>
+<th style="text-align:center">PARAMS</th>
+<th style="text-align:center">RESPONSE TYPE</th>
+<th style="text-align:left">RESPONSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/api/v1/customers</td>
+<td style="text-align:center">PATCH</td>
+<td style="text-align:center"><font color=green>Phone,CustomerID</font><br />Name,Address,Status,<br />Age,Sex,ShopID<br />RecommendCustomerID</td>
+<td style="text-align:center">Object</td>
+<td style="text-align:left">{CustomerID,Name,<br />Address,Status,Phone,<br />Sex,Age,<br />RecommendCustomerID}</td>
+</tr>
+</tbody>
+</table>
+<ul class="list">
+<li>操作权限：Superman,分店</li>
+<li>请求参数<ul class="list">
+<li>CustomerID与Phone二者不能同时为空<ul class="list">
+<li>当CustomerID不为空时，Phone参数不为空将修改客户电话</li>
+<li>当CustomerID为空时，Phone参数作为修改客户信息的条件使用</li>
+</ul>
+</li>
+<li>ShopID 只有在操作ID是Superman是有效</li>
+</ul>
+</li>
+<li>响应参数<ul class="list">
+<li>修改后的客户信息</li>
+</ul>
+</li>
+<li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
+</ul>
+    </article>
+  </body>
+</html>

@@ -1,5 +1,6 @@
 'use strict';
 
+var path = require('path');
 var createError = require('http-errors');
 var express = require('express');
 var db = require('./models').db;
@@ -13,12 +14,15 @@ var ApiRouter = require('./controllers/routes/api/');
 var app = express();
 app.db = db;
 app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({
-//   extended: false
-// }));
 app.use(cookieParser());
-//app.use('*',preAction);
 
+
+app.use(express.static(__dirname+'/doc'));
+app.get('/',(req,res)=>{
+    let tmp = path.resolve(__dirname+'/doc/index.html');
+    console.log(tmp);
+    res.sendFile(path.resolve(__dirname+'/doc/index.html'));
+})
 //log everything in the info level 
 app.all('*', function (req, res, next) {
   try {
@@ -46,7 +50,6 @@ app.use('/api', ApiRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
-
 });
 // error handler
 app.use(function (err, req, res, next) {
