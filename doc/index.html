@@ -25,6 +25,15 @@
 <li><a href="#1-%E5%88%9B%E5%BB%BA%E5%AE%A2%E6%88%B7">1 创建客户</a></li>
 <li><a href="#2-%E8%8E%B7%E5%8F%96%E5%AE%A2%E6%88%B7%E4%BF%A1%E6%81%AF">2 获取客户信息</a></li>
 <li><a href="#3-%E4%BF%AE%E6%94%B9%E5%AE%A2%E6%88%B7%E4%BF%A1%E6%81%AF">3 修改客户信息</a></li>
+<li><a href="#4-%E6%B3%A8%E9%94%80%E5%AE%A2%E6%88%B7">4 注销客户</a></li>
+</ul>
+</li>
+<li><a href="#%E5%BA%97%E9%9D%A2%E8%B4%A6%E6%88%B7%E4%BF%A1%E6%81%AF">店面账户信息</a><ul class="list">
+<li><a href="#1-%E8%8E%B7%E5%8F%96%E5%BA%97%E9%9D%A2%E8%B4%A6%E6%88%B7%E4%BF%A1%E6%81%AF">1 获取店面账户信息</a></li>
+</ul>
+</li>
+<li><a href="#%E5%AE%A2%E6%88%B7%E8%B4%A6%E6%88%B7">客户账户</a><ul class="list">
+<li><a href="#1-%E8%8E%B7%E5%8F%96%E5%AE%A2%E6%88%B7%E8%B4%A6%E6%88%B7%E4%BF%A1%E6%81%AF">1 获取客户账户信息</a></li>
 </ul>
 </li>
 </ul>
@@ -150,10 +159,10 @@
 <li>全部为可选参数</li>
 <li>Type 字段只有在操作ID是Superman时会起作用<ul class="list">
 <li>1：表示取总店信息，如果有总店ShopID，则只返回该总店信息</li>
-<li>2：表示取分店信息，如果有总店ShopID，则返回该总店下所有分店信息
-    * Page 表示取第几页，默认为 1</li>
+<li>2：表示取分店信息，如果有总店ShopID，则返回该总店下所有分店信息</li>
 </ul>
 </li>
+<li>Page 表示取第几页，默认为 1</li>
 <li>Size 表示每页最多记录数量，默认为 20</li>
 <li>ShopID 表示按ShopID查询</li>
 <li>Phone 支持子串匹配</li>
@@ -285,7 +294,7 @@
 <tr>
 <td style="text-align:center">/api/v1/customers</td>
 <td style="text-align:center">GET</td>
-<td style="text-align:center">Phone,ShopID,Name,<br />RecommendCustomerID</td>
+<td style="text-align:center">Phone,ShopID,Name,<br />RecommendCustomerID<br />Page,Size</td>
 <td style="text-align:center">Array</td>
 <td style="text-align:left">[{CustomerID,Name,<br />Address,Status,Phone,<br />Sex,Age,ShopInfo,<br />RecommendCustomerInfo}]</td>
 </tr>
@@ -342,6 +351,152 @@
 </li>
 <li>响应参数<ul class="list">
 <li>修改后的客户信息</li>
+</ul>
+</li>
+<li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
+</ul>
+<h3 id="4-注销客户"><a class="header-link" href="#4-注销客户"></a>4 注销客户</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">URL</th>
+<th style="text-align:center">METHOD</th>
+<th style="text-align:center">PARAMS</th>
+<th style="text-align:center">RESPONSE TYPE</th>
+<th style="text-align:left">RESPONSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/api/v1/customers</td>
+<td style="text-align:center">DELETE</td>
+<td style="text-align:center"><font color=red>Phone</font><br /></td>
+<td style="text-align:center">Object</td>
+<td style="text-align:left">{CustomerID,Name,<br />Address,Status,Phone,<br />Sex,Age,<br />RecommendCustomerID}</td>
+</tr>
+</tbody>
+</table>
+<ul class="list">
+<li>操作权限：Superman,分店</li>
+<li>请求参数<ul class="list">
+<li>Phone为必输参数，用于选择注销的客户</li>
+</ul>
+</li>
+<li>响应参数<ul class="list">
+<li>注销后客户信息</li>
+</ul>
+</li>
+</ul>
+<h2 id="店面账户信息"><a class="header-link" href="#店面账户信息"></a>店面账户信息</h2>
+<h3 id="1-获取店面账户信息"><a class="header-link" href="#1-获取店面账户信息"></a>1 获取店面账户信息</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">URL</th>
+<th style="text-align:center">METHOD</th>
+<th style="text-align:center">PARAMS</th>
+<th style="text-align:center">RESPONSE TYPE</th>
+<th style="text-align:left">RESPONSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/api/v1/shoppoints</td>
+<td style="text-align:center">GET</td>
+<td style="text-align:center">ShopID,Page,Size</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:left">[{id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />ShopID,ShopInfo}]</td>
+</tr>
+</tbody>
+</table>
+<ul class="list">
+<li>操作权限 Superman,分店，总店</li>
+<li>请求参数<ul class="list">
+<li>全部为可选参数</li>
+<li>当操作ID是Superman时：<ul class="list">
+<li>若ShopID是总店，则返回该总店下所有分店的账户信息</li>
+<li>若ShopID是分店，则返回该分店账户信息</li>
+<li>若ShopID为空，则返回所有分店账户信息</li>
+</ul>
+</li>
+<li>当操作ID是总店时：<ul class="list">
+<li>若ShopID为空，或是该总店，则返回总店下所有分店的账户信息</li>
+<li>若ShopID为该总店下属分店，则返回该分店账户信息</li>
+<li>其它情况返回错误信息</li>
+</ul>
+</li>
+<li>当操作ID是分店时：<ul class="list">
+<li>ShopID若不为空，则在ShopID与操作ID相同时，返回该分店账户信息</li>
+<li>其它情况返回错误信息</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>返回参数<ul class="list">
+<li>CustomedPoints:Integer, 表示分店客户当前累积消费积分数</li>
+<li>RecommendPoints:Integer,表示分店客户当前累积推荐奖励积分数，包含一次推荐与二次推荐</li>
+<li>ChargedPoints:Integer,表示分店客户当前累积充值积分数</li>
+<li>ShopBounusPoints:Inteter,表示分店当前累积赠送积分数</li>
+<li>ShopInfo 表示分店信息</li>
+</ul>
+</li>
+<li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
+</ul>
+<h2 id="客户账户"><a class="header-link" href="#客户账户"></a>客户账户</h2>
+<h3 id="1-获取客户账户信息"><a class="header-link" href="#1-获取客户账户信息"></a>1 获取客户账户信息</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">URL</th>
+<th style="text-align:center">METHOD</th>
+<th style="text-align:center">PARAMS</th>
+<th style="text-align:center">RESPONSE TYPE</th>
+<th style="text-align:left">RESPONSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/api/v1/userpoints</td>
+<td style="text-align:center">GET</td>
+<td style="text-align:center">ShopID,Phone,Page,Size</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:left">[{id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />RemainPoints,<br />IndirectRecommendPoints, <br />CustomerID,CustomerInfo}]</td>
+</tr>
+</tbody>
+</table>
+<ul class="list">
+<li>操作权限：Superman，总店，分店</li>
+<li>请求参数<ul class="list">
+<li>全部为可选参数</li>
+<li>当操作ID是Superman时：<ul class="list">
+<li>若ShopID是总店，则返回该总店下所有分店的客户的账户信息</li>
+<li>若ShopID是分店，则返回该分店下的客户账户信息</li>
+<li>若ShopID为空，则返回全部分店的客户账户信息</li>
+</ul>
+</li>
+<li>当操作ID是总店时：<ul class="list">
+<li>若ShopID为空，或是该总店，则返回总店下所有分店的客户账户信息</li>
+<li>若ShopID为该总店下属分店，则返回该分店的客户账户信息</li>
+<li>其它情况返回错误信息</li>
+</ul>
+</li>
+<li>当操作ID是分店时：<ul class="list">
+<li>ShopID若不为空，则在ShopID与操作ID相同时，返回该分店客户账户信息</li>
+<li>其它情况返回错误信息</li>
+</ul>
+</li>
+<li>Phone 根据电话号码查询指定客户账户信息</li>
+</ul>
+</li>
+<li>响应参数<ul class="list">
+<li>id 序号</li>
+<li>RemainPoints:Integer 客户可消费余额</li>
+<li>ShopBounusPoints 客户受赠积分</li>
+<li>ChargedPoints 客户累积充值积分</li>
+<li>RecommendPoints 客户累积推荐奖励积分</li>
+<li>IndirectRecommendPoints:Integer 客户累积二级推荐奖励积分</li>
+<li>CustomedPoints:Integer 客户累积消费积分</li>
+<li>CustomerInfo: 客户信息，其中包含ShopInfo字段表示客户归属的分店信息</li>
 </ul>
 </li>
 <li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
