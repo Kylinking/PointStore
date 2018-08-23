@@ -332,7 +332,7 @@ describe('总店改分店', () => {
         let data = {
             ShopID:124,
             Name:"总店改名",
-            Status:'a'
+            Status:1
         };
         chai.request(server)
             .patch('/api/v1/shops')
@@ -376,7 +376,7 @@ describe('Superman改分店', () => {
         let data = {
             ShopID:123,
             Name:"Superman改名",
-            Status:0
+            Status:1
         };
         chai.request(server)
             .patch('/api/v1/shops')
