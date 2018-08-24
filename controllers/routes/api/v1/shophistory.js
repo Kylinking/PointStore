@@ -8,20 +8,18 @@ const Op = require('sequelize').Op;
 router.get('/shophistory', async (req, res) => {
     let logger = res.locals.logger;
     let operateShopID = res.locals.ShopID;
-    let queryShopID = util.checkInt(req.query.ShopID) || null;
-    let page = util.checkInt(req.query.Page) || 1;
-    let pageSize = util.checkInt(req.query.Size) || 20;
+    let queryShopID = util.makeNumericValue(req.query.ShopID,null);
+    let page = util.makeNumericValue(req.query.Page,1);
+    let pageSize = util.makeNumericValue(req.query.Size,20);
     let offset = (page - 1) * pageSize;
     let type = req.query.Type || null;
     let startDate = req.query.Start || null;
     let endDate = req.query.End || null;
     let db = res.locals.db;
     const duration = moment.duration(30, "days");
-    logger.info(`startDate:${startDate},endDate:${endDate}`);
+    logger.info(`startDate:${startDate},endDate:${endDate},queryShopID:${queryShopID}`);
     endDate = Date.parse(moment(endDate).format("MM DD YYYY"));
     startDate = Date.parse(moment(startDate).format("MM DD YYYY"));
-
-    logger.info(`startDate:${moment(startDate).format("MM DD YYYY")},endDate:${moment(endDate).format("MM DD YYYY")}`);
     if (isNaN(endDate) && isNaN(startDate)) {
         endDate = Date.parse(moment().format());
         startDate = Date.parse(moment().subtract(30, 'days').format("MM DD YYYY"));
@@ -98,7 +96,7 @@ router.get('/shophistory', async (req, res) => {
     if (instance) {
         let data = [];
         instance.rows.forEach(ele => {
-            ele.dataValues.Date = moment(ele.Date).format('YYYY-MM-DD hh:mm:ss a');
+            ele.dataValues.Date = moment(ele.Date).format("YYYY-MM-DDTHH:mm:ss");
             data.push(ele);
         })
         let pages = Math.ceil(instance.count / pageSize);
@@ -113,8 +111,6 @@ router.get('/shophistory', async (req, res) => {
         }).end();
     }
 });
-
-
 
 // error 
 router.use('/shophistory', (req, res) => {
