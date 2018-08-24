@@ -34,6 +34,7 @@
 </li>
 <li><a href="#%E5%AE%A2%E6%88%B7%E8%B4%A6%E6%88%B7">客户账户</a><ul class="list">
 <li><a href="#1-%E8%8E%B7%E5%8F%96%E5%AE%A2%E6%88%B7%E8%B4%A6%E6%88%B7%E4%BF%A1%E6%81%AF">1 获取客户账户信息</a></li>
+<li><a href="#2-%E5%AE%A2%E6%88%B7%E7%A7%AF%E5%88%86%E5%8F%98%E5%8A%A8">2 客户积分变动</a></li>
 </ul>
 </li>
 </ul>
@@ -130,6 +131,7 @@
 <li>Type 表示类型 0为Superman 1为总店 2为分店 （后续可能扩展 3客户）</li>
 </ul>
 </li>
+<li>新建分店成功后，会自动创建分店账户记录，各项数值初始为0</li>
 <li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
 </ul>
 <h3 id="2-获取店面信息"><a class="header-link" href="#2-获取店面信息"></a>2 获取店面信息</h3>
@@ -277,6 +279,7 @@
 <li>新建客户信息</li>
 </ul>
 </li>
+<li>新建客户信息成功后会自动创建该客户的账户记录，各项数值初始为0</li>
 <li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
 </ul>
 <h3 id="2-获取客户信息"><a class="header-link" href="#2-获取客户信息"></a>2 获取客户信息</h3>
@@ -499,6 +502,42 @@
 <li>CustomerInfo: 客户信息，其中包含ShopInfo字段表示客户归属的分店信息</li>
 </ul>
 </li>
+<li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
+</ul>
+<h3 id="2-客户积分变动"><a class="header-link" href="#2-客户积分变动"></a>2 客户积分变动</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">URL</th>
+<th style="text-align:center">METHOD</th>
+<th style="text-align:center">PARAMS</th>
+<th style="text-align:center">RESPONSE TYPE</th>
+<th style="text-align:left">RESPONSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/api/v1/userpoints</td>
+<td style="text-align:center">POST</td>
+<td style="text-align:center"><font color=red>Phone</font>,<br />Cost, Recharged<br />ShopBounusPoints,<br />RecommendPoints,<br />IndirectRecommendPoints</td>
+<td style="text-align:center">Object</td>
+<td style="text-align:left">{id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />RemainPoints,<br />IndirectRecommendPoints, <br />CustomerID,CustomerInfo}</td>
+</tr>
+</tbody>
+</table>
+<ul class="list">
+<li>操作权限 Superman, 分店</li>
+<li>请求参数<ul class="list">
+<li>Phone：客户手机号，必输参数</li>
+<li>其它为可选参数</li>
+<li>账户变动数值为&gt;=0的整数</li>
+</ul>
+</li>
+<li>响应参数<ul class="list">
+<li>变动后客户账户信息</li>
+</ul>
+</li>
+<li>积分变动请求涉及客户账户、推荐客户账户、二级推荐客户账户、流水、店面账户、店面账户变动、客户账户变动等多张表的变化。</li>
 <li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
 </ul>
     </article>
