@@ -441,7 +441,7 @@ router.patch('/customers', async (req, res) => {
         where: whereObj
     });
     if (instance) {
-        if (!role != 'superman') {
+        if (role != 'superman') {
             if (instance.ShopID != operateShopID) {
                 res.json({
                     error: {

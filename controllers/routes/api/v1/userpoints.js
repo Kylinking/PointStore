@@ -125,7 +125,7 @@ router.post('/userpoints', async (req, res) => {
     }
     var roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
     logger.info(roleOfOperatedShopID);
-    if (roleOfOperatedShopID != 'normal') {
+    if (roleOfOperatedShopID == 'admin') {
         res.json({
             error: {
                 message: '该用户无权完成操作'
@@ -156,6 +156,9 @@ router.post('/userpoints', async (req, res) => {
                     transaction: transaction
                 })
                 .then(async (row) => {
+                    if (roleOfOperatedShopID == 'normal' && row.ShopID != operateShopID){
+                        throw '无权操作其它分店客户账户';
+                    }
                     customerInfo = row;
                     if (customerInfo.Status != 1){
                         throw "用户状态不正确，本次交易拒绝。";
@@ -271,7 +274,7 @@ router.post('/userpoints', async (req, res) => {
                     });
                     
                     logger.info("customerInfo CustomerAccountChange create");
-                    if (recommendCustomerInfo) {
+                    if (recommendCustomerInfo && recommendPoints > 0) {
                         await db.CustomerAccountChange.create({
                             CustomerID: recommendCustomerInfo.CustomerID,
                             RecommendPoints:recommendPoints,
@@ -284,7 +287,7 @@ router.post('/userpoints', async (req, res) => {
                         shopAcctChangeRecommendPointAmount += recommendPoints;
                         logger.info("recommendCustomerInfo CustomerAccountChange create");
                     }
-                    if (indirectRecommendCustomerInfo) {
+                    if (indirectRecommendCustomerInfo && indirectRecommendPoints > 0) {
                         await db.CustomerAccountChange.create({
                             CustomerID: indirectRecommendCustomerInfo.CustomerID,
                             IndirectRecommendPoints:indirectRecommendPoints,
