@@ -9,7 +9,6 @@ router.get('/customerhistory', async (req, res) => {
     let logger = res.locals.logger;
     let operateShopID = res.locals.ShopID;
     let phone = isNaN(util.checkPhone(req.query.Phone))?null:req.query.Phone
-    let queryShopID = util.makeNumericValue(req.query.ShopID,null);
     let page = util.makeNumericValue(req.query.Page,1);
     let pageSize = util.makeNumericValue(req.query.Size,20);
     let offset = (page - 1) * pageSize;
@@ -22,7 +21,7 @@ router.get('/customerhistory', async (req, res) => {
         res.json({error:{message:"客户手机号码不能为空"}}).end()
         return;
     }
-    logger.info(`startDate:${startDate},endDate:${endDate},queryShopID:${queryShopID},phone:${phone}`);
+    logger.info(`startDate:${startDate},endDate:${endDate},phone:${phone}`);
     endDate = Date.parse(moment(endDate).format("MM DD YYYY"));
     startDate = Date.parse(moment(startDate).format("MM DD YYYY"));
     if (isNaN(endDate) && isNaN(startDate)) {
@@ -44,53 +43,52 @@ router.get('/customerhistory', async (req, res) => {
             [Op.lte]: endDate
         }
     };
-    let include = [];
+    let customer = await db.CustomerInfo.findOne({
+        where:{
+            Phone:phone
+        }
+    });
+    if (!customer){
+        res.json({
+            data:{}
+        }).end()
+        return;
+    }
+
+    
     let role = await util.getRoleAsync(operateShopID);
     logger.info(role);
     if (role == 'normal') {
-        if (queryShopID != null && queryShopID != operateShopID) {
+        if (customer.ShopID != operateShopID) {
             res.json({
                 error: {
-                    message: "无权查询其它店面明细"
+                    message: "无权限查询其它分店客户明细"
                 }
             }).end();
             return;
         }
-        whereObj.ShopID = operateShopID;
     } else if (role == "admin") {
-        if (queryShopID != null && !await util.isSubordinateAsync(operateShopID, queryShopID)) {
+        if (!await util.isSubordinateAsync(operateShopID,customer.ShopID)) {
             res.json({
                 error: {
-                    message: "无权查询其它总店下店面明细"
+                    message: "无权限查询其它总店下客户明细"
                 }
             }).end();
             return;
         }
-        if (queryShopID == null) {
-            include.push({
-                model: db.ShopInfo,
-                where: {
-                    ParentShopID: operateShopID
-                }
-            })
-        }
-        if (queryShopID != null) {
-            whereObj.ShopID = queryShopID;
-        }
-    } else if (role == 'superman') {
-        if (await util.isAdminShopAsync(queryShopID)) {
-            include.push({
-                model: db.ShopInfo,
-                where: {
-                    ParentShopID: queryShopID
-                }
-            })
-        } else if (queryShopID != operateShopID && queryShopID != null) {
-            whereObj.ShopID = queryShopID;
-        }
-    }
+        whereObj.CustomerID = customer.CustomerID;
+        whereObj.ShopID = customer.ShopID;
+    } 
+    whereObj.CustomerID = customer.CustomerID;
+    //whereObj.ShopID = customer.ShopID;
     logger.info(whereObj);
-    logger.info(include);
+    let include = [{
+        model:db.ShopInfo,
+        where:{}
+    },{
+        model:db.CustomerInfo,
+        where:{}
+    }];
     let instance = await db.CustomerAccountChange.findAndCountAll({
         where: whereObj,
         include: include,
