@@ -87,22 +87,22 @@ router.get('/userpoints', async (req, res) => {
 
 router.post('/userpoints', async (req, res) => {
     var logger = res.locals.logger;
-    var phone = !isNaN(util.checkInt(req.body.Phone)) ? util.checkInt(req.body.Phone):0;
+    var phone = !isNaN(util.checkPhone(req.body.Phone)) ? util.checkPhone(req.body.Phone):0;
     var db = res.locals.db;
     var sequelize = db.sequelize;
     var operateShopID = res.locals.ShopID;
-    var cost = !isNaN(util.checkInt(req.body.Cost))? util.checkInt(req.body.Cost):0;
-    var recharged = !isNaN(util.checkInt(req.body.Recharged)) ? util.checkInt(req.body.Recharged):0;
-    var bounus = !isNaN(util.checkInt(req.body.ShopBounusPoints))? util.checkInt(req.body.ShopBounusPoints):0;
-    var recommendPoints = !isNaN(util.checkInt(req.body.RecommendPoints))? util.checkInt(req.body.RecommendPoints):0;
-    var indirectRecommendPoints = !isNaN(util.checkInt(req.body.IndirectRecommendPoints))? util.checkInt(req.body.IndirectRecommendPoints):0;
+    var cost =  util.makeNumericValue(req.body.Cost,0);
+    var recharged = util.makeNumericValue(req.body.Recharged,0);
+    var bounus = util.makeNumericValue(req.body.ShopBounusPoints,0); 
+    var recommendPoints = util.makeNumericValue(req.body.RecommendPoints,0);
+    var indirectRecommendPoints = util.makeNumericValue(req.body.IndirectRecommendPoints,0); 
     logger.info(`phone: ${phone}, operateShopID: ${operateShopID}, 
          cost: ${cost},recharged:${recharged}, bounus: ${bounus}, 
          recommendPoints: ${recommendPoints}, indirectRecommendPoints: ${indirectRecommendPoints}`);
     if (phone == null) {
         res.json({
             error: {
-                message: '无客户电话信息'
+                message: '客户号码参数不能为空'
             }
         }).end();
         return
