@@ -1,23 +1,23 @@
 'use strict';
-var util = require('../../../../util/util');
-var express = require('express');
-var router = express.Router();
+let util = require('../../../../util/util');
+let express = require('express');
+let router = express.Router();
 const Op = require('sequelize').Op;
 const defaultPassword = "hello";
 router.get('/shops', async (req, res, next) => {
-    var operateShopID = res.locals.ShopID;
-    var shopInfo = res.locals.db.ShopInfo;
-    var logger = res.locals.logger;
-    var queryShopID = util.makeNumericValue(req.query.ShopID,null);
-    var queryType = util.makeNumericValue(req.query.Type, 0);
-    var phone = isNaN(util.checkPhone(req.query.Phone))? null:req.query.Phone;
-    var roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
+    let operateShopID = res.locals.shopid;
+    let shopInfo = res.locals.db.ShopInfo;
+    let logger = res.locals.logger;
+    let queryShopID = util.makeNumericValue(req.query.shopid,null);
+    let queryType = util.makeNumericValue(req.query.type, 0);
+    let phone = isNaN(util.checkPhone(req.query.phone))? null:req.query.phone;
+    let roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
     logger.info(roleOfOperatedShopID);
     if (roleOfOperatedShopID == 'superman') {
-        var json = {
+        let json = {
             data: []
         };
-        var whereObj = {};
+        let whereObj = {};
         if (queryType !== 0) {
             if (queryShopID != null) {
                 whereObj.ParentShopID = queryShopID;
@@ -34,10 +34,10 @@ router.get('/shops', async (req, res, next) => {
                 [Op.like]: `%${phone}%`
             }
         }
-        var page = util.checkInt(req.query.Page) || 1;
-        var pageSize = util.checkInt(req.query.Size) || 20;
-        var offset = (page - 1) * pageSize;
-        var pages = Math.ceil(await shopInfo.count({
+        let page = util.makeNumericValue(req.query.page, 1);
+        let pageSize = util.makeNumericValue(req.query.size,20);
+        let offset = (page - 1) * pageSize;
+        let pages = Math.ceil(await shopInfo.count({
             where: whereObj
         }) / pageSize);
         if (page > pages) {
@@ -63,14 +63,14 @@ router.get('/shops', async (req, res, next) => {
             })
     } else if (roleOfOperatedShopID == 'admin') {
         if (queryShopID == null && phone == null) {
-            var json = {
+            let json = {
                 data: []
             };
             //无ShopID和Phone则返回所有分店信息，默认按20条分页，返回字段增加Pages表示总页数，Size表示每页条数
-            var page = util.checkInt(req.query.Page) || 1;
-            var pageSize = util.checkInt(req.query.Size) || 20;
-            var offset = (page - 1) * pageSize;
-            var pages = Math.ceil(await shopInfo.count() / pageSize);
+            let page = util.makeNumericValue(req.query.page,1);
+            let pageSize = util.makeNumericValue(req.query.size,20);
+            let offset = (page - 1) * pageSize;
+            let pages = Math.ceil(await shopInfo.count() / pageSize);
             if (page > pages) {
                 logger.warn("查询分页溢出");
                 json["Pages"] = Math.ceil(pages);
@@ -95,7 +95,7 @@ router.get('/shops', async (req, res, next) => {
                     res.json(json).end();
                 })
         } else { // !queryShopID == null && phone == null
-            var whereObj = {
+            let whereObj = {
                 ParentShopID: operateShopID
             };
             if (queryShopID != null) {
@@ -130,7 +130,7 @@ router.get('/shops', async (req, res, next) => {
             }).end();
             return;
         } else {
-            var whereObj = {
+            let whereObj = {
                 ShopID: operateShopID
             };
             if (phone != null) {
@@ -158,14 +158,14 @@ router.get('/shops', async (req, res, next) => {
 
 router.delete('/shops', async (req, res, next) => {
 
-    var shopInfo = res.locals.db.ShopInfo;
-    var logger = res.locals.logger;
-    var queryShopID = req.body.ShopID || null;
-    var phone = req.body.Phone || null;
-    var operateShopID = res.locals.ShopID;
-    var roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
+    let shopInfo = res.locals.db.ShopInfo;
+    let logger = res.locals.logger;
+    let queryShopID = req.body.shopid || null;
+    let phone = req.body.phone || null;
+    let operateShopID = res.locals.shopid;
+    let roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
     logger.info(roleOfOperatedShopID);
-    var whereObj = {};
+    let whereObj = {};
     if (phone != null) whereObj.Phone = phone;
     if (queryShopID != null) whereObj.ShopID = queryShopID;
     if (queryShopID == null && phone == null) {
@@ -185,7 +185,7 @@ router.delete('/shops', async (req, res, next) => {
         }).end();
         return;
     }
-    var instance = await shopInfo.findOne({
+    let instance = await shopInfo.findOne({
         where: whereObj
     });
     if (!instance) {
@@ -235,10 +235,10 @@ router.delete('/shops', async (req, res, next) => {
 });
 
 router.post('/shops', async (req, res, next) => {
-    var logger = res.locals.logger;
+    let logger = res.locals.logger;
     logger.info('enter post /shops');
-    var operateShopID = res.locals.ShopID;
-    var roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
+    let operateShopID = res.locals.shopid;
+    let roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
     logger.info(roleOfOperatedShopID);
     if (!(roleOfOperatedShopID == 'admin' ||
             roleOfOperatedShopID == 'superman')) {
@@ -249,13 +249,13 @@ router.post('/shops', async (req, res, next) => {
         }).end();
         return;
     }
-    var shopInfo = res.locals.db.ShopInfo;
-    var phone = req.body.Phone || null;
-    var status = req.body.Status || 0;
-    var name = req.body.Name || null;
-    var address = req.body.Address || null;
-    var parentShopID = req.body.ParentShopID || operateShopID;
-    var type = 2;
+    let shopInfo = res.locals.db.ShopInfo;
+    let phone = req.body.phone || null;
+    let status = req.body.status || 0;
+    let name = req.body.name || null;
+    let address = req.body.address || null;
+    let parentShopID = req.body.parentshopid || operateShopID;
+    let type = 2;
     logger.info(util.formString(phone, status, address, name, parentShopID));
     [phone, name, address].forEach(elem => {
         if (elem == null) {
@@ -280,7 +280,7 @@ router.post('/shops', async (req, res, next) => {
         newShop = await shopInfo.create({
             Name: name,
             Address: address,
-            Status: util.checkInt(status),
+            Status: util.makeNumericValue(status,1),
             Phone: phone,
             Type: type,
             ParentShopID: parentShopID
@@ -315,10 +315,10 @@ router.post('/shops', async (req, res, next) => {
 });
 
 router.patch('/shops', async (req, res, next) => {
-    var logger = res.locals.logger;
+    let logger = res.locals.logger;
     logger.info("enter patch shops");
-    var operateShopID = res.locals.ShopID;
-    var roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
+    let operateShopID = res.locals.shopid;
+    let roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
     logger.info(roleOfOperatedShopID);
     if (roleOfOperatedShopID != "admin" &&
         roleOfOperatedShopID != "superman") {
@@ -329,14 +329,14 @@ router.patch('/shops', async (req, res, next) => {
         }).end();
         return;
     }
-    var shopInfo = res.locals.db.ShopInfo;
-    var queryShopID = req.body.ShopID || null;
-    var phone = req.body.Phone || null;
-    var status = isNaN(util.checkInt(req.body.Status)) ? null : util.checkInt(req.body.Status);
+    let shopInfo = res.locals.db.ShopInfo;
+    let queryShopID = req.body.shopid || null;
+    let phone = req.body.phone || null;
+    let status =  util.makeNumericValue(req.body.status,null);
     logger.info(status);
-    var name = req.body.Name || null;
-    var address = req.body.Address || null;
-    var parentShopID = req.body.ParentShopID;
+    let name = req.body.name || null;
+    let address = req.body.address || null;
+    let parentShopID = req.body.parentshopid;
     if (queryShopID == null && phone == null) {
         res.json({
             error: {
@@ -344,14 +344,14 @@ router.patch('/shops', async (req, res, next) => {
             }
         }).end();
     }
-    var whereObj = {};
+    let whereObj = {};
     if (queryShopID != null) {
         whereObj.ShopID = queryShopID;
     }
     if (phone != null) {
         whereObj.Phone = phone;
     }
-    var instance = await shopInfo.findOne({
+    let instance = await shopInfo.findOne({
         where: whereObj
     });
     if (!instance) {

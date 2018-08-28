@@ -29,7 +29,7 @@ describe('别的总店取总店用户信息', () => {
     it('it should return error', (done) => {
         chai.request(server)
             .get('/api/v1/customers')
-            .query({ShopID:12})
+            .query({shopid:12})
             .set("TOKEN",tokenOtherAdmin)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -45,7 +45,7 @@ describe('别的总店取分店用户信息', () => {
     it('it should return error', (done) => {
         chai.request(server)
             .get('/api/v1/customers')
-            .query({ShopID:123})
+            .query({shopid:123})
             .set("TOKEN",tokenOtherAdmin)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -93,7 +93,7 @@ describe('Superman取总店用户信息', () => {
     it('it should return 3 user', (done) => {
         chai.request(server)
             .get('/api/v1/customers')
-            .query({ShopID:12})
+            .query({shopid:12})
             .set("TOKEN",tokenSuperman)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -110,7 +110,7 @@ describe('Superman取分店用户信息', () => {
     it('it should return 2 user', (done) => {
         chai.request(server)
             .get('/api/v1/customers')
-            .query({ShopID:123})
+            .query({shopid:123})
             .set("TOKEN",tokenSuperman)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -126,12 +126,12 @@ describe('Superman取分店用户信息', () => {
 describe('分店建用户', () => {
     it('it should create a customerinfo and return info', (done) => {
         let customer = {
-            Name: "分店建1号",
-            Address: "市中区",
-            Status: 1,
-            Phone: 111222229,
-            Sex: "男",
-            Age: 11,
+            name: "分店建1号",
+            address: "市中区",
+            status: 1,
+            phone: 111222229,
+            sex: "男",
+            age: 11,
             RecommendCustomerID:2
         };
         chai.request(server)
@@ -157,12 +157,12 @@ describe('分店建用户', () => {
 describe('分店建用户手机重号', () => {
     it('it should return error', (done) => {
         let customer = {
-            Name: "分店建2",
-            Address: "市中区",
-            Status: 1,
-            Phone: 111222229,
-            Sex: "男",
-            Age: 11,
+            name: "分店建2",
+            address: "市中区",
+            status: 1,
+            phone: 111222229,
+            sex: "男",
+            age: 11,
         };
         chai.request(server)
             .post('/api/v1/customers')
@@ -181,13 +181,13 @@ describe('分店建用户手机重号', () => {
 describe('分店建用户传不同的ShopID', () => {
     it('it should return error', (done) => {
         let customer = {
-            Name: "分店建3",
-            Address: "市中区",
-            Status: 1,
-            Phone: 111333339,
-            Sex: "男",
-            Age: 11,
-            ShopID:124
+            name: "分店建3",
+            address: "市中区",
+            status: 1,
+            phone: 111333339,
+            sex: "男",
+            age: 11,
+            shopid:124
         };
         chai.request(server)
             .post('/api/v1/customers')
@@ -206,13 +206,13 @@ describe('分店建用户传不同的ShopID', () => {
 describe('总店建用户', () => {
     it('it should return error', (done) => {
         let customer = {
-            Name: "总店建1号",
-            Address: "市中区",
-            Status: 1,
-            Phone: 111444449,
-            Sex: "男",
-            Age: 11,
-            ShopID:123
+            name: "总店建1号",
+            address: "市中区",
+            status: 1,
+            phone: 111444449,
+            sex: "男",
+            age: 11,
+            shopid:123
         };
         chai.request(server)
             .post('/api/v1/customers')
@@ -229,12 +229,12 @@ describe('总店建用户', () => {
 describe('Superman建用户无ShopID', () => {
     it('it should return error', (done) => {
         let customer = {
-            Name: "Superman建1号",
-            Address: "市中区",
-            Status: 0,
-            Phone: 111555559,
-            Sex: "男",
-            Age: 11,
+            name: "Superman建1号",
+            address: "市中区",
+            status: 0,
+            phone: 111555559,
+            sex: "男",
+            age: 11,
         };
         chai.request(server)
             .post('/api/v1/customers')
@@ -252,13 +252,13 @@ describe('Superman建用户无ShopID', () => {
 describe('Superman建用户带总店ShopID', () => {
     it('it should return error', (done) => {
         let customer = {
-            Name: "Superman建2号",
-            Address: "市中区",
-            Status: 0,
-            Phone: 111666669,
-            Sex: "男",
-            Age: 11,
-            ShopID:11
+            name: "Superman建2号",
+            address: "市中区",
+            status: 0,
+            phone: 111666669,
+            sex: "男",
+            age: 11,
+            shopid:11
         };
         chai.request(server)
             .post('/api/v1/customers')
@@ -276,13 +276,13 @@ describe('Superman建用户带总店ShopID', () => {
 describe('Superman建用户带分店ShopID Status 0', () => {
     it('it should create a customerinfo and return info', (done) => {
         let customer = {
-            Name: "Superman建3号",
-            Address: "市中区",
-            Status: 0,
-            Phone: 111777779,
-            Sex: "男",
-            Age: 11,
-            ShopID:112
+            name: "Superman建3号",
+            address: "市中区",
+            status: 0,
+            phone: 111777779,
+            sex: "男",
+            age: 11,
+            shopid:112
         };
         chai.request(server)
             .post('/api/v1/customers')
@@ -308,13 +308,13 @@ describe('Superman建用户带分店ShopID Status 0', () => {
 describe('Superman建用户带分店ShopID Status 1', () => {
     it('it should create a customerinfo and return info', (done) => {
         let customer = {
-            Name: "Superman建4号",
-            Address: "市中区",
-            Status: 1,
-            Phone: 111777780,
-            Sex: "男",
-            Age: 11,
-            ShopID:'112'
+            name: "Superman建4号",
+            address: "市中区",
+            status: 1,
+            phone: 111777780,
+            sex: "男",
+            age: 11,
+            shopid:'112'
         };
         chai.request(server)
             .post('/api/v1/customers')
@@ -340,7 +340,7 @@ describe('Superman建用户带分店ShopID Status 1', () => {
 describe('分店删用户', () => {
     it('it should set a customerinfo status=0 and return customerinfo', (done) => {
         let customer = {
-            Phone:111111
+            phone:111111
         };
         chai.request(server)
             .delete('/api/v1/customers')
@@ -365,7 +365,7 @@ describe('分店删用户', () => {
 describe('分店重复删用户', () => {
     it('it should return error', (done) => {
         let customer = {
-            Phone:111111
+            phone:111111
         };
         chai.request(server)
             .delete('/api/v1/customers')
@@ -384,7 +384,7 @@ describe('分店重复删用户', () => {
 describe('分店删别家分店用户', () => {
     it('it should return error', (done) => {
         let customer = {
-            Phone:111777779
+            phone:111777779
         };
         chai.request(server)
             .delete('/api/v1/customers')
@@ -403,7 +403,7 @@ describe('分店删别家分店用户', () => {
 describe('总店删用户', () => {
     it('it should return error', (done) => {
         let customer = {
-            Phone:144444
+            phone:144444
         };
         chai.request(server)
             .delete('/api/v1/customers')
@@ -422,7 +422,7 @@ describe('总店删用户', () => {
 describe('Superman删用户', () => {
     it('it should return error', (done) => {
         let customer = {
-            Phone:144444
+            phone:144444
         };
         chai.request(server)
             .delete('/api/v1/customers')
@@ -441,7 +441,7 @@ describe('Superman删用户', () => {
 describe('Superman重复删用户', () => {
     it('it should return error', (done) => {
         let customer = {
-            Phone:144444
+            phone:144444
         };
         chai.request(server)
             .delete('/api/v1/customers')

@@ -1,21 +1,21 @@
 'use strict';
-var util = require('../../../../util/util');
-var express = require('express');
-var router = express.Router();
+let util = require('../../../../util/util');
+let express = require('express');
+let router = express.Router();
 const Op = require('sequelize').Op;
 
 router.get('/userpoints', async (req, res) => {
-    var logger = res.locals.logger;
-    var phone = isNaN(util.checkPhone(req.query.Phone))? null:req.query.Phone;
-    var shopID = util.makeNumericValue(req.query.ShopID,null);
-    let page = util.makeNumericValue(req.query.Page, 1);
-    let pageSize = util.makeNumericValue(req.query.Size, 20);
-    var offset = (page - 1) * pageSize;
-    var acctInfo = res.locals.db.CustomerAccountInfo;
-    var operateShopID = res.locals.ShopID;
-    var whereCustomerInfoObj = {};
-    var whereShopInfoObj = {};
-    var roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
+    let logger = res.locals.logger;
+    let phone = isNaN(util.checkPhone(req.query.phone))? null:req.query.phone;
+    let shopID = util.makeNumericValue(req.query.shopid,null);
+    let page = util.makeNumericValue(req.query.page, 1);
+    let pageSize = util.makeNumericValue(req.query.size, 20);
+    let offset = (page - 1) * pageSize;
+    let acctInfo = res.locals.db.CustomerAccountInfo;
+    let operateShopID = res.locals.shopid;
+    let whereCustomerInfoObj = {};
+    let whereShopInfoObj = {};
+    let roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
     if (phone != null) {
         whereCustomerInfoObj.Phone = phone;
     }
@@ -66,8 +66,8 @@ router.get('/userpoints', async (req, res) => {
         offset: offset,
         limit: pageSize
     }).then((instance) => {
-        var pages = Math.ceil(instance.count / pageSize);
-        var json = {
+        let pages = Math.ceil(instance.count / pageSize);
+        let json = {
             data: []
         };
         instance.rows.forEach((row) => {
@@ -86,16 +86,16 @@ router.get('/userpoints', async (req, res) => {
 });
 
 router.post('/userpoints', async (req, res) => {
-    var logger = res.locals.logger;
-    var phone = !isNaN(util.checkPhone(req.body.Phone)) ? util.checkPhone(req.body.Phone):0;
-    var db = res.locals.db;
-    var sequelize = db.sequelize;
-    var operateShopID = res.locals.ShopID;
-    var cost =  util.makeNumericValue(req.body.Cost,0);
-    var recharged = util.makeNumericValue(req.body.Recharged,0);
-    var bounus = util.makeNumericValue(req.body.ShopBounusPoints,0); 
-    var recommendPoints = util.makeNumericValue(req.body.RecommendPoints,0);
-    var indirectRecommendPoints = util.makeNumericValue(req.body.IndirectRecommendPoints,0); 
+    let logger = res.locals.logger;
+    let phone = !isNaN(util.checkPhone(req.body.phone)) ? util.checkPhone(req.body.phone):0;
+    let db = res.locals.db;
+    let sequelize = db.sequelize;
+    let operateShopID = res.locals.shopid;
+    let cost =  util.makeNumericValue(req.body.cost,0);
+    let recharged = util.makeNumericValue(req.body.recharged,0);
+    let bounus = util.makeNumericValue(req.body.shopbounuspoints,0); 
+    let recommendPoints = util.makeNumericValue(req.body.recommendpoints,0);
+    let indirectRecommendPoints = util.makeNumericValue(req.body.indirectrecommendpoints,0); 
     logger.info(`phone: ${phone}, operateShopID: ${operateShopID}, 
          cost: ${cost},recharged:${recharged}, bounus: ${bounus}, 
          recommendPoints: ${recommendPoints}, indirectRecommendPoints: ${indirectRecommendPoints}`);
@@ -123,7 +123,7 @@ router.post('/userpoints', async (req, res) => {
         }).end();
         return;
     }
-    var roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
+    let roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
     logger.info(roleOfOperatedShopID);
     if (roleOfOperatedShopID == 'admin') {
         res.json({
@@ -141,10 +141,10 @@ router.post('/userpoints', async (req, res) => {
         }).end();
         return;
     }
-    var customerInfo = null;
-    var recommendCustomerInfo = null;
-    var indirectRecommendCustomerInfo = null;
-    var date = Date.parse(Date());
+    let customerInfo = null;
+    let recommendCustomerInfo = null;
+    let indirectRecommendCustomerInfo = null;
+    let date = Date.parse(Date());
     logger.info(date);
     //用户账户表、用户账户变动表、店铺账户表、店铺账户变动表、明细表
     sequelize.transaction(transaction => {
@@ -172,7 +172,7 @@ router.post('/userpoints', async (req, res) => {
                     }    
                     
                     indirectRecommendCustomerInfo &&  logger.info(indirectRecommendCustomerInfo.dataValues);
-                    var transactionOptions = {
+                    let transactionOptions = {
                         ChargedPoints: recharged,
                         Date: date,
                         CustomedPoints: cost,
@@ -180,14 +180,14 @@ router.post('/userpoints', async (req, res) => {
                         ShopID: operateShopID,
                         CustomerID: customerInfo.CustomerID,
                     };
-                    var shopAcctInfoOptions = {
+                    let shopAcctInfoOptions = {
                         CustomedPoints: cost,
                         RecommendPoints: 0,
                         ChargedPoints: recharged,
                         ShopBounusPoints: bounus
                     };
-                    var shopAcctChangeRecommendPointAmount = 0;
-                    var custAcctInfo = await db.CustomerAccountInfo.findOne(
+                    let shopAcctChangeRecommendPointAmount = 0;
+                    let custAcctInfo = await db.CustomerAccountInfo.findOne(
                         {
                             where: {
                                 CustomerID: customerInfo.CustomerID
@@ -245,7 +245,7 @@ router.post('/userpoints', async (req, res) => {
                         transactionOptions.IndirectRecommendCustomerID = indirectRecommendCustomerInfo.CustomerID;
                         shopAcctInfoOptions.RecommendPoints += indirectRecommendPoints;
                     }
-                    var transactionInstance = await db.TransactionDetail.create(
+                    let transactionInstance = await db.TransactionDetail.create(
                         transactionOptions, {
                             transaction: transaction
                         }

@@ -11,8 +11,8 @@ const expireTime = 8 * 3600; //seconds
 router.post('/', function (req, res, next) {
   let logger = res.locals.logger;
   logger.info('enter post /login"');
-  let shopID = req.body.ShopID || '';
-  let password = req.body.Password || '';
+  let shopID = req.body.shopid || '';
+  let password = req.body.password || '';
   let db = res.locals.db;
   let redisClient = res.locals.redisClient;
 
@@ -59,10 +59,8 @@ router.post('/', function (req, res, next) {
           return;
         }
 
-
-
         var token = jwt.encode({
-          ShopID: shopID
+          shopid: shopID
         }, jwtSecret);
         redisClient.set(String(shopID), token);
         redisClient.expire(String(shopID), expireTime);

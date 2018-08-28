@@ -48,7 +48,7 @@ describe('Super Get shopInfos',()=>{
     it('it should return array', done=>{
         chai.request(server)
             .get('/api/v1/shops')
-            .query({Type:1})
+            .query({type:1})
             .set("TOKEN",tokenSuperman)
             .end((err,res)=>{
                 res.should.have.status(200);
@@ -69,7 +69,7 @@ describe('Super Get some shopInfos',()=>{
     it('it should return array', done=>{
         chai.request(server)
             .get('/api/v1/shops')
-            .query({Type:1,ShopID:12})
+            .query({type:1,shopid:12})
             .set("TOKEN",tokenSuperman)
             .end((err,res)=>{
                 res.should.have.status(200);
@@ -89,10 +89,10 @@ describe('Super Get some shopInfos',()=>{
 describe('分店建分店', () => {
     it('it should return error', (done) => {
         let data = {
-            Name: "test分店",
-            Address: "市中区",
-            Status: 1,
-            Phone: 143431
+            name: "test分店",
+            address: "市中区",
+            status: 1,
+            phone: 143431
         };
         chai.request(server)
             .post('/api/v1/shops')
@@ -110,10 +110,10 @@ describe('分店建分店', () => {
 describe('总店建分店', () => {
     it('it should create a shopInfo and return info', (done) => {
         let data = {
-            Name: "总店建分店",
-            Address: "市中区",
-            Status: 1,
-            Phone: '125125125'
+            name: "总店建分店",
+            address: "市中区",
+            status: 1,
+            phone: '125125125'
         };
         chai.request(server)
             .post('/api/v1/shops')
@@ -137,10 +137,10 @@ describe('总店建分店', () => {
 describe('Superman建总店', () => {
     it('it should create a shopInfo and return info', (done) => {
         let data = {
-            Name: "新总店",
-            Address: "市中区",
-            Status: 1,
-            Phone: '013013013',
+            name: "新总店",
+            address: "市中区",
+            status: 1,
+            phone: '013013013',
         };
         chai.request(server)
             .post('/api/v1/shops')
@@ -164,11 +164,11 @@ describe('Superman建总店', () => {
 describe('Superman建分店', () => {
     it('it should create a shopInfo and return info', (done) => {
         let data = {
-            Name: "Superman建分店",
-            Address: "市中区",
-            Status: 1,
-            Phone: '113113113',
-            ParentShopID:11,
+            name: "Superman建分店",
+            address: "市中区",
+            status: 1,
+            phone: '113113113',
+            parentshopid:11,
         };
         chai.request(server)
             .post('/api/v1/shops')
@@ -192,7 +192,7 @@ describe('Superman建分店', () => {
 describe('分店关分店', () => {
     it('it should return error', (done) => {
         let data = {
-            ShopID:124
+            shopid:124
         };
         chai.request(server)
             .delete('/api/v1/shops')
@@ -210,7 +210,7 @@ describe('分店关分店', () => {
 describe('别的总店关分店', () => {
     it('it should return error', (done) => {
         let data = {
-            ShopID:124
+            shopid:124
         };
         chai.request(server)
             .delete('/api/v1/shops')
@@ -227,7 +227,7 @@ describe('别的总店关分店', () => {
 describe('总店关分店', () => {
     it('it should return error', (done) => {
         let data = {
-            ShopID:124
+            shopid:124
         };
         chai.request(server)
             .delete('/api/v1/shops')
@@ -250,7 +250,7 @@ describe('总店关分店', () => {
 describe('总店重复关分店', () => {
     it('it should return error', (done) => {
         let data = {
-            ShopID:124
+            shopid:124
         };
         chai.request(server)
             .delete('/api/v1/shops')
@@ -269,7 +269,7 @@ describe('总店重复关分店', () => {
 describe('Superman关分店', () => {
     it('it should return info', (done) => {
         let data = {
-            ShopID:123
+            shopid:123
         };
         chai.request(server)
             .delete('/api/v1/shops')
@@ -292,7 +292,7 @@ describe('Superman关分店', () => {
 describe('Superman重复关分店', () => {
     it('it should return error', (done) => {
         let data = {
-            ShopID:'123'
+            shopid:'123'
         };
         chai.request(server)
             .delete('/api/v1/shops')
@@ -311,8 +311,8 @@ describe('Superman重复关分店', () => {
 describe('分店改分店', () => {
     it('it should return error', (done) => {
         let data = {
-            ShopID:124,
-            Name:"改名"
+            shopid:124,
+            name:"改名"
         };
         chai.request(server)
             .patch('/api/v1/shops')
@@ -330,9 +330,9 @@ describe('分店改分店', () => {
 describe('总店改分店', () => {
     it('it should return info', (done) => {
         let data = {
-            ShopID:124,
-            Name:"总店改名",
-            Status:1
+            shopid:124,
+            name:"总店改名",
+            status:1
         };
         chai.request(server)
             .patch('/api/v1/shops')
@@ -355,8 +355,8 @@ describe('总店改分店', () => {
 describe('别的总店改分店', () => {
     it('it should return info', (done) => {
         let data = {
-            ShopID:124,
-            Name:"改名"
+            shopid:124,
+            name:"改名"
         };
         chai.request(server)
             .patch('/api/v1/shops')
@@ -374,9 +374,9 @@ describe('别的总店改分店', () => {
 describe('Superman改分店', () => {
     it('it should return info', (done) => {
         let data = {
-            ShopID:123,
-            Name:"Superman改名",
-            Status:1
+            shopid:123,
+            name:"Superman改名",
+            status:1
         };
         chai.request(server)
             .patch('/api/v1/shops')

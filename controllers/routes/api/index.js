@@ -51,10 +51,11 @@ router.use('/' + version,
         try {
             decoded = jwt.decode(token, jwtSecret);
             res.locals.logger.info(decoded);
-            res.locals.ShopID = decoded.ShopID;
+            res.locals.shopid = decoded.shopid;
+            logger.info(res.locals.shopid);
             var operatedShop = await res.locals.db.ShopInfo.findOne({
                 where: {
-                  ShopID: res.locals.ShopID
+                  ShopID: res.locals.shopid
                 }
             });
             if (operatedShop){
@@ -88,7 +89,7 @@ router.use('/' + version,
                 promisify
             } = require('util');
             const getAsync = promisify(redisClient.get).bind(redisClient);
-            var reply = await getAsync(decoded.ShopID);
+            var reply = await getAsync(decoded.shopid);
             console.log("replay: " + reply);
             if (reply == null) {
                 next(new Error("登录失效"));
@@ -113,19 +114,19 @@ router.use('/' + version,
     var queryShopID,phone,queryType,page,pageSize,age;
     logger.info(req.method);
     if (req.method == 'GET'){
-        queryShopID = req.query.ShopID || null;
-        phone = req.query.Phone|| null;
-        queryType = req.query.Type|| null;
-        page = req.query.Page|| null;
-        pageSize = req.query.Size|| null;
-        age = req.query.Age|| null;
+        queryShopID = req.query.shopid || null;
+        phone = req.query.phone|| null;
+        queryType = req.query.type|| null;
+        page = req.query.page|| null;
+        pageSize = req.query.size|| null;
+        age = req.query.age|| null;
     }else{
-        queryShopID = req.body.ShopID|| null;
-        phone = req.body.Phone|| null;
-        queryType = req.body.Type|| null;
-        page = req.body.Page|| null;
-        pageSize = req.body.Size|| null;
-        age = req.body.Age|| null;
+        queryShopID = req.body.shopid|| null;
+        phone = req.body.phone|| null;
+        queryType = req.body.type|| null;
+        page = req.body.page|| null;
+        pageSize = req.body.size|| null;
+        age = req.body.age|| null;
     }
     logger.info(`queryShopID:${queryShopID},phone:${phone},queryType:${queryType}`);
     if (queryShopID!=null && isNaN(util.checkInt(queryShopID))){

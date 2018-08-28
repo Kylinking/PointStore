@@ -1,17 +1,17 @@
 'use strict';
-var express = require('express');
-var util = require('../../../../util/util');
-var router = express.Router();
+let express = require('express');
+let util = require('../../../../util/util');
+let router = express.Router();
 const Op = require('sequelize').Op;
 
 
 router.get('/shoppoints', async (req, res) => {
-    var db = res.locals.db;
-    var logger = res.locals.logger;
-    var operateShopID = res.locals.ShopID;
-    let queryShopID = util.makeNumericValue(req.query.ShopID, null);
-    let page = util.makeNumericValue(req.query.Page, 1);
-    let pageSize = util.makeNumericValue(req.query.Size, 20);
+    let db = res.locals.db;
+    let logger = res.locals.logger;
+    let operateShopID = res.locals.shopid;
+    let queryShopID = util.makeNumericValue(req.query.shopid, null);
+    let page = util.makeNumericValue(req.query.page, 1);
+    let pageSize = util.makeNumericValue(req.query.size, 20);
     let offset = (page - 1) * pageSize;
     let role = await util.getRoleAsync(operateShopID);
     let queryRole = await util.getRoleAsync(queryShopID);

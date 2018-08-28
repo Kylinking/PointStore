@@ -13,8 +13,8 @@ before(async ()=>{
 describe('Login with correct ShopID & Password', () => {
     it('it should get token', (done) => {
         let info = {
-            ShopID: 1,
-            Password: "hello"
+            shopid: 1,
+            password: "hello"
         };
         chai.request(server)
             .post('/login')
@@ -33,8 +33,8 @@ describe('Login with correct ShopID & Password', () => {
 describe('Login with correct ShopID & Password', () => {
     it('it should get token', (done) => {
         let info = {
-            ShopID: 124,
-            Password: "hello"
+            shopid: 124,
+            password: "hello"
         };
         chai.request(server)
             .post('/login')
@@ -53,8 +53,8 @@ describe('Login with correct ShopID & Password', () => {
 describe('Login with correct ShopID & Password', () => {
     it('it should get token', (done) => {
         let info = {
-            ShopID: 11,
-            Password: "hello"
+            shopid: 11,
+            password: "hello"
         };
         chai.request(server)
             .post('/login')
@@ -74,8 +74,8 @@ describe('Login with correct ShopID & Password', () => {
 describe('Login with correct ShopID & Password', () => {
     it('it should get token', (done) => {
         let info = {
-            ShopID: 123,
-            Password: "hello"
+            shopid: 123,
+            password: "hello"
         };
         chai.request(server)
             .post('/login')
@@ -94,8 +94,8 @@ describe('Login with correct ShopID & Password', () => {
 describe('Login with correct ShopID & Password', () => {
     it('it should get token', (done) => {
         let info = {
-            ShopID: 12,
-            Password: "hello"
+            shopid: 12,
+            password: "hello"
         };
         chai.request(server)
             .post('/login')
@@ -114,8 +114,8 @@ describe('Login with correct ShopID & Password', () => {
 describe('Login with correct ShopID & fake Password', () => {
     it('it should return error', (done) => {
         let info = {
-            ShopID: 123,
-            Password: "fake password"
+            shopid: 123,
+            password: "fake password"
         };
         chai.request(server)
             .post('/login')
@@ -134,8 +134,8 @@ describe('Login with correct ShopID & fake Password', () => {
 describe('Login with fake ShopID & fake Password', () => {
     it('it should return error', (done) => {
         let info = {
-            ShopID: 1000,
-            Password: "fake password"
+            shopid: 1000,
+            password: "fake password"
         };
         chai.request(server)
             .post('/login')

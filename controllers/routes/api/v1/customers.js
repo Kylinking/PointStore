@@ -1,22 +1,22 @@
 'use strict';
-var util = require('../../../../util/util');
-var express = require('express');
-var router = express.Router();
+let util = require('../../../../util/util');
+let express = require('express');
+let router = express.Router();
 const Op = require('sequelize').Op;
 
 router.get('/customers', async (req, res) => {
-    var customerInfo = res.locals.db.CustomerInfo;
-    var shopInfo = res.locals.db.ShopInfo;
-    var logger = res.locals.logger;
-    var operateShopID = res.locals.ShopID;
-    var queryShopID = util.makeNumericValue(req.query.ShopID, null);
-    var phone = isNaN(util.checkPhone(req.query.Phone)) ? null : req.query.Phone;
-    var page = util.makeNumericValue(req.query.Page, 1);
-    var pageSize = util.makeNumericValue(req.query.Size, 20);
-    var name = req.query.Name || null;
-    var offset = (page - 1) * pageSize;
-    var recommendID = util.makeNumericValue(req.query.RecommendCustomerID,null);
-    var whereObj = {};
+    let customerInfo = res.locals.db.CustomerInfo;
+    let shopInfo = res.locals.db.ShopInfo;
+    let logger = res.locals.logger;
+    let operateShopID = res.locals.shopid;
+    let queryShopID = util.makeNumericValue(req.query.shopid, null);
+    let phone = isNaN(util.checkPhone(req.query.phone)) ? null : req.query.phone;
+    let page = util.makeNumericValue(req.query.page, 1);
+    let pageSize = util.makeNumericValue(req.query.size, 20);
+    let name = req.query.name || null;
+    let offset = (page - 1) * pageSize;
+    let recommendID = util.makeNumericValue(req.query.recommendcustomerid,null);
+    let whereObj = {};
     if (phone != null) whereObj.Phone = {
         [Op.like]: `%${phone}%`
     };
@@ -26,9 +26,9 @@ router.get('/customers', async (req, res) => {
     if (recommendID != null) {
         whereObj.RecommendCustomerID = recommendID;
     };
-    var role = await util.getRoleAsync(operateShopID);
+    let role = await util.getRoleAsync(operateShopID);
     logger.info(`role:${role},queryShopID${queryShopID}`);
-    var instance = undefined;
+    let instance = undefined;
     try {
         if (role == 'superman') {
             if (queryShopID != null && queryShopID != operateShopID) {
@@ -202,10 +202,10 @@ router.get('/customers', async (req, res) => {
         }).end();
         return;
     }
-    var json = {
+    let json = {
         data: []
     };
-    var pages = Math.ceil(instance.count / pageSize);
+    let pages = Math.ceil(instance.count / pageSize);
     instance.rows.forEach(row => {
         json.data.push(row);
     });
@@ -215,17 +215,17 @@ router.get('/customers', async (req, res) => {
 });
 
 router.post('/customers', async (req, res) => {
-    var customerInfo = res.locals.db.CustomerInfo;
-    var logger = res.locals.logger;
-    var phone = isNaN(util.checkPhone(req.body.Phone)) ? null : req.body.Phone;
-    var status = util.makeNumericValue(req.body.Status, 1);
-    var name = req.body.Name || null;
-    var address = req.body.Address || null;
-    var sex = req.body.Sex || null;
-    var age = util.makeNumericValue(req.body.Age, null);
-    var operateShopID = res.locals.ShopID;
-    var shopID = util.makeNumericValue(req.body.ShopID, null);
-    var recommendCustomerID = util.makeNumericValue(req.body.RecommendCustomerID, null);
+    let customerInfo = res.locals.db.CustomerInfo;
+    let logger = res.locals.logger;
+    let phone = isNaN(util.checkPhone(req.body.phone)) ? null : req.body.phone;
+    let status = util.makeNumericValue(req.body.status, 1);
+    let name = req.name || null;
+    let address = req.body.address || null;
+    let sex = req.body.sex || null;
+    let age = util.makeNumericValue(req.body.age, null);
+    let operateShopID = res.locals.shopid;
+    let shopID = util.makeNumericValue(req.body.shopid, null);
+    let recommendCustomerID = util.makeNumericValue(req.body.recommendcustomerid, null);
     logger.info(`phone:${phone},status:${status},name:${name},sex:${sex},age:${age},recommend:${recommendCustomerID}`);
     [phone, sex].forEach(elem => {
         if (elem == null) {
@@ -238,8 +238,8 @@ router.post('/customers', async (req, res) => {
         }
     });
 
-    var role = await util.getRoleAsync(operateShopID);
-    var createCondition = {
+    let role = await util.getRoleAsync(operateShopID);
+    let createCondition = {
         Name: name,
         Address: address,
         Status: status,
@@ -322,11 +322,11 @@ router.post('/customers', async (req, res) => {
 });
 
 router.delete('/customers', async (req, res) => {
-    var customerInfo = res.locals.db.CustomerInfo;
-    var logger = res.locals.logger;
-    var operateShopID = res.locals.ShopID;
-    var phone = isNaN(util.checkPhone(req.body.Phone)) ? null : req.body.Phone;
-    var role = await util.getRoleAsync(operateShopID);
+    let customerInfo = res.locals.db.CustomerInfo;
+    let logger = res.locals.logger;
+    let operateShopID = res.locals.shopid;
+    let phone = isNaN(util.checkPhone(req.body.phone)) ? null : req.body.phone;
+    let role = await util.getRoleAsync(operateShopID);
     if (role == 'admin') {
         res.json({
             error: {
@@ -343,7 +343,7 @@ router.delete('/customers', async (req, res) => {
         }).end();
         return;
     }
-    var instance = await customerInfo.findOne({
+    let instance = await customerInfo.findOne({
         where: {
             Phone: phone
         }
@@ -401,19 +401,19 @@ router.delete('/customers', async (req, res) => {
 });
 
 router.patch('/customers', async (req, res) => {
-    var customerInfo = res.locals.db.CustomerInfo;
-    var logger = res.locals.logger;
-    var operateShopID = res.locals.ShopID;
-    var phone = isNaN(util.checkPhone(req.body.Phone)) ? null : req.body.Phone;
-    var status = util.makeNumericValue(req.body.Status, null);
-    var name = req.body.Name || null;
-    var address = req.body.Address || null;
-    var sex = req.body.Sex || null;
-    var age = util.makeNumericValue(req.body.Age, null);
-    var shopID = util.makeNumericValue(req.body.ShopID, null);
-    var customerID = util.makeNumericValue(req.body.CustomerID, null);
-    var role = await util.getRoleAsync(operateShopID);
-    var recommendCustomerID = util.makeNumericValue(req.body.RecommendCustomerID, null);
+    let customerInfo = res.locals.db.CustomerInfo;
+    let logger = res.locals.logger;
+    let operateShopID = res.locals.shopid;
+    let phone = isNaN(util.checkPhone(req.body.phone)) ? null : req.body.phone;
+    let status = util.makeNumericValue(req.body.status, null);
+    let name = req.body.name || null;
+    let address = req.body.address || null;
+    let sex = req.body.sex || null;
+    let age = util.makeNumericValue(req.body.age, null);
+    let shopID = util.makeNumericValue(req.body.shopid, null);
+    let customerID = util.makeNumericValue(req.body.customerid, null);
+    let role = await util.getRoleAsync(operateShopID);
+    let recommendCustomerID = util.makeNumericValue(req.body.recommendcustomerid, null);
     if (role == 'admin') {
         logger.info(`总店无权修改客户信息`)
         res.json({
@@ -431,13 +431,13 @@ router.patch('/customers', async (req, res) => {
         }).end();
         return;
     }
-    var whereObj = {};
+    let whereObj = {};
     if (customerID != null){
         whereObj.CustomerID = customerID;
     }else{
         whereObj.Phone = phone;
     }
-    var instance = await customerInfo.findOne({
+    let instance = await customerInfo.findOne({
         where: whereObj
     });
     if (instance) {

@@ -1,20 +1,20 @@
 'use strict';
-var util = require('../../../../util/util');
-var express = require('express');
-var router = express.Router();
-var moment = require('moment')
+let util = require('../../../../util/util');
+let express = require('express');
+let router = express.Router();
+let moment = require('moment')
 const Op = require('sequelize').Op;
 
 router.get('/shophistory', async (req, res) => {
     let logger = res.locals.logger;
-    let operateShopID = res.locals.ShopID;
-    let queryShopID = util.makeNumericValue(req.query.ShopID,null);
-    let page = util.makeNumericValue(req.query.Page,1);
-    let pageSize = util.makeNumericValue(req.query.Size,20);
+    let operateShopID = res.locals.shopid;
+    let queryShopID = util.makeNumericValue(req.query.shopid,null);
+    let page = util.makeNumericValue(req.query.page,1);
+    let pageSize = util.makeNumericValue(req.query.size,20);
     let offset = (page - 1) * pageSize;
-    let type = req.query.Type || null;
-    let startDate = req.query.Start || null;
-    let endDate = req.query.End || null;
+    let type = req.query.type || null;
+    let startDate = req.query.start || null;
+    let endDate = req.query.end || null;
     let db = res.locals.db;
     const duration = moment.duration(30, "days");
     logger.info(`startDate:${startDate},endDate:${endDate},queryShopID:${queryShopID}`);
