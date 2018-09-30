@@ -6,10 +6,10 @@ const Op = require('sequelize').Op;
 
 router.get('/userpoints', async (req, res) => {
     let logger = res.locals.logger;
-    let phone = isNaN(util.checkPhone(req.query.phone))? null:req.query.phone;
-    let shopID = util.makeNumericValue(req.query.shopid,null);
-    let page = util.makeNumericValue(req.query.page, 1);
-    let pageSize = util.makeNumericValue(req.query.size, 20);
+    let phone = isNaN(util.checkPhone(req.query.Phone))? null:req.query.Phone;
+    let shopID = util.makeNumericValue(req.query.ShopId,null);
+    let page = util.makeNumericValue(req.query.Page, 1);
+    let pageSize = util.makeNumericValue(req.query.Size, 20);
     let offset = (page - 1) * pageSize;
     let acctInfo = res.locals.db.CustomerAccountInfo;
     let operateShopID = res.locals.shopid;
@@ -33,8 +33,8 @@ router.get('/userpoints', async (req, res) => {
         if ((shopID != null && !await util.isSubordinateAsync(operateShopID, shopID)) ||
             (phone != null && !await util.isBelongsToByPhoneAsync(phone, operateShopID))) {
             res.json({
-                error: {
-                    message: "无权查询其它总店下用户账户"
+                Error: {
+                    Message: "无权查询其它总店下用户账户"
                 }
             }).end();
             return;
@@ -43,8 +43,8 @@ router.get('/userpoints', async (req, res) => {
         if ((shopID != null && shopID != operateShopID) ||
             (phone != null && !await util.isBelongsToByPhoneAsync(phone, operateShopID))) {
             res.json({
-                error: {
-                    message: "无权查询其它店面用户账户"
+                Error: {
+                    Message: "无权查询其它店面用户账户"
                 }
             }).end();
             return;
@@ -68,18 +68,18 @@ router.get('/userpoints', async (req, res) => {
     }).then((instance) => {
         let pages = Math.ceil(instance.count / pageSize);
         let json = {
-            data: []
+            Data: []
         };
         instance.rows.forEach((row) => {
-            json.data.push(row);
+            json.Data.push(row);
         });
         json["Pages"] = pages;
         json["Size"] = pageSize;
         res.json(json).end();
     }).catch(err => {
         res.json({
-            error: {
-                message: err
+            Error: {
+                Message: err
             }
         }).end();
     });
@@ -87,38 +87,38 @@ router.get('/userpoints', async (req, res) => {
 
 router.post('/userpoints', async (req, res) => {
     let logger = res.locals.logger;
-    let phone = !isNaN(util.checkPhone(req.body.phone)) ? util.checkPhone(req.body.phone):0;
+    let phone = !isNaN(util.checkPhone(req.body.Phone)) ? util.checkPhone(req.body.Phone):0;
     let db = res.locals.db;
     let sequelize = db.sequelize;
     let operateShopID = res.locals.shopid;
-    let cost =  util.makeNumericValue(req.body.cost,0);
-    let recharged = util.makeNumericValue(req.body.recharged,0);
-    let bounus = util.makeNumericValue(req.body.shopbounuspoints,0); 
-    let recommendPoints = util.makeNumericValue(req.body.recommendpoints,0);
-    let indirectRecommendPoints = util.makeNumericValue(req.body.indirectrecommendpoints,0); 
+    let cost =  util.makeNumericValue(req.body.Cost,0);
+    let recharged = util.makeNumericValue(req.body.Recharged,0);
+    let bounus = util.makeNumericValue(req.body.ShopBounusPoints,0); 
+    let recommendPoints = util.makeNumericValue(req.body.RecommendPoints,0);
+    let indirectRecommendPoints = util.makeNumericValue(req.body.IndirectRecommendPoints,0); 
     logger.info(`phone: ${phone}, operateShopID: ${operateShopID}, 
          cost: ${cost},recharged:${recharged}, bounus: ${bounus}, 
          recommendPoints: ${recommendPoints}, indirectRecommendPoints: ${indirectRecommendPoints}`);
     if (phone == null) {
         res.json({
-            error: {
-                message: '客户号码参数不能为空'
+            Error: {
+                Message: '客户号码参数不能为空'
             }
         }).end();
         return
     }
     if (cost < 0 || recharged < 0) {
         res.json({
-            error: {
-                message: '交易积分须大于等于0'
+            Error: {
+                Message: '交易积分须大于等于0'
             }
         }).end();
         return;
     }
     if (bounus < 0 || recommendPoints < 0 || indirectRecommendPoints < 0) {
         res.json({
-            error: {
-                message: '奖励积分须大于等于0'
+            Error: {
+                Message: '奖励积分须大于等于0'
             }
         }).end();
         return;
@@ -127,16 +127,16 @@ router.post('/userpoints', async (req, res) => {
     logger.info(roleOfOperatedShopID);
     if (roleOfOperatedShopID == 'admin') {
         res.json({
-            error: {
-                message: '该用户无权完成操作'
+            Error: {
+                Message: '该用户无权完成操作'
             }
         }).end();
         return;
     }
     if (!await util.isBelongsToByPhoneAsync(phone, operateShopID)) {
         res.json({
-            error: {
-                message: '无权操作其它分店客户账户'
+            Error: {
+                Message: '无权操作其它分店客户账户'
             }
         }).end();
         return;
@@ -197,7 +197,7 @@ router.post('/userpoints', async (req, res) => {
                         }
                     )
                     if (custAcctInfo.RemainPoints + recharged + bounus < cost){
-                        //res.json({error:{message:"本次消费积分余额不足"}}).end();
+                        //res.json({Error:{Message:"本次消费积分余额不足"}}).end();
                         throw "本次消费积分余额不足" ;
                     }
                     await db.CustomerAccountInfo.increment({
@@ -325,12 +325,12 @@ router.post('/userpoints', async (req, res) => {
         })
         .then(result=>{
             logger.info(result);
-            res.json({data:result}).end();
+            res.json({Data:result}).end();
         })
         .catch(err => {
             // Rolled back
             logger.error(err);
-            res.json({error:{message:err}}).end();
+            res.json({Error:{Message:err}}).end();
         });
 });
 

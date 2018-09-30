@@ -13,8 +13,8 @@ before(async ()=>{
 describe('Login with correct ShopID & Password', () => {
     it('it should get token', (done) => {
         let info = {
-            shopid: 1,
-            password: "hello"
+            ShopId: 1,
+            Password: "hello"
         };
         chai.request(server)
             .post('/login')
@@ -22,10 +22,10 @@ describe('Login with correct ShopID & Password', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.have.property('token');
-                res.body.data.token.length.should.be.gt(0);
-                res.body.data.should.have.property('message');
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('Token');
+                res.body.Data.Token.length.should.be.gt(0);
+                res.body.Data.should.have.property('Message');
                 done();
             });
     });
@@ -33,8 +33,8 @@ describe('Login with correct ShopID & Password', () => {
 describe('Login with correct ShopID & Password', () => {
     it('it should get token', (done) => {
         let info = {
-            shopid: 124,
-            password: "hello"
+            ShopId: 124,
+            Password: "hello"
         };
         chai.request(server)
             .post('/login')
@@ -42,10 +42,10 @@ describe('Login with correct ShopID & Password', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.have.property('token');
-                res.body.data.token.length.should.be.gt(0);
-                res.body.data.should.have.property('message');
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('Token');
+                res.body.Data.Token.length.should.be.gt(0);
+                res.body.Data.should.have.property('Message');
                 done();
             });
     });
@@ -53,8 +53,8 @@ describe('Login with correct ShopID & Password', () => {
 describe('Login with correct ShopID & Password', () => {
     it('it should get token', (done) => {
         let info = {
-            shopid: 11,
-            password: "hello"
+            ShopId: 11,
+            Password: "hello"
         };
         chai.request(server)
             .post('/login')
@@ -62,10 +62,10 @@ describe('Login with correct ShopID & Password', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.have.property('token');
-                res.body.data.token.length.should.be.gt(0);
-                res.body.data.should.have.property('message');
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('Token');
+                res.body.Data.Token.length.should.be.gt(0);
+                res.body.Data.should.have.property('Message');
                 done();
             });
     });
@@ -74,8 +74,8 @@ describe('Login with correct ShopID & Password', () => {
 describe('Login with correct ShopID & Password', () => {
     it('it should get token', (done) => {
         let info = {
-            shopid: 123,
-            password: "hello"
+            ShopId: 123,
+            Password: "hello"
         };
         chai.request(server)
             .post('/login')
@@ -83,10 +83,10 @@ describe('Login with correct ShopID & Password', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.have.property('token');
-                res.body.data.token.length.should.be.gt(0);
-                res.body.data.should.have.property('message');
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('Token');
+                res.body.Data.Token.length.should.be.gt(0);
+                res.body.Data.should.have.property('Message');
                 done();
             });
     });
@@ -94,8 +94,8 @@ describe('Login with correct ShopID & Password', () => {
 describe('Login with correct ShopID & Password', () => {
     it('it should get token', (done) => {
         let info = {
-            shopid: 12,
-            password: "hello"
+            ShopId: 12,
+            Password: "hello"
         };
         chai.request(server)
             .post('/login')
@@ -103,10 +103,10 @@ describe('Login with correct ShopID & Password', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.have.property('token');
-                res.body.data.token.length.should.be.gt(0);
-                res.body.data.should.have.property('message');
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('Token');
+                res.body.Data.Token.length.should.be.gt(0);
+                res.body.Data.should.have.property('Message');
                 done();
             });
     });
@@ -114,8 +114,8 @@ describe('Login with correct ShopID & Password', () => {
 describe('Login with correct ShopID & fake Password', () => {
     it('it should return error', (done) => {
         let info = {
-            shopid: 123,
-            password: "fake password"
+            ShopId: 123,
+            Password: "fake password"
         };
         chai.request(server)
             .post('/login')
@@ -123,10 +123,10 @@ describe('Login with correct ShopID & fake Password', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.not.have.property('data');
-                res.body.should.have.property('error');
-                res.body.error.should.have.property('message');
-                res.body.error.message.should.be.eq("密码错误");
+                res.body.should.not.have.property('Data');
+                res.body.should.have.property('Error');
+                res.body.Error.should.have.property('Message');
+                res.body.Error.Message.should.be.eq("密码错误");
                 done();
             });
     })
@@ -134,8 +134,8 @@ describe('Login with correct ShopID & fake Password', () => {
 describe('Login with fake ShopID & fake Password', () => {
     it('it should return error', (done) => {
         let info = {
-            shopid: 1000,
-            password: "fake password"
+            ShopId: 1000,
+            Password: "fake password"
         };
         chai.request(server)
             .post('/login')
@@ -143,10 +143,10 @@ describe('Login with fake ShopID & fake Password', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.not.have.property('data');
-                res.body.should.have.property('error');
-                res.body.error.should.have.property('message');
-                res.body.error.message.should.be.eq("用户不存在");
+                res.body.should.not.have.property('Data');
+                res.body.should.have.property('Error');
+                res.body.Error.should.have.property('Message');
+                res.body.Error.Message.should.be.eq("用户不存在");
                 done();
             });
     })

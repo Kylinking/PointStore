@@ -9,13 +9,13 @@ router.get('/customers', async (req, res) => {
     let shopInfo = res.locals.db.ShopInfo;
     let logger = res.locals.logger;
     let operateShopID = res.locals.shopid;
-    let queryShopID = util.makeNumericValue(req.query.shopid, null);
-    let phone = isNaN(util.checkPhone(req.query.phone)) ? null : req.query.phone;
-    let page = util.makeNumericValue(req.query.page, 1);
-    let pageSize = util.makeNumericValue(req.query.size, 20);
-    let name = req.query.name || null;
+    let queryShopID = util.makeNumericValue(req.query.ShopId, null);
+    let phone = isNaN(util.checkPhone(req.query.Phone)) ? null : req.query.Phone;
+    let page = util.makeNumericValue(req.query.Page, 1);
+    let pageSize = util.makeNumericValue(req.query.Size, 20);
+    let name = req.query.Name || null;
     let offset = (page - 1) * pageSize;
-    let recommendID = util.makeNumericValue(req.query.recommendcustomerid,null);
+    let recommendID = util.makeNumericValue(req.query.RecommendCustomerId,null);
     let whereObj = {};
     if (phone != null) whereObj.Phone = {
         [Op.like]: `%${phone}%`
@@ -87,8 +87,8 @@ router.get('/customers', async (req, res) => {
                 if (await util.isSupermanAsync(queryShopID)) {
                     // 报错
                     res.json({
-                        error: {
-                            message: "无权限"
+                        Error: {
+                            Message: "无权限"
                         }
                     }).end();
                     return;
@@ -96,8 +96,8 @@ router.get('/customers', async (req, res) => {
                     if (queryShopID != operateShopID) {
                         //报错
                         res.json({
-                            error: {
-                                message: "无权限取其它总店客户信息"
+                            Error: {
+                                Message: "无权限取其它总店客户信息"
                             }
                         }).end();
                         return;
@@ -126,8 +126,8 @@ router.get('/customers', async (req, res) => {
                     });
                     if (shop.ParentShopID != operateShopID) {
                         res.json({
-                            error: {
-                                message: "无权限取其它总店客户信息"
+                            Error: {
+                                Message: "无权限取其它总店客户信息"
                             }
                         }).end();
                         return;
@@ -170,8 +170,8 @@ router.get('/customers', async (req, res) => {
             if (queryShopID != null && queryShopID != operateShopID) {
                 // 报错
                 res.json({
-                    error: {
-                        message: "无权限取其它分店客户信息"
+                    Error: {
+                        Message: "无权限取其它分店客户信息"
                     }
                 }).end();
                 return;
@@ -196,18 +196,18 @@ router.get('/customers', async (req, res) => {
     } catch (error) {
         logger.error(error);
         res.json({
-            error: {
-                message: error
+            Error: {
+                Message: error
             }
         }).end();
         return;
     }
     let json = {
-        data: []
+        Data: []
     };
     let pages = Math.ceil(instance.count / pageSize);
     instance.rows.forEach(row => {
-        json.data.push(row);
+        json.Data.push(row);
     });
     json["Pages"] = Math.ceil(pages);
     json["Size"] = pageSize;
@@ -217,20 +217,20 @@ router.get('/customers', async (req, res) => {
 router.post('/customers', async (req, res) => {
     let customerInfo = res.locals.db.CustomerInfo;
     let logger = res.locals.logger;
-    let phone = isNaN(util.checkPhone(req.body.phone)) ? null : req.body.phone;
-    let status = util.makeNumericValue(req.body.status, 1);
-    let name = req.name || null;
-    let address = req.body.address || null;
-    let sex = req.body.sex || null;
-    let age = util.makeNumericValue(req.body.age, null);
+    let phone = isNaN(util.checkPhone(req.body.Phone)) ? null : req.body.Phone;
+    let status = util.makeNumericValue(req.body.Status, 1);
+    let name = req.body.Name || null;
+    let address = req.body.Address || null;
+    let sex = req.body.Sex || null;
+    let age = util.makeNumericValue(req.body.Age, null);
     let operateShopID = res.locals.shopid;
-    let shopID = util.makeNumericValue(req.body.shopid, null);
-    let recommendCustomerID = util.makeNumericValue(req.body.recommendcustomerid, null);
+    let shopID = util.makeNumericValue(req.body.ShopId, null);
+    let recommendCustomerID = util.makeNumericValue(req.body.RecommendCustomerId, null);
     logger.info(`phone:${phone},status:${status},name:${name},sex:${sex},age:${age},recommend:${recommendCustomerID}`);
     [phone, sex].forEach(elem => {
         if (elem == null) {
             res.json({
-                error: {
+                Error: {
                     Message: "Phone,Sex不能为空！"
                 }
             });
@@ -249,16 +249,16 @@ router.post('/customers', async (req, res) => {
     };
     if (role == 'admin') {
         res.json({
-            error: {
-                message: "无权创建客户信息"
+            Error: {
+                Message: "无权创建客户信息"
             }
         }).end();
         return;
     } else if (role == 'superman') {
         if (shopID == null || await util.isAdminShopAsync(shopID)) {
             res.json({
-                error: {
-                    message: "需要客户归属分店ID"
+                Error: {
+                    Message: "需要客户归属分店ID"
                 }
             }).end();
             return;
@@ -272,8 +272,8 @@ router.post('/customers', async (req, res) => {
     } else {
         if (shopID !== null && shopID != operateShopID) {
             res.json({
-                error: {
-                    message: "无权创建其它店面客户信息"
+                Error: {
+                    Message: "无权创建其它店面客户信息"
                 }
             }).end();
             return;
@@ -292,7 +292,7 @@ router.post('/customers', async (req, res) => {
             })
             .then((row) => {
                 res.json({
-                    data: row
+                    Data: row
                 }).end();
                 //logger.info(row);
                 return res.locals.db.CustomerAccountInfo.create({
@@ -312,8 +312,8 @@ router.post('/customers', async (req, res) => {
                 error => {
                     logger.error(error);
                     res.json({
-                        error: {
-                            message: error
+                        Error: {
+                            Message: error
                         }
                     }).end();
                 }
@@ -325,20 +325,20 @@ router.delete('/customers', async (req, res) => {
     let customerInfo = res.locals.db.CustomerInfo;
     let logger = res.locals.logger;
     let operateShopID = res.locals.shopid;
-    let phone = isNaN(util.checkPhone(req.body.phone)) ? null : req.body.phone;
+    let phone = isNaN(util.checkPhone(req.body.Phone)) ? null : req.body.Phone;
     let role = await util.getRoleAsync(operateShopID);
     if (role == 'admin') {
         res.json({
-            error: {
-                message: "无权修改客户信息"
+            Error: {
+                Message: "无权修改客户信息"
             }
         }).end();
         return;
     }
     if (phone == null) {
         res.json({
-            error: {
-                message: "客户电话不能为空"
+            Error: {
+                Message: "客户电话不能为空"
             }
         }).end();
         return;
@@ -351,8 +351,8 @@ router.delete('/customers', async (req, res) => {
     if (instance) {
         if (instance.dataValues.Status == 0) {
             res.json({
-                error: {
-                    message: "该客户已注销"
+                Error: {
+                    Message: "该客户已注销"
                 }
             }).end();
             return;
@@ -360,8 +360,8 @@ router.delete('/customers', async (req, res) => {
         if (role != 'superman') {
             if (instance.ShopID != operateShopID) {
                 res.json({
-                    error: {
-                        message: "无权注销别家分店客户"
+                    Error: {
+                        Message: "无权注销别家分店客户"
                     }
                 }).end();
                 return;
@@ -376,7 +376,7 @@ router.delete('/customers', async (req, res) => {
         }).then(() => {
             instance.reload().then(()=>{
                 res.json({
-                    data: instance
+                    Data: instance
                 }).end();
             }
             )
@@ -385,16 +385,16 @@ router.delete('/customers', async (req, res) => {
             error => {
                 logger.error(error);
                 res.json({
-                    error: {
-                        message: error
+                    Error: {
+                        Message: error
                     }
                 }).end();
             });
     } else {
         logger.info(`客户不存在`);
         res.json({
-            error: {
-                message: "客户不存在"
+            Error: {
+                Message: "客户不存在"
             }
         }).end();
     }
@@ -404,29 +404,29 @@ router.patch('/customers', async (req, res) => {
     let customerInfo = res.locals.db.CustomerInfo;
     let logger = res.locals.logger;
     let operateShopID = res.locals.shopid;
-    let phone = isNaN(util.checkPhone(req.body.phone)) ? null : req.body.phone;
-    let status = util.makeNumericValue(req.body.status, null);
-    let name = req.body.name || null;
-    let address = req.body.address || null;
-    let sex = req.body.sex || null;
-    let age = util.makeNumericValue(req.body.age, null);
-    let shopID = util.makeNumericValue(req.body.shopid, null);
+    let phone = isNaN(util.checkPhone(req.body.Phone)) ? null : req.body.Phone;
+    let status = util.makeNumericValue(req.body.Status, null);
+    let name = req.body.Name || null;
+    let address = req.body.Address || null;
+    let sex = req.body.Sex || null;
+    let age = util.makeNumericValue(req.body.Age, null);
+    let shopID = util.makeNumericValue(req.body.ShopId, null);
     let customerID = util.makeNumericValue(req.body.customerid, null);
     let role = await util.getRoleAsync(operateShopID);
-    let recommendCustomerID = util.makeNumericValue(req.body.recommendcustomerid, null);
+    let recommendCustomerID = util.makeNumericValue(req.body.RecommendCustomerId, null);
     if (role == 'admin') {
         logger.info(`总店无权修改客户信息`)
         res.json({
-            error: {
-                message: "无权修改客户信息"
+            Error: {
+                Message: "无权修改客户信息"
             }
         }).end();
         return;
     }
     if (customerID == null && phone == null) {
         res.json({
-            error: {
-                message: "Phone和CustomerID不能同时为空"
+            Error: {
+                Message: "Phone和CustomerID不能同时为空"
             }
         }).end();
         return;
@@ -444,16 +444,16 @@ router.patch('/customers', async (req, res) => {
         if (role != 'superman') {
             if (instance.ShopID != operateShopID) {
                 res.json({
-                    error: {
-                        message: "无权修改别家分店客户信息"
+                    Error: {
+                        Message: "无权修改别家分店客户信息"
                     }
                 }).end();
                 return;
             }
             if (shopID != null) {
                 res.json({
-                    error: {
-                        message: "无权修改客户归属信息"
+                    Error: {
+                        Message: "无权修改客户归属信息"
                     }
                 }).end();
                 return;
@@ -462,8 +462,8 @@ router.patch('/customers', async (req, res) => {
             if (shopID != null) {
                 if (await util.getRoleAsync(shopID) != "normal"){
                     res.json({
-                        error:{
-                            message:"客户归属只能修改为分店"
+                        Error:{
+                            Message:"客户归属只能修改为分店"
                         }
                     });
                     return ;
@@ -482,12 +482,12 @@ router.patch('/customers', async (req, res) => {
         if (age != null) instance.set('Age', age);
         instance.save().then((row) => {
             res.json({
-                data:row
+                Data:row
             }).end();
         }).catch((err) => {
             res.json({
-                error: {
-                    message: err
+                Error: {
+                    Message: err
                 }
             }).end();
         })
@@ -497,8 +497,8 @@ router.patch('/customers', async (req, res) => {
 
 router.use('/customers', (req, res) => {
     res.json({
-        error: {
-            message: "无服务： " + req.method
+        Error: {
+            Message: "无服务： " + req.method
         }
     }).end();
 })

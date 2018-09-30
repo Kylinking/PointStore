@@ -8,17 +8,17 @@ const Op = require('sequelize').Op;
 router.get('/customerhistory', async (req, res) => {
     let logger = res.locals.logger;
     let operateShopID = res.locals.shopid;
-    let phone = isNaN(util.checkPhone(req.query.phone))?null:req.query.phone
-    let page = util.makeNumericValue(req.query.page,1);
-    let pageSize = util.makeNumericValue(req.query.size,20);
+    let phone = isNaN(util.checkPhone(req.query.Phone))?null:req.query.Phone
+    let page = util.makeNumericValue(req.query.Page,1);
+    let pageSize = util.makeNumericValue(req.query.Size,20);
     let offset = (page - 1) * pageSize;
-    let type = req.query.type || null;
-    let startDate = req.query.start || null;
+    let type = req.query.Type || null;
+    let startDate = req.query.Start || null;
     let endDate = req.query.end || null;
     let db = res.locals.db;
     const duration = moment.duration(30, "days");
     if (phone == null){
-        res.json({error:{message:"客户手机号码不能为空"}}).end()
+        res.json({Error:{Message:"客户手机号码不能为空"}}).end()
         return;
     }
     logger.info(`startDate:${startDate},endDate:${endDate},phone:${phone}`);
@@ -50,7 +50,7 @@ router.get('/customerhistory', async (req, res) => {
     });
     if (!customer){
         res.json({
-            data:{}
+            Data:{}
         }).end()
         return;
     }
@@ -61,8 +61,8 @@ router.get('/customerhistory', async (req, res) => {
     if (role == 'normal') {
         if (customer.ShopID != operateShopID) {
             res.json({
-                error: {
-                    message: "无权限查询其它分店客户明细"
+                Error: {
+                    Message: "无权限查询其它分店客户明细"
                 }
             }).end();
             return;
@@ -70,8 +70,8 @@ router.get('/customerhistory', async (req, res) => {
     } else if (role == "admin") {
         if (!await util.isSubordinateAsync(operateShopID,customer.ShopID)) {
             res.json({
-                error: {
-                    message: "无权限查询其它总店下客户明细"
+                Error: {
+                    Message: "无权限查询其它总店下客户明细"
                 }
             }).end();
             return;
@@ -104,13 +104,13 @@ router.get('/customerhistory', async (req, res) => {
         })
         let pages = Math.ceil(instance.count / pageSize);
         res.json({
-            data: data,
+            Data: data,
             Pages: pages,
             Size: pageSize
         }).end();
     } else {
         res.json({
-            data: []
+            Data: []
         }).end();
     }
 });
@@ -119,8 +119,8 @@ router.get('/customerhistory', async (req, res) => {
 router.use('/customerhistory', (req, res) => {
     res.status(400);
     res.json({
-        error: {
-            message: "No Service with " + req.method
+        Error: {
+            Message: "No Service with " + req.method
         }
     }).end();
 })

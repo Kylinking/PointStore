@@ -13,8 +13,8 @@ chai.use(chaiHttp);
 describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
-            phone:122222,
-            recharged:20
+            Phone:122222,
+            Recharged:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -23,8 +23,8 @@ describe('客户充值', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.RemainPoints.should.be.eq(140);
+                res.body.should.have.property('Data');
+                res.body.Data.RemainPoints.should.be.eq(140);
                 done();
             });
     });
@@ -33,11 +33,11 @@ describe('客户充值', () => {
 describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
-            phone:111222229,
-            recharged:2000,
-            recommendpoints:200,
-            indirectrecommendpoints:130,
-            shopbounuspoints:20
+            Phone:111222229,
+            Recharged:2000,
+            RecommendPoints:200,
+            IndirectRecommendPoints:130,
+            ShopBounusPoints:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -46,8 +46,8 @@ describe('客户充值', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.RemainPoints.should.be.eq(2020);
+                res.body.should.have.property('Data');
+                res.body.Data.RemainPoints.should.be.eq(2020);
                 done();
             });
     });
@@ -56,8 +56,8 @@ describe('客户充值', () => {
 describe('客户消费', () => {
     it('返回客户账户信息', (done) => {
         let data = {
-            phone:122222,
-            cost:20
+            Phone:122222,
+            Cost:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -66,8 +66,8 @@ describe('客户消费', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.RemainPoints.should.be.eq(120);
+                res.body.should.have.property('Data');
+                res.body.Data.RemainPoints.should.be.eq(120);
                 done();
             });
     });
@@ -76,8 +76,8 @@ describe('客户消费', () => {
 describe('客户推荐奖励', () => {
     it('返回客户账户信息', (done) => {
         let data = {
-            phone:122222,
-            recommendpoints:20
+            Phone:122222,
+            RecommendPoints:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -86,8 +86,8 @@ describe('客户推荐奖励', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.RemainPoints.should.be.eq(120);
+                res.body.should.have.property('Data');
+                res.body.Data.RemainPoints.should.be.eq(120);
                 done();
             });
     });
@@ -96,8 +96,8 @@ describe('客户推荐奖励', () => {
 describe('客户二级推荐奖励', () => {
     it('返回客户账户信息', (done) => {
         let data = {
-            phone:122222,
-            indirectrecommendpoints:20
+            Phone:122222,
+            IndirectRecommendPoints:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -106,8 +106,8 @@ describe('客户二级推荐奖励', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.RemainPoints.should.be.eq(120);
+                res.body.should.have.property('Data');
+                res.body.Data.RemainPoints.should.be.eq(120);
                 done();
             });
     });
@@ -116,8 +116,8 @@ describe('客户二级推荐奖励', () => {
 describe('店面奖励', () => {
     it('返回客户账户信息', (done) => {
         let data = {
-            phone:122222,
-            shopbounuspoints:20
+            Phone:122222,
+            ShopBounusPoints:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -126,8 +126,8 @@ describe('店面奖励', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.RemainPoints.should.be.eq(140);
+                res.body.should.have.property('Data');
+                res.body.Data.RemainPoints.should.be.eq(140);
                 done();
             });
     });
@@ -136,8 +136,8 @@ describe('店面奖励', () => {
 describe('客户推荐奖励', () => {
     it('返回客户账户信息', (done) => {
         let data = {
-            phone:111222229,
-            recommendpoints:20
+            Phone:111222229,
+            RecommendPoints:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -146,8 +146,8 @@ describe('客户推荐奖励', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.RemainPoints.should.be.eq(2020);
+                res.body.should.have.property('Data');
+                res.body.Data.RemainPoints.should.be.eq(2020);
                 done();
             });
     });
@@ -156,8 +156,8 @@ describe('客户推荐奖励', () => {
 describe('客户二级推荐奖励', () => {
     it('返回客户账户信息', (done) => {
         let data = {
-            phone:111222229,
-            indirectrecommendpoints:20
+            Phone:111222229,
+            IndirectRecommendPoints:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -166,8 +166,8 @@ describe('客户二级推荐奖励', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.RemainPoints.should.be.eq(2020);
+                res.body.should.have.property('Data');
+                res.body.Data.RemainPoints.should.be.eq(2020);
                 done();
             });
     });

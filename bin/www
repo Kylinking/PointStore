@@ -66,6 +66,7 @@ function onError(error) {
   switch (error.code) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges');
+      console.log(error)
       process.exit(1);
       break;
     case 'EADDRINUSE':

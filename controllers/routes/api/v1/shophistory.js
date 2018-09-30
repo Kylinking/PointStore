@@ -8,12 +8,12 @@ const Op = require('sequelize').Op;
 router.get('/shophistory', async (req, res) => {
     let logger = res.locals.logger;
     let operateShopID = res.locals.shopid;
-    let queryShopID = util.makeNumericValue(req.query.shopid,null);
-    let page = util.makeNumericValue(req.query.page,1);
-    let pageSize = util.makeNumericValue(req.query.size,20);
+    let queryShopID = util.makeNumericValue(req.query.ShopId,null);
+    let page = util.makeNumericValue(req.query.Page,1);
+    let pageSize = util.makeNumericValue(req.query.Size,20);
     let offset = (page - 1) * pageSize;
-    let type = req.query.type || null;
-    let startDate = req.query.start || null;
+    let type = req.query.Type || null;
+    let startDate = req.query.Start || null;
     let endDate = req.query.end || null;
     let db = res.locals.db;
     const duration = moment.duration(30, "days");
@@ -45,8 +45,8 @@ router.get('/shophistory', async (req, res) => {
     if (role == 'normal') {
         if (queryShopID != null && queryShopID != operateShopID) {
             res.json({
-                error: {
-                    message: "无权查询其它店面明细"
+                Error: {
+                    Message: "无权查询其它店面明细"
                 }
             }).end();
             return;
@@ -55,8 +55,8 @@ router.get('/shophistory', async (req, res) => {
     } else if (role == "admin") {
         if (queryShopID != null && !await util.isSubordinateAsync(operateShopID, queryShopID)) {
             res.json({
-                error: {
-                    message: "无权查询其它总店下店面明细"
+                Error: {
+                    Message: "无权查询其它总店下店面明细"
                 }
             }).end();
             return;
@@ -101,13 +101,13 @@ router.get('/shophistory', async (req, res) => {
         })
         let pages = Math.ceil(instance.count / pageSize);
         res.json({
-            data: data,
+            Data: data,
             Pages: pages,
             Size: pageSize
         }).end();
     } else {
         res.json({
-            data: []
+            Data: []
         }).end();
     }
 });
@@ -116,8 +116,8 @@ router.get('/shophistory', async (req, res) => {
 router.use('/shophistory', (req, res) => {
     res.status(400);
     res.json({
-        error: {
-            message: "No Service with " + req.method
+        Error: {
+            Message: "No Service with " + req.method
         }
     }).end();
 })

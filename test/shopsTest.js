@@ -16,9 +16,9 @@ describe('Get shopInfos',()=>{
             .end((err,res)=>{
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.be.a('array');
-                res.body.data.should.have.length(1);
+                res.body.should.have.property('Data');
+                res.body.Data.should.be.a('array');
+                res.body.Data.should.have.length(1);
                 done(); 
             })
     })
@@ -32,13 +32,13 @@ describe('总店取分店信息',()=>{
             .end((err,res)=>{
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.be.a('array');
+                res.body.should.have.property('Data');
+                res.body.Data.should.be.a('array');
                 res.body.should.have.property('Pages');
                 res.body.should.have.property('Size');
                 res.body.Pages.should.be.gt(0);
                 res.body.Size.should.be.gt(0);
-                res.body.data.should.have.length(2);
+                res.body.Data.should.have.length(2);
                 done(); 
             })
     })
@@ -48,18 +48,18 @@ describe('Super Get shopInfos',()=>{
     it('it should return array', done=>{
         chai.request(server)
             .get('/api/v1/shops')
-            .query({type:1})
+            .query({Type:1})
             .set("TOKEN",tokenSuperman)
             .end((err,res)=>{
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.be.a('array');
+                res.body.should.have.property('Data');
+                res.body.Data.should.be.a('array');
                 res.body.should.have.property('Pages');
                 res.body.should.have.property('Size');
                 res.body.Pages.should.be.gt(0);
                 res.body.Size.should.be.gt(0);
-                res.body.data.should.have.length(2);
+                res.body.Data.should.have.length(2);
                 done(); 
             })
     })
@@ -69,18 +69,18 @@ describe('Super Get some shopInfos',()=>{
     it('it should return array', done=>{
         chai.request(server)
             .get('/api/v1/shops')
-            .query({type:1,shopid:12})
+            .query({Type:1,ShopId:12})
             .set("TOKEN",tokenSuperman)
             .end((err,res)=>{
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.be.a('array');
+                res.body.should.have.property('Data');
+                res.body.Data.should.be.a('array');
                 res.body.should.have.property('Pages');
                 res.body.should.have.property('Size');
                 res.body.Pages.should.be.gt(0);
                 res.body.Size.should.be.gt(0);
-                res.body.data.should.have.length(2);
+                res.body.Data.should.have.length(2);
                 done(); 
             })
     })
@@ -89,10 +89,10 @@ describe('Super Get some shopInfos',()=>{
 describe('分店建分店', () => {
     it('it should return error', (done) => {
         let data = {
-            name: "test分店",
-            address: "市中区",
-            status: 1,
-            phone: 143431
+            Name: "test分店",
+            Address: "市中区",
+            Status: 1,
+            Phone: 143431
         };
         chai.request(server)
             .post('/api/v1/shops')
@@ -101,7 +101,7 @@ describe('分店建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('error');
+                res.body.should.have.property('Error');
                 done();
             });
     });
@@ -110,10 +110,10 @@ describe('分店建分店', () => {
 describe('总店建分店', () => {
     it('it should create a shopInfo and return info', (done) => {
         let data = {
-            name: "总店建分店",
-            address: "市中区",
-            status: 1,
-            phone: '125125125'
+            Name: "总店建分店",
+            Address: "市中区",
+            Status: 1,
+            Phone: '125125125'
         };
         chai.request(server)
             .post('/api/v1/shops')
@@ -122,13 +122,13 @@ describe('总店建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.have.property('ShopID');
-                res.body.data.should.have.property('Name');
-                res.body.data.should.have.property('Address');
-                res.body.data.should.have.property('Status');
-                res.body.data.should.have.property('Phone');
-                res.body.data.should.have.property('ParentShopID');
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopID');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopID');
                 done();
             });
     });
@@ -137,10 +137,10 @@ describe('总店建分店', () => {
 describe('Superman建总店', () => {
     it('it should create a shopInfo and return info', (done) => {
         let data = {
-            name: "新总店",
-            address: "市中区",
-            status: 1,
-            phone: '013013013',
+            Name: "新总店",
+            Address: "市中区",
+            Status: 1,
+            Phone: '013013013',
         };
         chai.request(server)
             .post('/api/v1/shops')
@@ -149,13 +149,13 @@ describe('Superman建总店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.have.property('ShopID');
-                res.body.data.should.have.property('Name');
-                res.body.data.should.have.property('Address');
-                res.body.data.should.have.property('Status');
-                res.body.data.should.have.property('Phone');
-                res.body.data.should.have.property('ParentShopID');
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopID');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopID');
                 done();
             });
     });
@@ -164,11 +164,11 @@ describe('Superman建总店', () => {
 describe('Superman建分店', () => {
     it('it should create a shopInfo and return info', (done) => {
         let data = {
-            name: "Superman建分店",
-            address: "市中区",
-            status: 1,
-            phone: '113113113',
-            parentshopid:11,
+            Name: "Superman建分店",
+            Address: "市中区",
+            Status: 1,
+            Phone: '113113113',
+            ParentShopId:11,
         };
         chai.request(server)
             .post('/api/v1/shops')
@@ -177,13 +177,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.have.property('ShopID');
-                res.body.data.should.have.property('Name');
-                res.body.data.should.have.property('Address');
-                res.body.data.should.have.property('Status');
-                res.body.data.should.have.property('Phone');
-                res.body.data.should.have.property('ParentShopID');
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopID');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopID');
                 done();
             });
     });
@@ -192,7 +192,7 @@ describe('Superman建分店', () => {
 describe('分店关分店', () => {
     it('it should return error', (done) => {
         let data = {
-            shopid:124
+            ShopId:124
         };
         chai.request(server)
             .delete('/api/v1/shops')
@@ -201,7 +201,7 @@ describe('分店关分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('error');
+                res.body.should.have.property('Error');
                 done();
             });
     });
@@ -210,7 +210,7 @@ describe('分店关分店', () => {
 describe('别的总店关分店', () => {
     it('it should return error', (done) => {
         let data = {
-            shopid:124
+            ShopId:124
         };
         chai.request(server)
             .delete('/api/v1/shops')
@@ -219,7 +219,7 @@ describe('别的总店关分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('error');
+                res.body.should.have.property('Error');
                 done();
             });
     });
@@ -227,7 +227,7 @@ describe('别的总店关分店', () => {
 describe('总店关分店', () => {
     it('it should return error', (done) => {
         let data = {
-            shopid:124
+            ShopId:124
         };
         chai.request(server)
             .delete('/api/v1/shops')
@@ -236,12 +236,12 @@ describe('总店关分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.have.property('ShopID');
-                res.body.data.should.have.property('Name');
-                res.body.data.should.have.property('Address');
-                res.body.data.should.have.property('Status');
-                res.body.data.should.have.property('Phone');
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopID');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
                 done();
             });
     });
@@ -250,7 +250,7 @@ describe('总店关分店', () => {
 describe('总店重复关分店', () => {
     it('it should return error', (done) => {
         let data = {
-            shopid:124
+            ShopId:124
         };
         chai.request(server)
             .delete('/api/v1/shops')
@@ -259,8 +259,8 @@ describe('总店重复关分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('error');
-                res.body.error.should.have.property('message');
+                res.body.should.have.property('Error');
+                res.body.Error.should.have.property('Message');
                 done();
             });
     });
@@ -269,7 +269,7 @@ describe('总店重复关分店', () => {
 describe('Superman关分店', () => {
     it('it should return info', (done) => {
         let data = {
-            shopid:123
+            ShopId:123
         };
         chai.request(server)
             .delete('/api/v1/shops')
@@ -278,12 +278,12 @@ describe('Superman关分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.have.property('ShopID');
-                res.body.data.should.have.property('Name');
-                res.body.data.should.have.property('Address');
-                res.body.data.should.have.property('Status');
-                res.body.data.should.have.property('Phone');
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopID');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
                 done();
             });
     });
@@ -292,7 +292,7 @@ describe('Superman关分店', () => {
 describe('Superman重复关分店', () => {
     it('it should return error', (done) => {
         let data = {
-            shopid:'123'
+            ShopId:'123'
         };
         chai.request(server)
             .delete('/api/v1/shops')
@@ -301,8 +301,8 @@ describe('Superman重复关分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('error');
-                res.body.error.should.have.property('message');
+                res.body.should.have.property('Error');
+                res.body.Error.should.have.property('Message');
                 done();
             });
     });
@@ -311,8 +311,8 @@ describe('Superman重复关分店', () => {
 describe('分店改分店', () => {
     it('it should return error', (done) => {
         let data = {
-            shopid:124,
-            name:"改名"
+            ShopId:124,
+            Name:"改名"
         };
         chai.request(server)
             .patch('/api/v1/shops')
@@ -321,7 +321,7 @@ describe('分店改分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('error');
+                res.body.should.have.property('Error');
                 done();
             });
     });
@@ -330,9 +330,9 @@ describe('分店改分店', () => {
 describe('总店改分店', () => {
     it('it should return info', (done) => {
         let data = {
-            shopid:124,
-            name:"总店改名",
-            status:1
+            ShopId:124,
+            Name:"总店改名",
+            Status:1
         };
         chai.request(server)
             .patch('/api/v1/shops')
@@ -341,12 +341,12 @@ describe('总店改分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.have.property('ShopID');
-                res.body.data.should.have.property('Name');
-                res.body.data.should.have.property('Address');
-                res.body.data.should.have.property('Status');
-                res.body.data.should.have.property('Phone');
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopID');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
                 done();
             });
     });
@@ -355,8 +355,8 @@ describe('总店改分店', () => {
 describe('别的总店改分店', () => {
     it('it should return info', (done) => {
         let data = {
-            shopid:124,
-            name:"改名"
+            ShopId:124,
+            Name:"改名"
         };
         chai.request(server)
             .patch('/api/v1/shops')
@@ -365,7 +365,7 @@ describe('别的总店改分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('error');
+                res.body.should.have.property('Error');
                 done();
             });
     });
@@ -374,9 +374,9 @@ describe('别的总店改分店', () => {
 describe('Superman改分店', () => {
     it('it should return info', (done) => {
         let data = {
-            shopid:123,
-            name:"Superman改名",
-            status:1
+            ShopId:123,
+            Name:"Superman改名",
+            Status:1
         };
         chai.request(server)
             .patch('/api/v1/shops')
@@ -385,12 +385,12 @@ describe('Superman改分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('data');
-                res.body.data.should.have.property('ShopID');
-                res.body.data.should.have.property('Name');
-                res.body.data.should.have.property('Address');
-                res.body.data.should.have.property('Status');
-                res.body.data.should.have.property('Phone');
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopID');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
                 done();
             });
     });

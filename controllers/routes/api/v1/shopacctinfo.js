@@ -9,9 +9,9 @@ router.get('/shoppoints', async (req, res) => {
     let db = res.locals.db;
     let logger = res.locals.logger;
     let operateShopID = res.locals.shopid;
-    let queryShopID = util.makeNumericValue(req.query.shopid, null);
-    let page = util.makeNumericValue(req.query.page, 1);
-    let pageSize = util.makeNumericValue(req.query.size, 20);
+    let queryShopID = util.makeNumericValue(req.query.ShopId, null);
+    let page = util.makeNumericValue(req.query.Page, 1);
+    let pageSize = util.makeNumericValue(req.query.Size, 20);
     let offset = (page - 1) * pageSize;
     let role = await util.getRoleAsync(operateShopID);
     let queryRole = await util.getRoleAsync(queryShopID);
@@ -29,8 +29,8 @@ router.get('/shoppoints', async (req, res) => {
         });
         if (!shopinfo) {
             res.json({
-                error: {
-                    message: `该店面不存在。ShopID:${queryShopID}`
+                Error: {
+                    Message: `该店面不存在。ShopID:${queryShopID}`
                 }
             }).end()
             return;
@@ -51,8 +51,8 @@ router.get('/shoppoints', async (req, res) => {
             (queryRole == 'admin' && queryShopID != operateShopID) ||
             queryRole == 'superman') {
             res.json({
-                error: {
-                    message: `无权限查询该店面账户信息.ShopID:${queryShopID}`
+                Error: {
+                    Message: `无权限查询该店面账户信息.ShopID:${queryShopID}`
                 }
             }).end();
             return;
@@ -68,8 +68,8 @@ router.get('/shoppoints', async (req, res) => {
     } else {
         if (queryShopID != null && queryShopID != operateShopID) {
             res.json({
-                error: {
-                    message: `无权限查询该店面账户信息.ShopID:${queryShopID}`
+                Error: {
+                    Message: `无权限查询该店面账户信息.ShopID:${queryShopID}`
                 }
             }).end();
             return;
@@ -91,13 +91,13 @@ router.get('/shoppoints', async (req, res) => {
             })
             let pages = Math.ceil(instance.count / pageSize);
             res.json({
-                data: data,
+                Data: data,
                 Pages: pages,
                 Size: pageSize
             }).end();
         } else {
             res.json({
-                data: [],
+                Data: [],
                 Pages: 0,
                 Size: pageSize
             }).end();
@@ -105,8 +105,8 @@ router.get('/shoppoints', async (req, res) => {
     } catch (error) {
         logger.error(error);
         res.json({
-            error: {
-                message: error
+            Error: {
+                Message: error
             }
         }).end();
         return;
@@ -116,8 +116,8 @@ router.get('/shoppoints', async (req, res) => {
 // error 
 router.use('/shoppoints', (req, res) => {
     res.json({
-        error: {
-            message: "Not Found. \nNo Service with " + req.method
+        Error: {
+            Message: "Not Found. \nNo Service with " + req.method
         }
     }).end();
 })
