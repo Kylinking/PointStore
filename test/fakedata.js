@@ -29,6 +29,12 @@ module.exports = async (models) => {
         Status: 1,
         Type:0
     });
+    await models.BounusPointRate.create({
+        RecommendRate: 0.1,
+        IndirectRecommendRate: 0.05,
+        ShopBounusPointRate: 0,
+        ShopId: 1,
+    });
     await models.ShopInfo.create({
         ShopId: 12,
         Name: "A总店",
@@ -37,6 +43,19 @@ module.exports = async (models) => {
         Status: 1,
         Type:1,
         ParentShopId: 1
+    });
+    await models.ShopAccountInfo.create({
+        CustomedPoints:80,
+        RecommendPoints:160,
+        ChargedPoints:260,
+        ShopBounusPoints:100,
+        ShopId:12
+    });
+    await models.BounusPointRate.create({
+        RecommendRate: 0.2,
+        IndirectRecommendRate: 0.09,
+        ShopBounusPointRate: 0.05,
+        ShopId: 12,
     });
     await models.ShopInfo.create({
         ShopId: 11,
@@ -47,6 +66,19 @@ module.exports = async (models) => {
         Type:1,
         ParentShopId: 1
     });
+    await models.ShopAccountInfo.create({
+        CustomedPoints:40,
+        RecommendPoints:80,
+        ChargedPoints:130,
+        ShopBounusPoints:50,
+        ShopId:11
+    });
+    await models.BounusPointRate.create({
+        RecommendRate: 0.1,
+        IndirectRecommendRate: 0.05,
+        ShopBounusPointRate: 0,
+        ShopId: 11,
+    });
     await models.ShopInfo.create({
         ShopId: 123,
         Name: "春华路分店",
@@ -55,6 +87,20 @@ module.exports = async (models) => {
         Status: 1,
         Type:2,
         ParentShopId: 12
+    });
+    await models.ShopAccountInfo.create({
+        CustomedPoints:40,
+        RecommendPoints:80,
+        ChargedPoints:130,
+        ShopBounusPoints:50,
+        ShopId:123
+    });
+    
+    await models.BounusPointRate.create({
+        RecommendRate: 0.1,
+        IndirectRecommendRate: 0.05,
+        ShopBounusPointRate: 0,
+        ShopId: 123,
     });
     await models.ShopInfo.create({
         ShopId: 112,
@@ -65,6 +111,19 @@ module.exports = async (models) => {
         Type:2,
         ParentShopId: 11
     });
+    await models.BounusPointRate.create({
+        RecommendRate: 0.1,
+        IndirectRecommendRate: 0.05,
+        ShopBounusPointRate: 0,
+        ShopId: 112,
+    });
+    await models.ShopAccountInfo.create({
+        CustomedPoints:40,
+        RecommendPoints:80,
+        ChargedPoints:130,
+        ShopBounusPoints:50,
+        ShopId:112
+    });
     await models.ShopInfo.create({
         ShopId: 124,
         Name: "柏杨路分店",
@@ -73,6 +132,19 @@ module.exports = async (models) => {
         Status: 1,
         Type:2,
         ParentShopId: 12
+    });
+    await models.ShopAccountInfo.create({
+        CustomedPoints:40,
+        RecommendPoints:80,
+        ChargedPoints:130,
+        ShopBounusPoints:50,
+        ShopId:124
+    });
+    await models.BounusPointRate.create({
+        RecommendRate: 0.1,
+        IndirectRecommendRate: 0.05,
+        ShopBounusPointRate: 0,
+        ShopId: 124,
     });
     await models.CustomerInfo.create({
         Name: "小红",
@@ -147,20 +219,7 @@ module.exports = async (models) => {
         CustomedPoints:20,
         CustomerId:4
     });
-    await models.ShopAccountInfo.create({
-        CustomedPoints:40,
-        RecommendPoints:80,
-        ChargedPoints:130,
-        ShopBounusPoints:50,
-        ShopId:123
-    });
-    await models.ShopAccountInfo.create({
-        CustomedPoints:40,
-        RecommendPoints:80,
-        ChargedPoints:130,
-        ShopBounusPoints:50,
-        ShopId:124
-    });
+   
 
 
 

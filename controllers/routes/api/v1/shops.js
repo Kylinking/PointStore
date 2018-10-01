@@ -4,6 +4,7 @@ let express = require('express');
 let router = express.Router();
 const Op = require('sequelize').Op;
 const defaultPassword = "hello";
+
 router.get('/shops', async (req, res, next) => {
     let operateShopId = res.locals.shopid;
     let shopInfo = res.locals.db.ShopInfo;
@@ -12,7 +13,7 @@ router.get('/shops', async (req, res, next) => {
     let queryType = util.makeNumericValue(req.query.Type, 0);
     let phone = isNaN(util.checkPhone(req.query.Phone))? null:req.query.Phone;
     let roleOfOperatedShopId = await util.getRoleAsync(operateShopId);
-    logger.info(roleOfOperatedShopId);
+    logger.info(`roleOfOperatedShopId:${roleOfOperatedShopId},queryType:${queryType} `);
     if (roleOfOperatedShopId == 'superman') {
         let json = {
             Data: [],
@@ -49,7 +50,7 @@ router.get('/shops', async (req, res, next) => {
             json.Meta["TotalRows"] = rows;
             json["Message"] = "查询分页溢出";
             res.json(json).end();
-            return;
+          //  return;
         }
         shopInfo.findAll({
                 where: whereObj,
@@ -84,7 +85,7 @@ router.get('/shops', async (req, res, next) => {
                 json.Meta["TotalRows"] = instance.count;
                 json["Message"] = "查询分页溢出";
                 res.json(json).end();
-                return;
+             //   return;
             }
             shopInfo.findAll({
                     where: {
@@ -102,10 +103,12 @@ router.get('/shops', async (req, res, next) => {
                     json.Meta["TotalRows"] = rows;
                     res.json(json).end();
                 })
-        } else { // !queryShopId == null && phone == null
-            let whereObj = {
-                ParentShopId: operateShopId
-            };
+        } else if (queryShopId !=null){ 
+            let whereObj = {};
+            if (!await util.isSubordinateAsync(operateShopId,queryShopId)){
+                res.json({Error:{Message:"无权查询其它总店下分店信息"}}).end();
+                return;
+            }
             if (queryShopId != null) {
                 whereObj.ShopId = queryShopId;
             }
@@ -123,6 +126,7 @@ router.get('/shops', async (req, res, next) => {
                         }
                     }).end();
                 } else {
+                    logger.info(info.dataValues);
                     res.json({
                         Data: [info.dataValues]
                     }).end();
@@ -310,8 +314,17 @@ router.post('/shops', async (req, res, next) => {
         }, {
             transaction: transaction
         });
+        let newBounusRate = await res.locals.db.BounusPointRate.create({
+            RecommendRate:0.1,
+            IndirectRecommendRate:0.05,
+            ShopBounusPointRate:0,
+            ShopId: newShop.ShopId,
+        }, {
+            transaction: transaction
+        });
     })
     .then(()=>{
+        logger.info(newShop);
         res.json({
             Data: newShop
         }).end();

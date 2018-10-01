@@ -9,6 +9,7 @@ router.get('/shoppoints', async (req, res) => {
     let db = res.locals.db;
     let logger = res.locals.logger;
     let operateShopId = res.locals.shopid;
+    let queryType = util.makeNumericValue(req.query.Type, 0);
     let queryShopId = util.makeNumericValue(req.query.ShopId, null);
     let page = util.makeNumericValue(req.query.Page, 1);
     let pageSize = util.makeNumericValue(req.query.Size, 20);
@@ -38,13 +39,18 @@ router.get('/shoppoints', async (req, res) => {
     }
     if (role == 'superman') {
         if (queryShopId == operateShopId) {
-            
-        } else if (queryRole == 'admin') {
-            includeObj.where = {
-                ParentShopId: queryShopId,
-            };
-        } else if (queryShopId != null) {
-            whereObj.ShopId = queryShopId;
+            whereObj.ShopId = operateShopId;
+        } 
+        if (queryShopId == null){
+
+        }else if (queryRole == 'admin') {
+            if (queryType == 0) {
+                whereObj.ShopId = queryShopId;
+            }else{
+                includeObj.where = {
+                    ParentShopId: queryShopId,
+                };
+            }           
         }
     } else if (role == 'admin') {
         if ((queryRole == 'normal' && !await util.isSubordinateAsync(operateShopId, queryShopId)) ||
@@ -57,12 +63,11 @@ router.get('/shoppoints', async (req, res) => {
             }).end();
             return;
         }
-        if (queryRole == 'admin' || queryShopId == null) {
+        if (queryShopId == null) {
             includeObj.where = {
                 ParentShopId: operateShopId,
             };
-        }
-        if (queryRole == 'normal') {
+        }else {
             whereObj.ShopId = queryShopId;
         }
     } else {
