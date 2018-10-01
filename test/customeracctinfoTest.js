@@ -21,7 +21,7 @@ describe('总店取客户账户信息', () => {
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
                 res.body.Data.should.have.length(4);
-                res.body.should.have.property('Pages');
+                res.body.Meta.should.have.property('Pages');
                 done();
             });
     });
@@ -39,7 +39,7 @@ describe('Superman取客户账户信息', () => {
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
                 res.body.Data.should.have.length(4);
-                res.body.should.have.property('Pages');
+                res.body.Meta.should.have.property('Pages');
                 done();
             });
     });
@@ -56,7 +56,7 @@ describe('Superman取客户账户信息', () => {
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
                 res.body.Data.should.have.length(7);
-                res.body.should.have.property('Pages');
+                res.body.Meta.should.have.property('Pages');
                 done();
             });
     });
@@ -73,7 +73,7 @@ describe('分店取客户账户信息', () => {
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
                 res.body.Data.should.have.length(3);
-                res.body.should.have.property('Pages');
+                res.body.Meta.should.have.property('Pages');
                 done();
             });
     });
@@ -91,7 +91,7 @@ describe('Superman取客户账户信息', () => {
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
                 res.body.Data.should.have.length(1);
-                res.body.should.have.property('Pages');
+                res.body.Meta.should.have.property('Pages');
                 done();
             });
     });
@@ -109,7 +109,7 @@ describe('分店取客户账户信息', () => {
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
                 res.body.Data.should.have.length(1);
-                res.body.should.have.property('Pages');
+                res.body.Meta.should.have.property('Pages');
                 done();
             });
     });

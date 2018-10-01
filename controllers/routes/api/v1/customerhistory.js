@@ -105,8 +105,11 @@ router.get('/customerhistory', async (req, res) => {
         let pages = Math.ceil(instance.count / pageSize);
         res.json({
             Data: data,
-            Pages: pages,
-            Size: pageSize
+            Meta: {
+                Pages: pages,
+                Size: pageSize,
+                TotalRows: instance.count
+            }
         }).end();
     } else {
         res.json({

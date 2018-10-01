@@ -68,13 +68,15 @@ router.get('/userpoints', async (req, res) => {
     }).then((instance) => {
         let pages = Math.ceil(instance.count / pageSize);
         let json = {
-            Data: []
+            Data: [],
+            Meta:{}
         };
         instance.rows.forEach((row) => {
             json.Data.push(row);
         });
-        json["Pages"] = pages;
-        json["Size"] = pageSize;
+        json.Meta["Pages"] = Math.ceil(pages);
+    json.Meta["Size"] = pageSize;
+    json.Meta["TotalRows"] = instance.count;
         res.json(json).end();
     }).catch(err => {
         res.json({

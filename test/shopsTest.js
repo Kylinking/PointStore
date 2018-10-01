@@ -34,10 +34,10 @@ describe('总店取分店信息',()=>{
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
-                res.body.should.have.property('Pages');
-                res.body.should.have.property('Size');
-                res.body.Pages.should.be.gt(0);
-                res.body.Size.should.be.gt(0);
+                res.body.Meta.should.have.property('Pages');
+                res.body.Meta.should.have.property('Size');
+                res.body.Meta.Pages.should.be.gt(0);
+                res.body.Meta.Size.should.be.gt(0);
                 res.body.Data.should.have.length(2);
                 done(); 
             })
@@ -55,10 +55,10 @@ describe('Super Get shopInfos',()=>{
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
-                res.body.should.have.property('Pages');
-                res.body.should.have.property('Size');
-                res.body.Pages.should.be.gt(0);
-                res.body.Size.should.be.gt(0);
+                res.body.Meta.should.have.property('Pages');
+                res.body.Meta.should.have.property('Size');
+                res.body.Meta.Pages.should.be.gt(0);
+                res.body.Meta.Size.should.be.gt(0);
                 res.body.Data.should.have.length(2);
                 done(); 
             })
@@ -76,10 +76,10 @@ describe('Super Get some shopInfos',()=>{
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
-                res.body.should.have.property('Pages');
-                res.body.should.have.property('Size');
-                res.body.Pages.should.be.gt(0);
-                res.body.Size.should.be.gt(0);
+                res.body.Meta.should.have.property('Pages');
+                res.body.Meta.should.have.property('Size');
+                res.body.Meta.Pages.should.be.gt(0);
+                res.body.Meta.Size.should.be.gt(0);
                 res.body.Data.should.have.length(2);
                 done(); 
             })

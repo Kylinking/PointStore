@@ -15,7 +15,8 @@ router.get('/shops', async (req, res, next) => {
     logger.info(roleOfOperatedShopId);
     if (roleOfOperatedShopId == 'superman') {
         let json = {
-            Data: []
+            Data: [],
+            Meta:{}
         };
         let whereObj = {};
         if (queryType !== 0) {
@@ -37,13 +38,15 @@ router.get('/shops', async (req, res, next) => {
         let page = util.makeNumericValue(req.query.Page, 1);
         let pageSize = util.makeNumericValue(req.query.Size,20);
         let offset = (page - 1) * pageSize;
-        let pages = Math.ceil(await shopInfo.count({
+        let rows = await shopInfo.count({
             where: whereObj
-        }) / pageSize);
+        });
+        let pages = Math.ceil( rows / pageSize);
         if (page > pages) {
             logger.warn("查询分页溢出");
-            json["Pages"] = Math.ceil(pages);
-            json["Size"] = pageSize;
+            json.Meta["Pages"] = Math.ceil(pages);
+            json.Meta["Size"] = pageSize;
+            json.Meta["TotalRows"] = rows;
             json["Message"] = "查询分页溢出";
             res.json(json).end();
             return;
@@ -57,24 +60,28 @@ router.get('/shops', async (req, res, next) => {
                 results.forEach(result => {
                     json.Data.push(result);
                 });
-                json["Pages"] = Math.ceil(pages);
-                json["Size"] = pageSize;
+                json.Meta["Pages"] = Math.ceil(pages);
+                json.Meta["Size"] = pageSize;
+                json.Meta["TotalRows"] = rows;
                 res.json(json).end();
             })
     } else if (roleOfOperatedShopId == 'admin') {
         if (queryShopId == null && phone == null) {
             let json = {
-                Data: []
+                Data: [],
+                Meta:{}
             };
             //无ShopId和Phone则返回所有分店信息，默认按20条分页，返回字段增加Pages表示总页数，Size表示每页条数
             let page = util.makeNumericValue(req.query.Page,1);
             let pageSize = util.makeNumericValue(req.query.Size,20);
             let offset = (page - 1) * pageSize;
-            let pages = Math.ceil(await shopInfo.count() / pageSize);
+            let rows = await shopInfo.count();
+            let pages = Math.ceil(rows / pageSize);
             if (page > pages) {
                 logger.warn("查询分页溢出");
-                json["Pages"] = Math.ceil(pages);
-                json["Size"] = pageSize;
+                json.Meta["Pages"] = Math.ceil(pages);
+                json.Meta["Size"] = pageSize;
+                json.Meta["TotalRows"] = instance.count;
                 json["Message"] = "查询分页溢出";
                 res.json(json).end();
                 return;
@@ -90,8 +97,9 @@ router.get('/shops', async (req, res, next) => {
                     results.forEach(result => {
                         json.Data.push(result);
                     });
-                    json["Pages"] = Math.ceil(pages);
-                    json["Size"] = pageSize;
+                    json.Meta["Pages"] = Math.ceil(pages);
+                    json.Meta["Size"] = pageSize;
+                    json.Meta["TotalRows"] = rows;
                     res.json(json).end();
                 })
         } else { // !queryShopId == null && phone == null

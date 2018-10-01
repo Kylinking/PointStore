@@ -8,7 +8,7 @@ var jwtSecret = require('../../config/global.json').jwtSecret;
 const expireTime = 8 * 3600; //seconds
 
 // Login in
-router.post('/', function (req, res, next) {
+router.post('/', async function  (req, res, next) {
   let logger = res.locals.logger;
   logger.info('enter post /login"');
   let shopId = req.body.ShopId || '';
@@ -58,7 +58,7 @@ router.post('/', function (req, res, next) {
           }).end();
           return;
         }
-
+        var loginUser = db.ShopInfo.findOne();
         var token = jwt.encode({
           shopid: shopId
         }, jwtSecret);
