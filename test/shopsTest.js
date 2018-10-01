@@ -237,7 +237,7 @@ describe('总店关分店', () => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopID');
+                res.body.Data.should.have.property('ShopId');
                 res.body.Data.should.have.property('Name');
                 res.body.Data.should.have.property('Address');
                 res.body.Data.should.have.property('Status');
@@ -279,7 +279,7 @@ describe('Superman关分店', () => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopID');
+                res.body.Data.should.have.property('ShopId');
                 res.body.Data.should.have.property('Name');
                 res.body.Data.should.have.property('Address');
                 res.body.Data.should.have.property('Status');

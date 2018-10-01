@@ -24,6 +24,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         }
+    },{
+        updatedAt:'UpdatedAt',
+        createdAt:'CreatedAt'
     });
 
     CustomerAccountInfo.associate = function (models) {

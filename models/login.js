@@ -10,6 +10,9 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: false,
             allowNull: false,
         }
+    },{
+        updatedAt:'UpdatedAt',
+        createdAt:'CreatedAt'
     })
    return Login;
 }

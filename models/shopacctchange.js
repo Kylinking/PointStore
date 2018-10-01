@@ -20,7 +20,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-  });
+  },{
+    updatedAt:'UpdatedAt',
+    createdAt:'CreatedAt'
+});
   ShopAccountChange.associate = function (models) {
     models.ShopAccountChange.belongsTo(models.ShopInfo, {
       onDelete: "CASCADE",

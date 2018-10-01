@@ -32,6 +32,10 @@ module.exports = (sequelize, DataTypes)=>{
             type:DataTypes.STRING,
             allowNull:false,
         },
+        
+    },{
+        updatedAt:'UpdatedAt',
+        createdAt:'CreatedAt'
     });
 
     CustomerInfo.associate = function (models) {

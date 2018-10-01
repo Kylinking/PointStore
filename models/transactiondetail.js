@@ -29,7 +29,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       allowNull: false,
     }
-  });
+  },{
+    updatedAt:'UpdatedAt',
+    createdAt:'CreatedAt'
+});
 
   TransactionDetail.associate = function (models) {
     models.TransactionDetail.belongsTo(models.ShopInfo, {

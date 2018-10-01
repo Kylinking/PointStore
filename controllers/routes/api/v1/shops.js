@@ -218,7 +218,7 @@ router.delete('/shops', async (req, res, next) => {
     instance.save().then(() => {
         res.json({
             Data: {
-                ShopID: instance.dataValues.ShopID,
+                ShopId: instance.dataValues.ShopID,
                 Name: instance.dataValues.Name,
                 Address: instance.dataValues.Address,
                 Status: 0,
