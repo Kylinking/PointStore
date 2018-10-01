@@ -7,7 +7,7 @@ const Op = require('sequelize').Op;
 
 router.get('/customerhistory', async (req, res) => {
     let logger = res.locals.logger;
-    let operateShopID = res.locals.shopid;
+    let operateShopId = res.locals.shopid;
     let phone = isNaN(util.checkPhone(req.query.Phone))?null:req.query.Phone
     let page = util.makeNumericValue(req.query.Page,1);
     let pageSize = util.makeNumericValue(req.query.Size,20);
@@ -56,10 +56,10 @@ router.get('/customerhistory', async (req, res) => {
     }
 
     
-    let role = await util.getRoleAsync(operateShopID);
+    let role = await util.getRoleAsync(operateShopId);
     logger.info(role);
     if (role == 'normal') {
-        if (customer.ShopID != operateShopID) {
+        if (customer.ShopId != operateShopId) {
             res.json({
                 Error: {
                     Message: "无权限查询其它分店客户明细"
@@ -68,7 +68,7 @@ router.get('/customerhistory', async (req, res) => {
             return;
         }
     } else if (role == "admin") {
-        if (!await util.isSubordinateAsync(operateShopID,customer.ShopID)) {
+        if (!await util.isSubordinateAsync(operateShopId,customer.ShopId)) {
             res.json({
                 Error: {
                     Message: "无权限查询其它总店下客户明细"
@@ -76,11 +76,11 @@ router.get('/customerhistory', async (req, res) => {
             }).end();
             return;
         }
-        whereObj.CustomerID = customer.CustomerID;
-        whereObj.ShopID = customer.ShopID;
+        whereObj.CustomerId = customer.CustomerId;
+        whereObj.ShopId = customer.ShopId;
     } 
-    whereObj.CustomerID = customer.CustomerID;
-    //whereObj.ShopID = customer.ShopID;
+    whereObj.CustomerId = customer.CustomerId;
+    //whereObj.ShopId = customer.ShopId;
     logger.info(whereObj);
     let include = [{
         model:db.ShopInfo,

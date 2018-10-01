@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     models.ShopAccountChange.belongsTo(models.ShopInfo, {
       onDelete: "CASCADE",
       foreignKey: {
-        name: 'ShopID',
+        name: 'ShopId',
         allowNull: false
       }
     });

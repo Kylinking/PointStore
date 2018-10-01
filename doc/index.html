@@ -79,7 +79,7 @@
 <tr>
 <td style="text-align:center">/login</td>
 <td style="text-align:center">POST</td>
-<td style="text-align:center"><font color=red>ShopID:Integer,<br />Password:String</font></td>
+<td style="text-align:center"><font color=red>ShopId:Integer,<br />Password:String</font></td>
 <td style="text-align:center">Object</td>
 <td style="text-align:left">token:String</td>
 </tr>
@@ -89,7 +89,7 @@
 <li>操作权限：Superman，总店，分店</li>
 <li>需要保存token作为所有API调用的验证，token有效期8小时，每次成功调用会刷新有效期</li>
 <li>后续所有接口调用，Header中需要设置请求字段TOKEN，值是登录成功后返回的token值</li>
-<li>超级权限 ShopID 为 1</li>
+<li>超级权限 ShopId 为 1</li>
 <li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
 </ul>
 <h2 id="店面信息"><a class="header-link" href="#店面信息"></a>店面信息</h2>
@@ -108,9 +108,9 @@
 <tr>
 <td style="text-align:center">/api/v1/shops</td>
 <td style="text-align:center">POST</td>
-<td style="text-align:center"><font color=red>Name:String,<br />Address:String,<br />Phone:Integer<br /></font>Status:Integer,<br />ParentShopID:Integer</td>
+<td style="text-align:center"><font color=red>Name:String,<br />Address:String,<br />Phone:Integer<br /></font>Status:Integer,<br />ParentShopId:Integer</td>
 <td style="text-align:center">Object</td>
-<td style="text-align:left">{ShopID,Name,<br />Address,Status,<br />Phone,ParentShopID,<br />Type:Integer}</td>
+<td style="text-align:left">{ShopId,Name,<br />Address,Status,<br />Phone,ParentShopId,<br />Type:Integer}</td>
 </tr>
 </tbody>
 </table>
@@ -119,9 +119,9 @@
 <li>请求参数：<ul class="list">
 <li>Name,Address,Phone 为必输字段</li>
 <li>操作ID只能是总店或Superman，操作ID是分店，则报错。</li>
-<li>ParentShopID 表示店面归属。<ul class="list">
-<li>若操作ID是Superman, ParentShopID 输入 Superman ID，则创建的是总店。输入总店ID，将创建该总店下的分店，输入分店ID或无对应分店信息存在，将报错。</li>
-<li>若操作ID是总店，将忽略ParentShopID字段，创建该总店下的分店</li>
+<li>ParentShopId 表示店面归属。<ul class="list">
+<li>若操作ID是Superman, ParentShopId 输入 Superman ID，则创建的是总店。输入总店ID，将创建该总店下的分店，输入分店ID或无对应分店信息存在，将报错。</li>
+<li>若操作ID是总店，将忽略ParentShopId字段，创建该总店下的分店</li>
 </ul>
 </li>
 <li>Status 表示店面状态 1 为正常 0 为注销</li>
@@ -149,9 +149,9 @@
 <tr>
 <td style="text-align:center">/api/v1/shops</td>
 <td style="text-align:center">GET</td>
-<td style="text-align:center">ShopID,Type,<br />Phone,Page,Size</td>
+<td style="text-align:center">ShopId,Type,<br />Phone,Page,Size</td>
 <td style="text-align:center">Array</td>
-<td style="text-align:left">[{ShopID,Name,<br /> Phone,Address,<br />Status,Type,<br />ParentShopID，ParentShopInfo:Object<br />Pages:Integer,Size:Integer}]</td>
+<td style="text-align:left">[{ShopId,Name,<br /> Phone,Address,<br />Status,Type,<br />ParentShopId，ParentShopInfo:Object<br />Pages:Integer,Size:Integer}]</td>
 </tr>
 </tbody>
 </table>
@@ -160,18 +160,18 @@
 <li>请求参数<ul class="list">
 <li>全部为可选参数</li>
 <li>Type 字段只有在操作ID是Superman时会起作用<ul class="list">
-<li>1：表示取总店信息，如果有总店ShopID，则只返回该总店信息</li>
-<li>2：表示取分店信息，如果有总店ShopID，则返回该总店下所有分店信息</li>
+<li>1：表示取总店信息，如果有总店ShopId，则只返回该总店信息</li>
+<li>2：表示取分店信息，如果有总店ShopId，则返回该总店下所有分店信息</li>
 </ul>
 </li>
 <li>Page 表示取第几页，默认为 1</li>
 <li>Size 表示每页最多记录数量，默认为 20</li>
-<li>ShopID 表示按ShopID查询</li>
+<li>ShopId 表示按ShopId查询</li>
 <li>Phone 支持子串匹配</li>
 </ul>
 </li>
 <li>响应参数<ul class="list">
-<li>ParentShopID 表示该店面的归属，分店归属为总店，总店归属为Superman，Superman该字段为空</li>
+<li>ParentShopId 表示该店面的归属，分店归属为总店，总店归属为Superman，Superman该字段为空</li>
 <li>ParentShopInfo 为归属店的信息对象，对象内容包含响应参数的所有字段</li>
 <li>Size 表示每页最多记录数量</li>
 <li>Pages 表示在Size下，总量数据的页数</li>
@@ -194,16 +194,16 @@
 <tr>
 <td style="text-align:center">/api/v1/shops</td>
 <td style="text-align:center">PATCH</td>
-<td style="text-align:center"><font color=red>ShopID,</font><br />Phone,Address,<br />Status,ParentShopID</td>
+<td style="text-align:center"><font color=red>ShopId,</font><br />Phone,Address,<br />Status,ParentShopId</td>
 <td style="text-align:center">Object</td>
-<td style="text-align:left">{ShopID,Name,<br /> Phone,Address<br />,Status,Type,<br />ParentShopID}</td>
+<td style="text-align:left">{ShopId,Name,<br /> Phone,Address<br />,Status,Type,<br />ParentShopId}</td>
 </tr>
 </tbody>
 </table>
 <ul class="list">
 <li>操作权限：Superman，总店</li>
 <li>请求参数：<ul class="list">
-<li>ShopID 为必输字段</li>
+<li>ShopId 为必输字段</li>
 <li>店面信息可部分更新</li>
 </ul>
 </li>
@@ -227,16 +227,16 @@
 <tr>
 <td style="text-align:center">/api/v1/shops</td>
 <td style="text-align:center">PATCH</td>
-<td style="text-align:center"><font color=red>ShopID</td>
+<td style="text-align:center"><font color=red>ShopId</td>
 <td style="text-align:center">Object</td>
-<td style="text-align:left">{ShopID,Name,<br /> Phone,Address<br />,Status,Type,<br />ParentShopID}</td>
+<td style="text-align:left">{ShopId,Name,<br /> Phone,Address<br />,Status,Type,<br />ParentShopId}</td>
 </tr>
 </tbody>
 </table>
 <ul class="list">
 <li>操作权限：Superman，总店</li>
 <li>请求字段：<ul class="list">
-<li>ShopID为必输字段</li>
+<li>ShopId为必输字段</li>
 </ul>
 </li>
 <li>返回字段<ul class="list">
@@ -261,9 +261,9 @@
 <tr>
 <td style="text-align:center">/api/v1/customers</td>
 <td style="text-align:center">POST</td>
-<td style="text-align:center"><font color=red>Phone,Sex:String,</font><br /><font color=green>ShopID,</font><br />Name,Address,Status,<br />Age:Integer,<br />RecommendCustomerID</td>
+<td style="text-align:center"><font color=red>Phone,Sex:String,</font><br /><font color=green>ShopId,</font><br />Name,Address,Status,<br />Age:Integer,<br />RecommendCustomerId</td>
 <td style="text-align:center">Object</td>
-<td style="text-align:left">{CustomerID,Name,<br />Address,Status,Phone,<br />Sex,Age,<br />RecommendCustomerID}</td>
+<td style="text-align:left">{CustomerId,Name,<br />Address,Status,Phone,<br />Sex,Age,<br />RecommendCustomerId}</td>
 </tr>
 </tbody>
 </table>
@@ -271,8 +271,8 @@
 <li>操作权限：Superman,分店</li>
 <li>请求参数：<ul class="list">
 <li>Phone，Sex为必输字段</li>
-<li>当操作ID是Superman时，ShopID也是必输字段，使客户归属于某一分店</li>
-<li>RecommendCustomerID 表示推荐客户ID</li>
+<li>当操作ID是Superman时，ShopId也是必输字段，使客户归属于某一分店</li>
+<li>RecommendCustomerId 表示推荐客户ID</li>
 </ul>
 </li>
 <li>响应参数：<ul class="list">
@@ -297,9 +297,9 @@
 <tr>
 <td style="text-align:center">/api/v1/customers</td>
 <td style="text-align:center">GET</td>
-<td style="text-align:center">Phone,ShopID,Name,<br />RecommendCustomerID<br />Page,Size</td>
+<td style="text-align:center">Phone,ShopId,Name,<br />RecommendCustomerId<br />Page,Size</td>
 <td style="text-align:center">Array</td>
-<td style="text-align:left">[{CustomerID,Name,<br />Address,Status,Phone,<br />Sex,Age,ShopInfo,<br />RecommendCustomerInfo}]</td>
+<td style="text-align:left">[{CustomerId,Name,<br />Address,Status,Phone,<br />Sex,Age,ShopInfo,<br />RecommendCustomerInfo}]</td>
 </tr>
 </tbody>
 </table>
@@ -307,9 +307,9 @@
 <li>操作权限 Superman,总店,分店</li>
 <li>请求参数<ul class="list">
 <li>所有参数都是可选参数</li>
-<li>ShopID 在操作ID是Superman和总店的时候用于限定查询归属于特定分店的客户信息</li>
+<li>ShopId 在操作ID是Superman和总店的时候用于限定查询归属于特定分店的客户信息</li>
 <li>Phone、Name支持部分匹配查询</li>
-<li>RecommendCustomerID 查询同一推荐人推荐的客户信息</li>
+<li>RecommendCustomerId 查询同一推荐人推荐的客户信息</li>
 </ul>
 </li>
 <li>响应参数<ul class="list">
@@ -335,21 +335,21 @@
 <tr>
 <td style="text-align:center">/api/v1/customers</td>
 <td style="text-align:center">PATCH</td>
-<td style="text-align:center"><font color=green>Phone,CustomerID</font><br />Name,Address,Status,<br />Age,Sex,ShopID<br />RecommendCustomerID</td>
+<td style="text-align:center"><font color=green>Phone,CustomerId</font><br />Name,Address,Status,<br />Age,Sex,ShopId<br />RecommendCustomerId</td>
 <td style="text-align:center">Object</td>
-<td style="text-align:left">{CustomerID,Name,<br />Address,Status,Phone,<br />Sex,Age,<br />RecommendCustomerID}</td>
+<td style="text-align:left">{CustomerId,Name,<br />Address,Status,Phone,<br />Sex,Age,<br />RecommendCustomerId}</td>
 </tr>
 </tbody>
 </table>
 <ul class="list">
 <li>操作权限：Superman,分店</li>
 <li>请求参数<ul class="list">
-<li>CustomerID与Phone二者不能同时为空<ul class="list">
-<li>当CustomerID不为空时，Phone参数不为空将修改客户电话</li>
-<li>当CustomerID为空时，Phone参数作为修改客户信息的条件使用</li>
+<li>CustomerId与Phone二者不能同时为空<ul class="list">
+<li>当CustomerId不为空时，Phone参数不为空将修改客户电话</li>
+<li>当CustomerId为空时，Phone参数作为修改客户信息的条件使用</li>
 </ul>
 </li>
-<li>ShopID 只有在操作ID是Superman是有效</li>
+<li>ShopId 只有在操作ID是Superman是有效</li>
 </ul>
 </li>
 <li>响应参数<ul class="list">
@@ -375,7 +375,7 @@
 <td style="text-align:center">DELETE</td>
 <td style="text-align:center"><font color=red>Phone</font><br /></td>
 <td style="text-align:center">Object</td>
-<td style="text-align:left">{CustomerID,Name,<br />Address,Status,Phone,<br />Sex,Age,<br />RecommendCustomerID}</td>
+<td style="text-align:left">{CustomerId,Name,<br />Address,Status,Phone,<br />Sex,Age,<br />RecommendCustomerId}</td>
 </tr>
 </tbody>
 </table>
@@ -406,9 +406,9 @@
 <tr>
 <td style="text-align:center">/api/v1/shoppoints</td>
 <td style="text-align:center">GET</td>
-<td style="text-align:center">ShopID,Page,Size</td>
+<td style="text-align:center">ShopId,Page,Size</td>
 <td style="text-align:center">Array</td>
-<td style="text-align:left">[{id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />ShopID,ShopInfo}]</td>
+<td style="text-align:left">[{id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />ShopId,ShopInfo}]</td>
 </tr>
 </tbody>
 </table>
@@ -417,19 +417,19 @@
 <li>请求参数<ul class="list">
 <li>全部为可选参数</li>
 <li>当操作ID是Superman时：<ul class="list">
-<li>若ShopID是总店，则返回该总店下所有分店的账户信息</li>
-<li>若ShopID是分店，则返回该分店账户信息</li>
-<li>若ShopID为空，则返回所有分店账户信息</li>
+<li>若ShopId是总店，则返回该总店下所有分店的账户信息</li>
+<li>若ShopId是分店，则返回该分店账户信息</li>
+<li>若ShopId为空，则返回所有分店账户信息</li>
 </ul>
 </li>
 <li>当操作ID是总店时：<ul class="list">
-<li>若ShopID为空，或是该总店，则返回总店下所有分店的账户信息</li>
-<li>若ShopID为该总店下属分店，则返回该分店账户信息</li>
+<li>若ShopId为空，或是该总店，则返回总店下所有分店的账户信息</li>
+<li>若ShopId为该总店下属分店，则返回该分店账户信息</li>
 <li>其它情况返回错误信息</li>
 </ul>
 </li>
 <li>当操作ID是分店时：<ul class="list">
-<li>ShopID若不为空，则在ShopID与操作ID相同时，返回该分店账户信息</li>
+<li>ShopId若不为空，则在ShopId与操作ID相同时，返回该分店账户信息</li>
 <li>其它情况返回错误信息</li>
 </ul>
 </li>
@@ -461,9 +461,9 @@
 <tr>
 <td style="text-align:center">/api/v1/userpoints</td>
 <td style="text-align:center">GET</td>
-<td style="text-align:center">ShopID,Phone,Page,Size</td>
+<td style="text-align:center">ShopId,Phone,Page,Size</td>
 <td style="text-align:center">Array</td>
-<td style="text-align:left">[{id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />RemainPoints,<br />IndirectRecommendPoints, <br />CustomerID,CustomerInfo}]</td>
+<td style="text-align:left">[{id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />RemainPoints,<br />IndirectRecommendPoints, <br />CustomerId,CustomerInfo}]</td>
 </tr>
 </tbody>
 </table>
@@ -472,19 +472,19 @@
 <li>请求参数<ul class="list">
 <li>全部为可选参数</li>
 <li>当操作ID是Superman时：<ul class="list">
-<li>若ShopID是总店，则返回该总店下所有分店的客户的账户信息</li>
-<li>若ShopID是分店，则返回该分店下的客户账户信息</li>
-<li>若ShopID为空，则返回全部分店的客户账户信息</li>
+<li>若ShopId是总店，则返回该总店下所有分店的客户的账户信息</li>
+<li>若ShopId是分店，则返回该分店下的客户账户信息</li>
+<li>若ShopId为空，则返回全部分店的客户账户信息</li>
 </ul>
 </li>
 <li>当操作ID是总店时：<ul class="list">
-<li>若ShopID为空，或是该总店，则返回总店下所有分店的客户账户信息</li>
-<li>若ShopID为该总店下属分店，则返回该分店的客户账户信息</li>
+<li>若ShopId为空，或是该总店，则返回总店下所有分店的客户账户信息</li>
+<li>若ShopId为该总店下属分店，则返回该分店的客户账户信息</li>
 <li>其它情况返回错误信息</li>
 </ul>
 </li>
 <li>当操作ID是分店时：<ul class="list">
-<li>ShopID若不为空，则在ShopID与操作ID相同时，返回该分店客户账户信息</li>
+<li>ShopId若不为空，则在ShopId与操作ID相同时，返回该分店客户账户信息</li>
 <li>其它情况返回错误信息</li>
 </ul>
 </li>
@@ -521,7 +521,7 @@
 <td style="text-align:center">POST</td>
 <td style="text-align:center"><font color=red>Phone</font>,<br />Cost, Recharged<br />ShopBounusPoints,<br />RecommendPoints,<br />IndirectRecommendPoints</td>
 <td style="text-align:center">Object</td>
-<td style="text-align:left">{id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />RemainPoints,<br />IndirectRecommendPoints, <br />CustomerID,CustomerInfo}</td>
+<td style="text-align:left">{id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />RemainPoints,<br />IndirectRecommendPoints, <br />CustomerId,CustomerInfo}</td>
 </tr>
 </tbody>
 </table>

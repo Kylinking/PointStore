@@ -8,13 +8,13 @@ const Op = require('sequelize').Op;
 router.get('/statistics/shop',async (req,res)=>{
     let logger = res.locals.logger;
     logger.info('statistics start');
-    let operateShopID = res.locals.shopid;
+    let operateShopId = res.locals.shopid;
     let type = req.query.Type || null;
     let startDate = req.query.Start || null;
     let endDate = req.query.end || null;
     let db = res.locals.db;
     let duration = util.makeNumericValue(req.query.recent,7);
-    let queryShopID = util.makeNumericValue(req.query.ShopId,null);
+    let queryShopId = util.makeNumericValue(req.query.ShopId,null);
     let now = Date.parse(moment().format());
     let today = Date.parse(moment().format("MM DD YYYY"));
     endDate = Date.parse(moment(endDate).format("MM DD YYYY"));
@@ -31,9 +31,9 @@ router.get('/statistics/shop',async (req,res)=>{
             [endDate, startDate] = [startDate, endDate];
         }
     }
-    logger.info(`startDate:${startDate},endDate:${endDate},queryShopID:${queryShopID},duration:${duration}`);
+    logger.info(`startDate:${startDate},endDate:${endDate},queryShopId:${queryShopId},duration:${duration}`);
 
-    let role = await util.getRoleAsync(operateShopID);
+    let role = await util.getRoleAsync(operateShopId);
     // 默认展示七日内的新增数据
     // duration == 'recent7','recent30','months'
     // type == customer,customed,bounus,recommend
@@ -47,11 +47,11 @@ router.get('/statistics/shop',async (req,res)=>{
     let whereObj = {};
     let include = [];
     if (role === 'normal'){
-        if (queryShopID != null && queryShopID != operateShopID){
+        if (queryShopId != null && queryShopId != operateShopId){
             res.json({Error:{Message:'无权查询其它店面统计信息。'}}).end();
             return;
         }
-        whereObj.ShopID = operateShopID;
+        whereObj.ShopId = operateShopId;
         newCustomers = await db.CustomerInfo.count({
             where:{
                 createdAt:{
@@ -60,7 +60,7 @@ router.get('/statistics/shop',async (req,res)=>{
                     moment(endDate).format("YYYY-MM-DD HH:mm:ss")
                    ]
                 },
-                ShopID:operateShopID
+                ShopId:operateShopId
             }
         });
         logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}有${newCustomers}位新增客户`)

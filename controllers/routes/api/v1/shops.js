@@ -5,28 +5,28 @@ let router = express.Router();
 const Op = require('sequelize').Op;
 const defaultPassword = "hello";
 router.get('/shops', async (req, res, next) => {
-    let operateShopID = res.locals.shopid;
+    let operateShopId = res.locals.shopid;
     let shopInfo = res.locals.db.ShopInfo;
     let logger = res.locals.logger;
-    let queryShopID = util.makeNumericValue(req.query.ShopId,null);
+    let queryShopId = util.makeNumericValue(req.query.ShopId,null);
     let queryType = util.makeNumericValue(req.query.Type, 0);
     let phone = isNaN(util.checkPhone(req.query.Phone))? null:req.query.Phone;
-    let roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
-    logger.info(roleOfOperatedShopID);
-    if (roleOfOperatedShopID == 'superman') {
+    let roleOfOperatedShopId = await util.getRoleAsync(operateShopId);
+    logger.info(roleOfOperatedShopId);
+    if (roleOfOperatedShopId == 'superman') {
         let json = {
             Data: []
         };
         let whereObj = {};
         if (queryType !== 0) {
-            if (queryShopID != null) {
-                whereObj.ParentShopID = queryShopID;
+            if (queryShopId != null) {
+                whereObj.ParentShopId = queryShopId;
             } else {
-                whereObj.ParentShopID = operateShopID;
+                whereObj.ParentShopId = operateShopId;
             }
         } else {
-            if (queryShopID != null) {
-                whereObj.ShopID = queryShopID;
+            if (queryShopId != null) {
+                whereObj.ShopId = queryShopId;
             }
         }
         if (phone != null) {
@@ -61,12 +61,12 @@ router.get('/shops', async (req, res, next) => {
                 json["Size"] = pageSize;
                 res.json(json).end();
             })
-    } else if (roleOfOperatedShopID == 'admin') {
-        if (queryShopID == null && phone == null) {
+    } else if (roleOfOperatedShopId == 'admin') {
+        if (queryShopId == null && phone == null) {
             let json = {
                 Data: []
             };
-            //无ShopID和Phone则返回所有分店信息，默认按20条分页，返回字段增加Pages表示总页数，Size表示每页条数
+            //无ShopId和Phone则返回所有分店信息，默认按20条分页，返回字段增加Pages表示总页数，Size表示每页条数
             let page = util.makeNumericValue(req.query.Page,1);
             let pageSize = util.makeNumericValue(req.query.Size,20);
             let offset = (page - 1) * pageSize;
@@ -81,7 +81,7 @@ router.get('/shops', async (req, res, next) => {
             }
             shopInfo.findAll({
                     where: {
-                        ParentShopID: operateShopID
+                        ParentShopId: operateShopId
                     },
                     limit: pageSize,
                     offset: offset
@@ -94,12 +94,12 @@ router.get('/shops', async (req, res, next) => {
                     json["Size"] = pageSize;
                     res.json(json).end();
                 })
-        } else { // !queryShopID == null && phone == null
+        } else { // !queryShopId == null && phone == null
             let whereObj = {
-                ParentShopID: operateShopID
+                ParentShopId: operateShopId
             };
-            if (queryShopID != null) {
-                whereObj.ShopID = queryShopID;
+            if (queryShopId != null) {
+                whereObj.ShopId = queryShopId;
             }
             if (phone != null) {
                 whereObj.Phone = phone;
@@ -108,7 +108,7 @@ router.get('/shops', async (req, res, next) => {
                 where: whereObj
             }).then(info => {
                 if (info == null) {
-                    logger.warn(queryShopID + ": 分店不存在");
+                    logger.warn(queryShopId + ": 分店不存在");
                     res.json({
                         Error: {
                             Message: "分店不存在"
@@ -122,7 +122,7 @@ router.get('/shops', async (req, res, next) => {
             });
         }
     } else { //!分店
-        if (queryShopID != null && queryShopID != operateShopID) {
+        if (queryShopId != null && queryShopId != operateShopId) {
             res.json({
                 Error: {
                     Message: "无权限查询其它分店."
@@ -131,7 +131,7 @@ router.get('/shops', async (req, res, next) => {
             return;
         } else {
             let whereObj = {
-                ShopID: operateShopID
+                ShopId: operateShopId
             };
             if (phone != null) {
                 whereObj.Phone = phone;
@@ -140,7 +140,7 @@ router.get('/shops', async (req, res, next) => {
                 where: whereObj
             }).then(info => {
                 if (info == null) {
-                    logger.warn(queryShopID + ": 分店不存在");
+                    logger.warn(queryShopId + ": 分店不存在");
                     res.json({
                         Error: {
                             Message: "分店不存在"
@@ -160,15 +160,15 @@ router.delete('/shops', async (req, res, next) => {
 
     let shopInfo = res.locals.db.ShopInfo;
     let logger = res.locals.logger;
-    let queryShopID = req.body.ShopId || null;
+    let queryShopId = req.body.ShopId || null;
     let phone = req.body.Phone || null;
-    let operateShopID = res.locals.shopid;
-    let roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
-    logger.info(roleOfOperatedShopID);
+    let operateShopId = res.locals.shopid;
+    let roleOfOperatedShopId = await util.getRoleAsync(operateShopId);
+    logger.info(roleOfOperatedShopId);
     let whereObj = {};
     if (phone != null) whereObj.Phone = phone;
-    if (queryShopID != null) whereObj.ShopID = queryShopID;
-    if (queryShopID == null && phone == null) {
+    if (queryShopId != null) whereObj.ShopId = queryShopId;
+    if (queryShopId == null && phone == null) {
         res.json({
             Error: {
                 Message: "未指定店面。"
@@ -176,8 +176,8 @@ router.delete('/shops', async (req, res, next) => {
         }).end();
         return;
     }
-    if (!(roleOfOperatedShopID == 'admin' ||
-            roleOfOperatedShopID == 'superman')) {
+    if (!(roleOfOperatedShopId == 'admin' ||
+            roleOfOperatedShopId == 'superman')) {
         res.json({
             Error: {
                 Message: "该用户无权关闭店面"
@@ -196,8 +196,8 @@ router.delete('/shops', async (req, res, next) => {
         }).end();
         return;
     }
-    if (roleOfOperatedShopID == 'admin') {
-        if (instance.ParentShopID != operateShopID) {
+    if (roleOfOperatedShopId == 'admin') {
+        if (instance.ParentShopId != operateShopId) {
             res.json({
                 Error: {
                     Message: "该用户无权关闭此店面"
@@ -218,7 +218,7 @@ router.delete('/shops', async (req, res, next) => {
     instance.save().then(() => {
         res.json({
             Data: {
-                ShopId: instance.dataValues.ShopID,
+                ShopId: instance.dataValues.ShopId,
                 Name: instance.dataValues.Name,
                 Address: instance.dataValues.Address,
                 Status: 0,
@@ -237,11 +237,11 @@ router.delete('/shops', async (req, res, next) => {
 router.post('/shops', async (req, res, next) => {
     let logger = res.locals.logger;
     logger.info('enter post /shops');
-    let operateShopID = res.locals.shopid;
-    let roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
-    logger.info(roleOfOperatedShopID);
-    if (!(roleOfOperatedShopID == 'admin' ||
-            roleOfOperatedShopID == 'superman')) {
+    let operateShopId = res.locals.shopid;
+    let roleOfOperatedShopId = await util.getRoleAsync(operateShopId);
+    logger.info(roleOfOperatedShopId);
+    if (!(roleOfOperatedShopId == 'admin' ||
+            roleOfOperatedShopId == 'superman')) {
         res.json({
             Error: {
                 Message: "该用户无权新建分店"
@@ -254,9 +254,9 @@ router.post('/shops', async (req, res, next) => {
     let status = req.body.Status || 0;
     let name = req.body.Name || null;
     let address = req.body.Address || null;
-    let parentShopID = req.body.ParentShopId || operateShopID;
+    let parentShopId = req.body.ParentShopId || operateShopId;
     let type = 2;
-    logger.info(util.formString(phone, status, address, name, parentShopID));
+    logger.info(util.formString(phone, status, address, name, parentShopId));
     [phone, name, address].forEach(elem => {
         if (elem == null) {
             res.json({
@@ -267,12 +267,12 @@ router.post('/shops', async (req, res, next) => {
             return;
         }
     })
-    if (roleOfOperatedShopID == 'superman') {
-        if (parentShopID == operateShopID) {
+    if (roleOfOperatedShopId == 'superman') {
+        if (parentShopId == operateShopId) {
             type = 1;
         }
     }else{
-        parentShopID = operateShopID;
+        parentShopId = operateShopId;
         type = 2;
     }
     let newShop = undefined;
@@ -283,7 +283,7 @@ router.post('/shops', async (req, res, next) => {
             Status: util.makeNumericValue(status,1),
             Phone: phone,
             Type: type,
-            ParentShopID: parentShopID
+            ParentShopId: parentShopId
         }, {
             transaction: transaction
         })
@@ -292,12 +292,12 @@ router.post('/shops', async (req, res, next) => {
             RecommendPoints: 0,
             ChargedPoints: 0,
             ShopBounusPoints: 0,
-            ShopID: newShop.ShopID,
+            ShopId: newShop.ShopId,
         }, {
             transaction: transaction
         });
         let newLogin = await res.locals.db.Login.create({
-            ID:newShop.ShopID,
+            Id:newShop.ShopId,
             Password:defaultPassword
         }, {
             transaction: transaction
@@ -317,11 +317,11 @@ router.post('/shops', async (req, res, next) => {
 router.patch('/shops', async (req, res, next) => {
     let logger = res.locals.logger;
     logger.info("enter patch shops");
-    let operateShopID = res.locals.shopid;
-    let roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
-    logger.info(roleOfOperatedShopID);
-    if (roleOfOperatedShopID != "admin" &&
-        roleOfOperatedShopID != "superman") {
+    let operateShopId = res.locals.shopid;
+    let roleOfOperatedShopId = await util.getRoleAsync(operateShopId);
+    logger.info(roleOfOperatedShopId);
+    if (roleOfOperatedShopId != "admin" &&
+        roleOfOperatedShopId != "superman") {
         res.json({
             Error: {
                 Message: "该用户无权修改分店信息"
@@ -330,14 +330,14 @@ router.patch('/shops', async (req, res, next) => {
         return;
     }
     let shopInfo = res.locals.db.ShopInfo;
-    let queryShopID = req.body.ShopId || null;
+    let queryShopId = req.body.ShopId || null;
     let phone = req.body.Phone || null;
     let status =  util.makeNumericValue(req.body.Status,null);
     logger.info(status);
     let name = req.body.Name || null;
     let address = req.body.Address || null;
-    let parentShopID = req.body.ParentShopId;
-    if (queryShopID == null && phone == null) {
+    let parentShopId = req.body.ParentShopId;
+    if (queryShopId == null && phone == null) {
         res.json({
             Error: {
                 Message: "未指定店面。"
@@ -345,8 +345,8 @@ router.patch('/shops', async (req, res, next) => {
         }).end();
     }
     let whereObj = {};
-    if (queryShopID != null) {
-        whereObj.ShopID = queryShopID;
+    if (queryShopId != null) {
+        whereObj.ShopId = queryShopId;
     }
     if (phone != null) {
         whereObj.Phone = phone;
@@ -362,8 +362,8 @@ router.patch('/shops', async (req, res, next) => {
         }).end();
         return;
     }
-    if (roleOfOperatedShopID == "admin") {
-        if (instance.ParentShopID != operateShopID) {
+    if (roleOfOperatedShopId == "admin") {
+        if (instance.ParentShopId != operateShopId) {
             res.json({
                 Error: {
                     Message: "该用户无权修改此分店信息"
@@ -384,8 +384,8 @@ router.patch('/shops', async (req, res, next) => {
         if (address) {
             instance.set("Address", address);
         }
-        if (parentShopID) {
-            instance.set("ParentShopID", parentShopID);
+        if (parentShopId) {
+            instance.set("ParentShopId", parentShopId);
         }
         instance.save().then((row) => {
             res.json({

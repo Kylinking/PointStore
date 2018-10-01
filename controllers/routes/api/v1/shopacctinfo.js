@@ -8,73 +8,73 @@ const Op = require('sequelize').Op;
 router.get('/shoppoints', async (req, res) => {
     let db = res.locals.db;
     let logger = res.locals.logger;
-    let operateShopID = res.locals.shopid;
-    let queryShopID = util.makeNumericValue(req.query.ShopId, null);
+    let operateShopId = res.locals.shopid;
+    let queryShopId = util.makeNumericValue(req.query.ShopId, null);
     let page = util.makeNumericValue(req.query.Page, 1);
     let pageSize = util.makeNumericValue(req.query.Size, 20);
     let offset = (page - 1) * pageSize;
-    let role = await util.getRoleAsync(operateShopID);
-    let queryRole = await util.getRoleAsync(queryShopID);
-    logger.info(`queryShopID:${queryShopID},page:${page},role:${role},queryRole:${queryRole}`);
+    let role = await util.getRoleAsync(operateShopId);
+    let queryRole = await util.getRoleAsync(queryShopId);
+    logger.info(`queryShopId:${queryShopId},page:${page},role:${role},queryRole:${queryRole}`);
     let whereObj = {};
     let includeObj = {
         model: db.ShopInfo,
         require: true,
     }
-    if (queryShopID != null) {
+    if (queryShopId != null) {
         let shopinfo = await db.ShopInfo.findOne({
             where: {
-                ShopID: queryShopID
+                ShopId: queryShopId
             }
         });
         if (!shopinfo) {
             res.json({
                 Error: {
-                    Message: `该店面不存在。ShopID:${queryShopID}`
+                    Message: `该店面不存在。ShopId:${queryShopId}`
                 }
             }).end()
             return;
         }
     }
     if (role == 'superman') {
-        if (queryShopID == operateShopID) {
+        if (queryShopId == operateShopId) {
             
         } else if (queryRole == 'admin') {
             includeObj.where = {
-                ParentShopID: queryShopID,
+                ParentShopId: queryShopId,
             };
-        } else if (queryShopID != null) {
-            whereObj.ShopID = queryShopID;
+        } else if (queryShopId != null) {
+            whereObj.ShopId = queryShopId;
         }
     } else if (role == 'admin') {
-        if ((queryRole == 'normal' && !await util.isSubordinateAsync(operateShopID, queryShopID)) ||
-            (queryRole == 'admin' && queryShopID != operateShopID) ||
+        if ((queryRole == 'normal' && !await util.isSubordinateAsync(operateShopId, queryShopId)) ||
+            (queryRole == 'admin' && queryShopId != operateShopId) ||
             queryRole == 'superman') {
             res.json({
                 Error: {
-                    Message: `无权限查询该店面账户信息.ShopID:${queryShopID}`
+                    Message: `无权限查询该店面账户信息.ShopId:${queryShopId}`
                 }
             }).end();
             return;
         }
-        if (queryRole == 'admin' || queryShopID == null) {
+        if (queryRole == 'admin' || queryShopId == null) {
             includeObj.where = {
-                ParentShopID: operateShopID,
+                ParentShopId: operateShopId,
             };
         }
         if (queryRole == 'normal') {
-            whereObj.ShopID = queryShopID;
+            whereObj.ShopId = queryShopId;
         }
     } else {
-        if (queryShopID != null && queryShopID != operateShopID) {
+        if (queryShopId != null && queryShopId != operateShopId) {
             res.json({
                 Error: {
-                    Message: `无权限查询该店面账户信息.ShopID:${queryShopID}`
+                    Message: `无权限查询该店面账户信息.ShopId:${queryShopId}`
                 }
             }).end();
             return;
         }
-        whereObj.ShopID = operateShopID;
+        whereObj.ShopId = operateShopId;
     }
 
     try {

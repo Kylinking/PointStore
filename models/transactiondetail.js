@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
     models.TransactionDetail.belongsTo(models.ShopInfo, {
       onDelete: "CASCADE",
       foreignKey: {
-        name: 'ShopID',
+        name: 'ShopId',
         allowNull: false
       }
     });
@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
     models.TransactionDetail.belongsTo(models.CustomerInfo, {
       onDelete: "CASCADE",
       foreignKey: {
-        name: 'CustomerID',
+        name: 'CustomerId',
         allowNull: false
       }
     });
@@ -55,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       as:'RecommendCustomer',
       foreignKey: {
-        name: 'RecommendCustomerID',
+        name: 'RecommendCustomerId',
         allowNull: true
       }
     });
@@ -63,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       as:'IndirectRecommendCustomer',
       foreignKey: {
-        name: 'IndirectRecommendCustomerID',
+        name: 'IndirectRecommendCustomerId',
         allowNull: true
       }
     });

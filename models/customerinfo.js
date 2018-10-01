@@ -2,7 +2,7 @@
 
 module.exports = (sequelize, DataTypes)=>{
     var CustomerInfo = sequelize.define('CustomerInfo',{
-        CustomerID:{
+        CustomerId:{
             type:DataTypes.INTEGER,
             primaryKey:true,
             autoIncrement: true,
@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes)=>{
         models.CustomerInfo.belongsTo(models.ShopInfo, {
           onDelete: "CASCADE",
           foreignKey: {
-            name: 'ShopID',
+            name: 'ShopId',
             allowNull: false
           }
         });
@@ -51,7 +51,7 @@ module.exports = (sequelize, DataTypes)=>{
             onDelete: "CASCADE",
             as:"RecommendCustomerInfo",
             foreignKey: {
-              name: 'RecommendCustomerID',
+              name: 'RecommendCustomerId',
               allowNull: true
             }
           });

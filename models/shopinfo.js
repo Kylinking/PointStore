@@ -2,7 +2,7 @@
 
 module.exports = (sequelize, DataTypes)=>{
     var ShopInfo = sequelize.define('ShopInfo',{
-        ShopID:{
+        ShopId:{
             type:DataTypes.INTEGER,
             primaryKey:true,
             autoIncrement: true
@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes)=>{
         models.ShopInfo.belongsTo(models.ShopInfo, {
           onDelete: "CASCADE",
           foreignKey: {
-            name: 'ParentShopID',
+            name: 'ParentShopId',
             allowNull: true
           }
         });

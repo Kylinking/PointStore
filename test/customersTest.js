@@ -132,7 +132,7 @@ describe('分店建用户', () => {
             Phone: 111222229,
             Sex: "男",
             Age: 11,
-            RecommendCustomerID:2
+            RecommendCustomerId:2
         };
         chai.request(server)
             .post('/api/v1/customers')
@@ -142,7 +142,7 @@ describe('分店建用户', () => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
-                res.body.Data.should.have.property('CustomerID');
+                res.body.Data.should.have.property('CustomerId');
                 res.body.Data.should.have.property('Name');
                 res.body.Data.should.have.property('Sex');
                 res.body.Data.should.have.property('Age');
@@ -178,7 +178,7 @@ describe('分店建用户手机重号', () => {
     });
 });
 
-describe('分店建用户传不同的ShopID', () => {
+describe('分店建用户传不同的ShopId', () => {
     it('it should return error', (done) => {
         let customer = {
             Name: "分店建3",
@@ -226,7 +226,7 @@ describe('总店建用户', () => {
     });
 });
 
-describe('Superman建用户无ShopID', () => {
+describe('Superman建用户无ShopId', () => {
     it('it should return error', (done) => {
         let customer = {
             Name: "Superman建1号",
@@ -249,7 +249,7 @@ describe('Superman建用户无ShopID', () => {
     });
 });
 
-describe('Superman建用户带总店ShopID', () => {
+describe('Superman建用户带总店ShopId', () => {
     it('it should return error', (done) => {
         let customer = {
             Name: "Superman建2号",
@@ -273,7 +273,7 @@ describe('Superman建用户带总店ShopID', () => {
     });
 });
 
-describe('Superman建用户带分店ShopID Status 0', () => {
+describe('Superman建用户带分店ShopId Status 0', () => {
     it('it should create a customerinfo and return info', (done) => {
         let customer = {
             Name: "Superman建3号",
@@ -292,7 +292,7 @@ describe('Superman建用户带分店ShopID Status 0', () => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
-                res.body.Data.should.have.property('CustomerID');
+                res.body.Data.should.have.property('CustomerId');
                 res.body.Data.should.have.property('Name');
                 res.body.Data.should.have.property('Sex');
                 res.body.Data.should.have.property('Age');
@@ -305,7 +305,7 @@ describe('Superman建用户带分店ShopID Status 0', () => {
     });
 });
 
-describe('Superman建用户带分店ShopID Status 1', () => {
+describe('Superman建用户带分店ShopId Status 1', () => {
     it('it should create a customerinfo and return info', (done) => {
         let customer = {
             Name: "Superman建4号",
@@ -324,7 +324,7 @@ describe('Superman建用户带分店ShopID Status 1', () => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
-                res.body.Data.should.have.property('CustomerID');
+                res.body.Data.should.have.property('CustomerId');
                 res.body.Data.should.have.property('Name');
                 res.body.Data.should.have.property('Sex');
                 res.body.Data.should.have.property('Age');
@@ -350,7 +350,7 @@ describe('分店删用户', () => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
-                res.body.Data.should.have.property('CustomerID');
+                res.body.Data.should.have.property('CustomerId');
                 res.body.Data.should.have.property('Name');
                 res.body.Data.should.have.property('Sex');
                 res.body.Data.should.have.property('Age');

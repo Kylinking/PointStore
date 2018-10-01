@@ -20,7 +20,7 @@ var r1,r2,r3;
 //     .then(async (row)=>{
 //         r1 = row;
 //        r2 = await r1.getRecommendCustomerInfo({attributes: ['Name']});
-//        r3 = await r2.getRecommendCustomerInfo({attributes: ['CustomerID']})
+//        r3 = await r2.getRecommendCustomerInfo({attributes: ['CustomerId']})
 
 //     });    // Committed
 // }).then(()=>{

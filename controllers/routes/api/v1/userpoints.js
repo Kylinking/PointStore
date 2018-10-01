@@ -7,31 +7,31 @@ const Op = require('sequelize').Op;
 router.get('/userpoints', async (req, res) => {
     let logger = res.locals.logger;
     let phone = isNaN(util.checkPhone(req.query.Phone))? null:req.query.Phone;
-    let shopID = util.makeNumericValue(req.query.ShopId,null);
+    let shopId = util.makeNumericValue(req.query.ShopId,null);
     let page = util.makeNumericValue(req.query.Page, 1);
     let pageSize = util.makeNumericValue(req.query.Size, 20);
     let offset = (page - 1) * pageSize;
     let acctInfo = res.locals.db.CustomerAccountInfo;
-    let operateShopID = res.locals.shopid;
+    let operateShopId = res.locals.shopid;
     let whereCustomerInfoObj = {};
     let whereShopInfoObj = {};
-    let roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
+    let roleOfOperatedShopId = await util.getRoleAsync(operateShopId);
     if (phone != null) {
         whereCustomerInfoObj.Phone = phone;
     }
     logger.info(`Phone:${phone},`)
-    if (roleOfOperatedShopID == 'superman') {
-        if (shopID != null && shopID != operateShopID) {
-            if (await util.isAdminShopAsync(shopID)) {
-                whereShopInfoObj.ParentShopID = shopID;
+    if (roleOfOperatedShopId == 'superman') {
+        if (shopId != null && shopId != operateShopId) {
+            if (await util.isAdminShopAsync(shopId)) {
+                whereShopInfoObj.ParentShopId = shopId;
             } else {
-                whereShopInfoObj.ShopID = shopID;
+                whereShopInfoObj.ShopId = shopId;
             }
         }
-    } else if (roleOfOperatedShopID == 'admin') {
-        whereShopInfoObj.ParentShopID = operateShopID;
-        if ((shopID != null && !await util.isSubordinateAsync(operateShopID, shopID)) ||
-            (phone != null && !await util.isBelongsToByPhoneAsync(phone, operateShopID))) {
+    } else if (roleOfOperatedShopId == 'admin') {
+        whereShopInfoObj.ParentShopId = operateShopId;
+        if ((shopId != null && !await util.isSubordinateAsync(operateShopId, shopId)) ||
+            (phone != null && !await util.isBelongsToByPhoneAsync(phone, operateShopId))) {
             res.json({
                 Error: {
                     Message: "无权查询其它总店下用户账户"
@@ -40,8 +40,8 @@ router.get('/userpoints', async (req, res) => {
             return;
         }
     } else {
-        if ((shopID != null && shopID != operateShopID) ||
-            (phone != null && !await util.isBelongsToByPhoneAsync(phone, operateShopID))) {
+        if ((shopId != null && shopId != operateShopId) ||
+            (phone != null && !await util.isBelongsToByPhoneAsync(phone, operateShopId))) {
             res.json({
                 Error: {
                     Message: "无权查询其它店面用户账户"
@@ -49,7 +49,7 @@ router.get('/userpoints', async (req, res) => {
             }).end();
             return;
         } else {
-            whereShopInfoObj.ShopID = operateShopID;
+            whereShopInfoObj.ShopId = operateShopId;
         }
     }
     logger.info(whereShopInfoObj);
@@ -90,13 +90,13 @@ router.post('/userpoints', async (req, res) => {
     let phone = !isNaN(util.checkPhone(req.body.Phone)) ? util.checkPhone(req.body.Phone):0;
     let db = res.locals.db;
     let sequelize = db.sequelize;
-    let operateShopID = res.locals.shopid;
+    let operateShopId = res.locals.shopid;
     let cost =  util.makeNumericValue(req.body.Cost,0);
     let recharged = util.makeNumericValue(req.body.Recharged,0);
     let bounus = util.makeNumericValue(req.body.ShopBounusPoints,0); 
     let recommendPoints = util.makeNumericValue(req.body.RecommendPoints,0);
     let indirectRecommendPoints = util.makeNumericValue(req.body.IndirectRecommendPoints,0); 
-    logger.info(`phone: ${phone}, operateShopID: ${operateShopID}, 
+    logger.info(`phone: ${phone}, operateShopId: ${operateShopId}, 
          cost: ${cost},recharged:${recharged}, bounus: ${bounus}, 
          recommendPoints: ${recommendPoints}, indirectRecommendPoints: ${indirectRecommendPoints}`);
     if (phone == null) {
@@ -123,9 +123,9 @@ router.post('/userpoints', async (req, res) => {
         }).end();
         return;
     }
-    let roleOfOperatedShopID = await util.getRoleAsync(operateShopID);
-    logger.info(roleOfOperatedShopID);
-    if (roleOfOperatedShopID == 'admin') {
+    let roleOfOperatedShopId = await util.getRoleAsync(operateShopId);
+    logger.info(roleOfOperatedShopId);
+    if (roleOfOperatedShopId == 'admin') {
         res.json({
             Error: {
                 Message: '该用户无权完成操作'
@@ -133,7 +133,7 @@ router.post('/userpoints', async (req, res) => {
         }).end();
         return;
     }
-    if (!await util.isBelongsToByPhoneAsync(phone, operateShopID)) {
+    if (!await util.isBelongsToByPhoneAsync(phone, operateShopId)) {
         res.json({
             Error: {
                 Message: '无权操作其它分店客户账户'
@@ -156,7 +156,7 @@ router.post('/userpoints', async (req, res) => {
                     transaction: transaction
                 })
                 .then(async (row) => {
-                    if (roleOfOperatedShopID == 'normal' && row.ShopID != operateShopID){
+                    if (roleOfOperatedShopId == 'normal' && row.ShopId != operateShopId){
                         throw '无权操作其它分店客户账户';
                     }
                     customerInfo = row;
@@ -177,8 +177,8 @@ router.post('/userpoints', async (req, res) => {
                         Date: date,
                         CustomedPoints: cost,
                         ShopBounusPoints: bounus,
-                        ShopID: operateShopID,
-                        CustomerID: customerInfo.CustomerID,
+                        ShopId: operateShopId,
+                        CustomerId: customerInfo.CustomerId,
                     };
                     let shopAcctInfoOptions = {
                         CustomedPoints: cost,
@@ -190,7 +190,7 @@ router.post('/userpoints', async (req, res) => {
                     let custAcctInfo = await db.CustomerAccountInfo.findOne(
                         {
                             where: {
-                                CustomerID: customerInfo.CustomerID
+                                CustomerId: customerInfo.CustomerId
                             }
                         }, {
                             transaction: transaction
@@ -207,7 +207,7 @@ router.post('/userpoints', async (req, res) => {
                         CustomedPoints: cost,
                     }, {
                         where: {
-                            CustomerID: customerInfo.CustomerID
+                            CustomerId: customerInfo.CustomerId
                         }
                     }, {
                         transaction: transaction
@@ -219,14 +219,14 @@ router.post('/userpoints', async (req, res) => {
                             RecommendPoints: recommendPoints
                         }, {
                             where: {
-                                CustomerID: recommendCustomerInfo.CustomerID
+                                CustomerId: recommendCustomerInfo.CustomerId
                             }
                         }, {
                             transaction: transaction
                         })
                         logger.info("recommendCustomerInfo CustomerAccountInfo increment ");
                         transactionOptions.RecommendPoints = recommendPoints;
-                        transactionOptions.RecommendCustomerID = recommendCustomerInfo.CustomerID;
+                        transactionOptions.RecommendCustomerId = recommendCustomerInfo.CustomerId;
                         shopAcctInfoOptions.RecommendPoints += recommendPoints;
                     }
                     if (indirectRecommendCustomerInfo) {
@@ -235,14 +235,14 @@ router.post('/userpoints', async (req, res) => {
                             IndirectRecommendPoints: indirectRecommendPoints
                         }, {
                             where: {
-                                CustomerID: indirectRecommendCustomerInfo.CustomerID
+                                CustomerId: indirectRecommendCustomerInfo.CustomerId
                             }
                         }, {
                             transaction: transaction
                         });
                         logger.info("indirectRecommendCustomerInfo CustomerAccountInfo increment ");
                         transactionOptions.IndirectRecommendPoints = indirectRecommendPoints;
-                        transactionOptions.IndirectRecommendCustomerID = indirectRecommendCustomerInfo.CustomerID;
+                        transactionOptions.IndirectRecommendCustomerId = indirectRecommendCustomerInfo.CustomerId;
                         shopAcctInfoOptions.RecommendPoints += indirectRecommendPoints;
                     }
                     let transactionInstance = await db.TransactionDetail.create(
@@ -254,7 +254,7 @@ router.post('/userpoints', async (req, res) => {
                     await db.ShopAccountInfo.increment(
                         shopAcctInfoOptions, {
                             where: {
-                                ShopID: operateShopID
+                                ShopId: operateShopId
                             }
                         }, {
                             transaction: transaction
@@ -262,12 +262,12 @@ router.post('/userpoints', async (req, res) => {
                     );
                     logger.info("ShopAccountInfo increment");
                     await db.CustomerAccountChange.create({
-                        CustomerID: customerInfo.CustomerID,
+                        CustomerId: customerInfo.CustomerId,
                         ChargedPoints: recharged,
                         CustomedPoints: cost,
                         ShopBounusPoints: bounus,
                         Date: date,
-                        ShopID:operateShopID,
+                        ShopId:operateShopId,
                         TransactionSeq:transactionInstance.TransactionSeq
                     }, {
                         transaction: transaction
@@ -276,10 +276,10 @@ router.post('/userpoints', async (req, res) => {
                     logger.info("customerInfo CustomerAccountChange create");
                     if (recommendCustomerInfo && recommendPoints > 0) {
                         await db.CustomerAccountChange.create({
-                            CustomerID: recommendCustomerInfo.CustomerID,
+                            CustomerId: recommendCustomerInfo.CustomerId,
                             RecommendPoints:recommendPoints,
                             Date: date,
-                            ShopID:operateShopID,
+                            ShopId:operateShopId,
                             TransactionSeq:transactionInstance.TransactionSeq
                     }, {
                             transaction: transaction
@@ -289,9 +289,9 @@ router.post('/userpoints', async (req, res) => {
                     }
                     if (indirectRecommendCustomerInfo && indirectRecommendPoints > 0) {
                         await db.CustomerAccountChange.create({
-                            CustomerID: indirectRecommendCustomerInfo.CustomerID,
+                            CustomerId: indirectRecommendCustomerInfo.CustomerId,
                             IndirectRecommendPoints:indirectRecommendPoints,
-                            ShopID:operateShopID,
+                            ShopId:operateShopId,
                             Date: date,
                             TransactionSeq:transactionInstance.TransactionSeq
                     }, {
@@ -307,7 +307,7 @@ router.post('/userpoints', async (req, res) => {
                         ShopBounusPoints: bounus,
                         RecommendPoints:shopAcctChangeRecommendPointAmount,
                         Date: date,
-                        ShopID:operateShopID,
+                        ShopId:operateShopId,
                         TransactionSeq:transactionInstance.TransactionSeq
                     }, {
                         transaction: transaction
@@ -315,7 +315,7 @@ router.post('/userpoints', async (req, res) => {
 
                     return db.CustomerAccountInfo.findOne({
                         where:{
-                            CustomerID:customerInfo.CustomerID
+                            CustomerId:customerInfo.CustomerId
                         },include:{
                             model:db.CustomerInfo,
                             require:true

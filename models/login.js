@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
     var Login = sequelize.define('Login', {
-        ID: {
+        Id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,

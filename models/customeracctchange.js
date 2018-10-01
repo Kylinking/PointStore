@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
     models.CustomerAccountChange.belongsTo(models.ShopInfo, {
       onDelete: "CASCADE",
       foreignKey: {
-        name: 'ShopID',
+        name: 'ShopId',
         allowNull: false
       }
     });
@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
     models.CustomerAccountChange.belongsTo(models.CustomerInfo, {
       onDelete: "CASCADE",
       foreignKey: {
-        name: 'CustomerID',
+        name: 'CustomerId',
         allowNull: false
       }
     });

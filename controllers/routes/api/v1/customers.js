@@ -8,14 +8,14 @@ router.get('/customers', async (req, res) => {
     let customerInfo = res.locals.db.CustomerInfo;
     let shopInfo = res.locals.db.ShopInfo;
     let logger = res.locals.logger;
-    let operateShopID = res.locals.shopid;
-    let queryShopID = util.makeNumericValue(req.query.ShopId, null);
+    let operateShopId = res.locals.shopid;
+    let queryShopId = util.makeNumericValue(req.query.ShopId, null);
     let phone = isNaN(util.checkPhone(req.query.Phone)) ? null : req.query.Phone;
     let page = util.makeNumericValue(req.query.Page, 1);
     let pageSize = util.makeNumericValue(req.query.Size, 20);
     let name = req.query.Name || null;
     let offset = (page - 1) * pageSize;
-    let recommendID = util.makeNumericValue(req.query.RecommendCustomerId,null);
+    let recommendId = util.makeNumericValue(req.query.RecommendCustomerId,null);
     let whereObj = {};
     if (phone != null) whereObj.Phone = {
         [Op.like]: `%${phone}%`
@@ -23,23 +23,23 @@ router.get('/customers', async (req, res) => {
     if (name != null) whereObj.Name = {
         [Op.like]: `%${name}%`
     };
-    if (recommendID != null) {
-        whereObj.RecommendCustomerID = recommendID;
+    if (recommendId != null) {
+        whereObj.RecommendCustomerId = recommendId;
     };
-    let role = await util.getRoleAsync(operateShopID);
-    logger.info(`role:${role},queryShopID${queryShopID}`);
+    let role = await util.getRoleAsync(operateShopId);
+    logger.info(`role:${role},queryShopId${queryShopId}`);
     let instance = undefined;
     try {
         if (role == 'superman') {
-            if (queryShopID != null && queryShopID != operateShopID) {
-                if (await util.isAdminShopAsync(queryShopID)) {
+            if (queryShopId != null && queryShopId != operateShopId) {
+                if (await util.isAdminShopAsync(queryShopId)) {
                     //取总店下所有分店的客户信息
                     instance = await customerInfo.findAndCountAll({
                         where: whereObj,
                         include: [{
                             model: shopInfo,
                             where: {
-                                ParentShopID: queryShopID
+                                ParentShopId: queryShopId
                             }
                         }, {
                             model: customerInfo,
@@ -51,7 +51,7 @@ router.get('/customers', async (req, res) => {
                     });
                 } else {
                     //取分店下的所有客户信息
-                    whereObj.ShopID = queryShopID;
+                    whereObj.ShopId = queryShopId;
                     instance = await customerInfo.findAndCountAll({
                         where: whereObj,
                         include: [{
@@ -83,8 +83,8 @@ router.get('/customers', async (req, res) => {
                 })
             }
         } else if (role == 'admin') {
-            if (queryShopID != null) {
-                if (await util.isSupermanAsync(queryShopID)) {
+            if (queryShopId != null) {
+                if (await util.isSupermanAsync(queryShopId)) {
                     // 报错
                     res.json({
                         Error: {
@@ -92,8 +92,8 @@ router.get('/customers', async (req, res) => {
                         }
                     }).end();
                     return;
-                } else if (await util.isAdminShopAsync(queryShopID)) {
-                    if (queryShopID != operateShopID) {
+                } else if (await util.isAdminShopAsync(queryShopId)) {
+                    if (queryShopId != operateShopId) {
                         //报错
                         res.json({
                             Error: {
@@ -107,7 +107,7 @@ router.get('/customers', async (req, res) => {
                             include: [{
                                 model: shopInfo,
                                 where: {
-                                    ParentShopID: operateShopID
+                                    ParentShopId: operateShopId
                                 }
                             }, {
                                 model: customerInfo,
@@ -121,10 +121,10 @@ router.get('/customers', async (req, res) => {
                 } else {
                     let shop = await shopInfo.findOne({
                         where: {
-                            ShopID: queryShopID
+                            ShopId: queryShopId
                         }
                     });
-                    if (shop.ParentShopID != operateShopID) {
+                    if (shop.ParentShopId != operateShopId) {
                         res.json({
                             Error: {
                                 Message: "无权限取其它总店客户信息"
@@ -132,7 +132,7 @@ router.get('/customers', async (req, res) => {
                         }).end();
                         return;
                     } else {
-                        whereObj.ShopID = queryShopID;
+                        whereObj.ShopId = queryShopId;
                         instance = await customerInfo.findAndCountAll({
                             where: whereObj,
                             include: [{
@@ -155,7 +155,7 @@ router.get('/customers', async (req, res) => {
                     include: [{
                         model: shopInfo,
                         where: {
-                            ParentShopID: operateShopID
+                            ParentShopId: operateShopId
                         }
                     }, {
                         model: customerInfo,
@@ -167,7 +167,7 @@ router.get('/customers', async (req, res) => {
                 });
             }
         } else {
-            if (queryShopID != null && queryShopID != operateShopID) {
+            if (queryShopId != null && queryShopId != operateShopId) {
                 // 报错
                 res.json({
                     Error: {
@@ -177,7 +177,7 @@ router.get('/customers', async (req, res) => {
                 return;
             } else {
                 //取该分店客户信息
-                whereObj.ShopID = operateShopID;
+                whereObj.ShopId = operateShopId;
                 instance = await customerInfo.findAndCountAll({
                     where: whereObj,
                     include: [{
@@ -223,10 +223,10 @@ router.post('/customers', async (req, res) => {
     let address = req.body.Address || null;
     let sex = req.body.Sex || null;
     let age = util.makeNumericValue(req.body.Age, null);
-    let operateShopID = res.locals.shopid;
-    let shopID = util.makeNumericValue(req.body.ShopId, null);
-    let recommendCustomerID = util.makeNumericValue(req.body.RecommendCustomerId, null);
-    logger.info(`phone:${phone},status:${status},name:${name},sex:${sex},age:${age},recommend:${recommendCustomerID}`);
+    let operateShopId = res.locals.shopid;
+    let shopId = util.makeNumericValue(req.body.ShopId, null);
+    let recommendCustomerId = util.makeNumericValue(req.body.RecommendCustomerId, null);
+    logger.info(`phone:${phone},status:${status},name:${name},sex:${sex},age:${age},recommend:${recommendCustomerId}`);
     [phone, sex].forEach(elem => {
         if (elem == null) {
             res.json({
@@ -238,7 +238,7 @@ router.post('/customers', async (req, res) => {
         }
     });
 
-    let role = await util.getRoleAsync(operateShopID);
+    let role = await util.getRoleAsync(operateShopId);
     let createCondition = {
         Name: name,
         Address: address,
@@ -255,22 +255,22 @@ router.post('/customers', async (req, res) => {
         }).end();
         return;
     } else if (role == 'superman') {
-        if (shopID == null || await util.isAdminShopAsync(shopID)) {
+        if (shopId == null || await util.isAdminShopAsync(shopId)) {
             res.json({
                 Error: {
-                    Message: "需要客户归属分店ID"
+                    Message: "需要客户归属分店Id"
                 }
             }).end();
             return;
         }
-        if (!await util.isBelongsToByIDAsync(recommendCustomerID, shopID)) {
-            createCondition.RecommendCustomerID = null;
+        if (!await util.isBelongsToByIdAsync(recommendCustomerId, shopId)) {
+            createCondition.RecommendCustomerId = null;
         } else {
-            createCondition.RecommendCustomerID = recommendCustomerID;
+            createCondition.RecommendCustomerId = recommendCustomerId;
         }
-        createCondition.ShopID = shopID;
+        createCondition.ShopId = shopId;
     } else {
-        if (shopID !== null && shopID != operateShopID) {
+        if (shopId !== null && shopId != operateShopId) {
             res.json({
                 Error: {
                     Message: "无权创建其它店面客户信息"
@@ -278,12 +278,12 @@ router.post('/customers', async (req, res) => {
             }).end();
             return;
         }
-        if (!await util.isBelongsToByIDAsync(recommendCustomerID, operateShopID)) {
-            createCondition.RecommendCustomerID = null;
+        if (!await util.isBelongsToByIdAsync(recommendCustomerId, operateShopId)) {
+            createCondition.RecommendCustomerId = null;
         } else {
-            createCondition.RecommendCustomerID = recommendCustomerID;
+            createCondition.RecommendCustomerId = recommendCustomerId;
         }
-        createCondition.ShopID = operateShopID;
+        createCondition.ShopId = operateShopId;
     }
 
     res.locals.db.sequelize.transaction(transaction => {
@@ -296,7 +296,7 @@ router.post('/customers', async (req, res) => {
                 }).end();
                 //logger.info(row);
                 return res.locals.db.CustomerAccountInfo.create({
-                    CustomerID: row.CustomerID,
+                    CustomerId: row.CustomerId,
                     ShopBounusPoints: 0,
                     ChargedPoints: 0,
                     RecommendPoints: 0,
@@ -324,9 +324,9 @@ router.post('/customers', async (req, res) => {
 router.delete('/customers', async (req, res) => {
     let customerInfo = res.locals.db.CustomerInfo;
     let logger = res.locals.logger;
-    let operateShopID = res.locals.shopid;
+    let operateShopId = res.locals.shopid;
     let phone = isNaN(util.checkPhone(req.body.Phone)) ? null : req.body.Phone;
-    let role = await util.getRoleAsync(operateShopID);
+    let role = await util.getRoleAsync(operateShopId);
     if (role == 'admin') {
         res.json({
             Error: {
@@ -358,7 +358,7 @@ router.delete('/customers', async (req, res) => {
             return;
         }
         if (role != 'superman') {
-            if (instance.ShopID != operateShopID) {
+            if (instance.ShopId != operateShopId) {
                 res.json({
                     Error: {
                         Message: "无权注销别家分店客户"
@@ -403,17 +403,17 @@ router.delete('/customers', async (req, res) => {
 router.patch('/customers', async (req, res) => {
     let customerInfo = res.locals.db.CustomerInfo;
     let logger = res.locals.logger;
-    let operateShopID = res.locals.shopid;
+    let operateShopId = res.locals.shopid;
     let phone = isNaN(util.checkPhone(req.body.Phone)) ? null : req.body.Phone;
     let status = util.makeNumericValue(req.body.Status, null);
     let name = req.body.Name || null;
     let address = req.body.Address || null;
     let sex = req.body.Sex || null;
     let age = util.makeNumericValue(req.body.Age, null);
-    let shopID = util.makeNumericValue(req.body.ShopId, null);
-    let customerID = util.makeNumericValue(req.body.customerid, null);
-    let role = await util.getRoleAsync(operateShopID);
-    let recommendCustomerID = util.makeNumericValue(req.body.RecommendCustomerId, null);
+    let shopId = util.makeNumericValue(req.body.ShopId, null);
+    let customerId = util.makeNumericValue(req.body.customerid, null);
+    let role = await util.getRoleAsync(operateShopId);
+    let recommendCustomerId = util.makeNumericValue(req.body.RecommendCustomerId, null);
     if (role == 'admin') {
         logger.info(`总店无权修改客户信息`)
         res.json({
@@ -423,17 +423,17 @@ router.patch('/customers', async (req, res) => {
         }).end();
         return;
     }
-    if (customerID == null && phone == null) {
+    if (customerId == null && phone == null) {
         res.json({
             Error: {
-                Message: "Phone和CustomerID不能同时为空"
+                Message: "Phone和CustomerId不能同时为空"
             }
         }).end();
         return;
     }
     let whereObj = {};
-    if (customerID != null){
-        whereObj.CustomerID = customerID;
+    if (customerId != null){
+        whereObj.CustomerId = customerId;
     }else{
         whereObj.Phone = phone;
     }
@@ -442,7 +442,7 @@ router.patch('/customers', async (req, res) => {
     });
     if (instance) {
         if (role != 'superman') {
-            if (instance.ShopID != operateShopID) {
+            if (instance.ShopId != operateShopId) {
                 res.json({
                     Error: {
                         Message: "无权修改别家分店客户信息"
@@ -450,7 +450,7 @@ router.patch('/customers', async (req, res) => {
                 }).end();
                 return;
             }
-            if (shopID != null) {
+            if (shopId != null) {
                 res.json({
                     Error: {
                         Message: "无权修改客户归属信息"
@@ -459,8 +459,8 @@ router.patch('/customers', async (req, res) => {
                 return;
             }
         } else {
-            if (shopID != null) {
-                if (await util.getRoleAsync(shopID) != "normal"){
+            if (shopId != null) {
+                if (await util.getRoleAsync(shopId) != "normal"){
                     res.json({
                         Error:{
                             Message:"客户归属只能修改为分店"
@@ -468,13 +468,13 @@ router.patch('/customers', async (req, res) => {
                     });
                     return ;
                 }
-                instance.set('ShopID', shopID);
+                instance.set('ShopId', shopId);
             }
         }
-        if (customerID != null && phone != null){
+        if (customerId != null && phone != null){
             instance.set("Phone",phone);
         }
-        if (recommendCustomerID != null) instance.set('RecommendCustomerID', recommendCustomerID);
+        if (recommendCustomerId != null) instance.set('RecommendCustomerId', recommendCustomerId);
         if (status != null) instance.set('Status', status);
         if (address != null) instance.set('Address', address);
         if (name != null) instance.set('Name', name);

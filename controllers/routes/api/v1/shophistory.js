@@ -7,8 +7,8 @@ const Op = require('sequelize').Op;
 
 router.get('/shophistory', async (req, res) => {
     let logger = res.locals.logger;
-    let operateShopID = res.locals.shopid;
-    let queryShopID = util.makeNumericValue(req.query.ShopId,null);
+    let operateShopId = res.locals.shopid;
+    let queryShopId = util.makeNumericValue(req.query.ShopId,null);
     let page = util.makeNumericValue(req.query.Page,1);
     let pageSize = util.makeNumericValue(req.query.Size,20);
     let offset = (page - 1) * pageSize;
@@ -17,7 +17,7 @@ router.get('/shophistory', async (req, res) => {
     let endDate = req.query.end || null;
     let db = res.locals.db;
     const duration = moment.duration(30, "days");
-    logger.info(`startDate:${startDate},endDate:${endDate},queryShopID:${queryShopID}`);
+    logger.info(`startDate:${startDate},endDate:${endDate},queryShopId:${queryShopId}`);
     endDate = Date.parse(moment(endDate).format("MM DD YYYY"));
     startDate = Date.parse(moment(startDate).format("MM DD YYYY"));
     if (isNaN(endDate) && isNaN(startDate)) {
@@ -40,10 +40,10 @@ router.get('/shophistory', async (req, res) => {
         }
     };
     let include = [];
-    let role = await util.getRoleAsync(operateShopID);
+    let role = await util.getRoleAsync(operateShopId);
     logger.info(role);
     if (role == 'normal') {
-        if (queryShopID != null && queryShopID != operateShopID) {
+        if (queryShopId != null && queryShopId != operateShopId) {
             res.json({
                 Error: {
                     Message: "无权查询其它店面明细"
@@ -51,9 +51,9 @@ router.get('/shophistory', async (req, res) => {
             }).end();
             return;
         }
-        whereObj.ShopID = operateShopID;
+        whereObj.ShopId = operateShopId;
     } else if (role == "admin") {
-        if (queryShopID != null && !await util.isSubordinateAsync(operateShopID, queryShopID)) {
+        if (queryShopId != null && !await util.isSubordinateAsync(operateShopId, queryShopId)) {
             res.json({
                 Error: {
                     Message: "无权查询其它总店下店面明细"
@@ -61,27 +61,27 @@ router.get('/shophistory', async (req, res) => {
             }).end();
             return;
         }
-        if (queryShopID == null) {
+        if (queryShopId == null) {
             include.push({
                 model: db.ShopInfo,
                 where: {
-                    ParentShopID: operateShopID
+                    ParentShopId: operateShopId
                 }
             })
         }
-        if (queryShopID != null) {
-            whereObj.ShopID = queryShopID;
+        if (queryShopId != null) {
+            whereObj.ShopId = queryShopId;
         }
     } else if (role == 'superman') {
-        if (await util.isAdminShopAsync(queryShopID)) {
+        if (await util.isAdminShopAsync(queryShopId)) {
             include.push({
                 model: db.ShopInfo,
                 where: {
-                    ParentShopID: queryShopID
+                    ParentShopId: queryShopId
                 }
             })
-        } else if (queryShopID != operateShopID && queryShopID != null) {
-            whereObj.ShopID = queryShopID;
+        } else if (queryShopId != operateShopId && queryShopId != null) {
+            whereObj.ShopId = queryShopId;
         }
     }
     logger.info(whereObj);

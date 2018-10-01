@@ -1,12 +1,12 @@
 var db = require('../models').db;
 
 var util = {
-     isAdminShopAsync: async function (shopID) {
-        if (isNaN(shopID)) return false;
+     isAdminShopAsync: async function (shopId) {
+        if (isNaN(shopId)) return false;
         var shopInfo = db.ShopInfo;
         var instance = await shopInfo.findOne({
             where: {
-                ShopID: shopID
+                ShopId: shopId
             }
         });
         if (instance) {
@@ -15,12 +15,12 @@ var util = {
         }
         return false;
     },
-    isSupermanAsync: async function (shopID) {
-        if (isNaN(shopID)) return false;
+    isSupermanAsync: async function (shopId) {
+        if (isNaN(shopId)) return false;
         var shopInfo = db.ShopInfo;
         var instance = await shopInfo.findOne({
             where: {
-                ShopID: shopID
+                ShopId: shopId
             }
         });
         if (instance) {
@@ -36,54 +36,54 @@ var util = {
         }
         return string;
     },
-    isSubordinateAsync:async function(parentShopID,childShopID){
-        if (!parentShopID || !childShopID){
+    isSubordinateAsync:async function(parentShopId,childShopId){
+        if (!parentShopId || !childShopId){
             return false;
         }
-        if (isNaN(parentShopID) || isNaN(childShopID)) return false;
-        if (parentShopID == childShopID) return true;
+        if (isNaN(parentShopId) || isNaN(childShopId)) return false;
+        if (parentShopId == childShopId) return true;
         var instance = await db.ShopInfo.findOne({
             where:{
-                ShopID:childShopID
+                ShopId:childShopId
             }
         });
         if (!instance) return false;
-        if (instance.ParentShopID == parentShopID){
+        if (instance.ParentShopId == parentShopId){
             return true;
         }
         return false;
     },
-    isBelongsToByPhoneAsync:async function(customerPhone,shopID){
-        if (!customerPhone || !shopID) return false;
-        if (await this.isSupermanAsync(shopID)) return true;
+    isBelongsToByPhoneAsync:async function(customerPhone,shopId){
+        if (!customerPhone || !shopId) return false;
+        if (await this.isSupermanAsync(shopId)) return true;
         var instance = await db.CustomerInfo.findOne({
             where:{
                 Phone:customerPhone
             }
         });
         if (!instance) return false;
-        if (instance.ShopID == shopID) return true;
-        if (await this.isSubordinateAsync(shopID,instance.ShopID)) return true;
+        if (instance.ShopId == shopId) return true;
+        if (await this.isSubordinateAsync(shopId,instance.ShopId)) return true;
         return false;
     },
-    isBelongsToByIDAsync:async function(customerID,shopID){
-        if (!customerID || !shopID) return false;
-        if (await this.isSupermanAsync(shopID)) return true;
+    isBelongsToByIdAsync:async function(customerId,shopId){
+        if (!customerId || !shopId) return false;
+        if (await this.isSupermanAsync(shopId)) return true;
         var instance = await db.CustomerInfo.findOne({
             where:{
-                CustomerID:customerID
+                CustomerId:customerId
             }
         });
         if (!instance) return false;
-        if (instance.ShopID == shopID) return true;
-        if (await this.isSubordinateAsync(shopID,instance.ShopID)) return true;
+        if (instance.ShopId == shopId) return true;
+        if (await this.isSubordinateAsync(shopId,instance.ShopId)) return true;
         return false;
     },
-    getRoleAsync: async function (shopID){
-        if (!shopID)return undefined;
+    getRoleAsync: async function (shopId){
+        if (!shopId)return undefined;
         var instance = await db.ShopInfo.findOne({
             where:{
-                ShopID:shopID
+                ShopId:shopId
             }
         });
         if (!instance)return undefined;

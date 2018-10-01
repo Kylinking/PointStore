@@ -10,7 +10,7 @@ before(async ()=>{
    await db.sequelize.sync({force:true});
    await require('./fakedata.js')(db);
 });
-describe('Login with correct ShopID & Password', () => {
+describe('Login with correct ShopId & Password', () => {
     it('it should get token', (done) => {
         let info = {
             ShopId: 1,
@@ -30,7 +30,7 @@ describe('Login with correct ShopID & Password', () => {
             });
     });
 });
-describe('Login with correct ShopID & Password', () => {
+describe('Login with correct ShopId & Password', () => {
     it('it should get token', (done) => {
         let info = {
             ShopId: 124,
@@ -50,7 +50,7 @@ describe('Login with correct ShopID & Password', () => {
             });
     });
 });
-describe('Login with correct ShopID & Password', () => {
+describe('Login with correct ShopId & Password', () => {
     it('it should get token', (done) => {
         let info = {
             ShopId: 11,
@@ -71,7 +71,7 @@ describe('Login with correct ShopID & Password', () => {
     });
 });
 
-describe('Login with correct ShopID & Password', () => {
+describe('Login with correct ShopId & Password', () => {
     it('it should get token', (done) => {
         let info = {
             ShopId: 123,
@@ -91,7 +91,7 @@ describe('Login with correct ShopID & Password', () => {
             });
     });
 });
-describe('Login with correct ShopID & Password', () => {
+describe('Login with correct ShopId & Password', () => {
     it('it should get token', (done) => {
         let info = {
             ShopId: 12,
@@ -111,7 +111,7 @@ describe('Login with correct ShopID & Password', () => {
             });
     });
 });
-describe('Login with correct ShopID & fake Password', () => {
+describe('Login with correct ShopId & fake Password', () => {
     it('it should return error', (done) => {
         let info = {
             ShopId: 123,
@@ -131,7 +131,7 @@ describe('Login with correct ShopID & fake Password', () => {
             });
     })
 });
-describe('Login with fake ShopID & fake Password', () => {
+describe('Login with fake ShopId & fake Password', () => {
     it('it should return error', (done) => {
         let info = {
             ShopId: 1000,

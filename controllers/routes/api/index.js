@@ -55,7 +55,7 @@ router.use('/' + version,
             logger.info(res.locals.shopid);
             var operatedShop = await res.locals.db.ShopInfo.findOne({
                 where: {
-                  ShopID: res.locals.shopid
+                  ShopId: res.locals.shopid
                 }
             });
             if (operatedShop){
@@ -111,27 +111,27 @@ router.use('/' + version,
 router.use('/' + version,
 (req,res,next)=>{
     var logger = res.locals.logger;
-    var queryShopID,phone,queryType,page,pageSize,age;
+    var queryShopId,phone,queryType,page,pageSize,age;
     logger.info(req.method);
     if (req.method == 'GET'){
-        queryShopID = req.query.ShopId || null;
+        queryShopId = req.query.ShopId || null;
         phone = req.query.Phone|| null;
         queryType = req.query.Type|| null;
         page = req.query.Page|| null;
         pageSize = req.query.Size|| null;
         age = req.query.Age|| null;
     }else{
-        queryShopID = req.body.ShopId|| null;
+        queryShopId = req.body.ShopId|| null;
         phone = req.body.Phone|| null;
         queryType = req.body.Type|| null;
         page = req.body.Page|| null;
         pageSize = req.body.Size|| null;
         age = req.body.Age|| null;
     }
-    logger.info(`queryShopID:${queryShopID},phone:${phone},queryType:${queryType}`);
-    if (queryShopID!=null && isNaN(util.checkInt(queryShopID))){
-        logger.info(`queryShopID 不能转换为Number`);
-        res.json({Error:{Message:`queryShopID:${queryShopID}不能转换为Number`}}).end();
+    logger.info(`queryShopId:${queryShopId},phone:${phone},queryType:${queryType}`);
+    if (queryShopId!=null && isNaN(util.checkInt(queryShopId))){
+        logger.info(`queryShopId 不能转换为Number`);
+        res.json({Error:{Message:`queryShopId:${queryShopId}不能转换为Number`}}).end();
         return;
     }
     if (queryType!=null && isNaN(util.checkInt(queryType))){

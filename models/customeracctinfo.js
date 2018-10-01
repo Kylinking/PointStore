@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         models.CustomerAccountInfo.belongsTo(models.CustomerInfo, {
             onDelete: "CASCADE",
             foreignKey: {
-                name: 'CustomerID',
+                name: 'CustomerId',
                 allowNull: false
             }
         });
