@@ -29,7 +29,7 @@ app.all('*', function (req, res, next) {
     // 支持跨域请求
     res.append('Access-Control-Allow-Origin', '*');
     res.append("Access-Control-Allow-Methods",'POST,GET,UPDATE,PATCH,DELETE');
-    res.append('Access-Control-Allow-Headers','*');
+    res.append('Access-Control-Allow-Headers','Content-Type, TOKEN');
     res.append('Access-Control-Max-Age','86400');
     res.locals.logger = logger;
     res.locals.db = db;
