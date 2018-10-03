@@ -1,5 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
   var ShopAccountChange = sequelize.define('ShopAccountChange', {
+    Id:{
+      type:DataTypes.INTEGER,
+      primaryKey:true,
+      autoIncrement: true
+  },
     ChargedPoints: {
       type: DataTypes.INTEGER,
       allowNull: true,

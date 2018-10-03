@@ -1,6 +1,11 @@
 'use strict';
 module.exports = (sequelize, DataTypes)=>{
     let BounusPointRate =  sequelize.define('BounusPointRate',{
+        Id:{
+            type:DataTypes.INTEGER,
+            primaryKey:true,
+            autoIncrement: true
+        },
         RecommendRate:{
             type:DataTypes.FLOAT,
             allowNull:false,
