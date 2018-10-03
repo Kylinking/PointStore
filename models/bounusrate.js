@@ -3,18 +3,18 @@ module.exports = (sequelize, DataTypes)=>{
     let BounusPointRate =  sequelize.define('BounusPointRate',{
         RecommendRate:{
             type:DataTypes.FLOAT,
-            allowNull:true,
+            allowNull:false,
         },
         IndirectRecommendRate:{
             type:DataTypes.FLOAT,
-            allowNull:true,
+            allowNull:false,
         },
         ShopBounusPointRate:{
             type:DataTypes.FLOAT,
-            allowNull:true,
+            allowNull:false,
         },
         Level:{
-            type:DataTypes.FLOAT,
+            type:DataTypes.INTEGER,
             allowNull:true,
         }
     },{

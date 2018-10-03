@@ -190,16 +190,7 @@ router.post('/userpoints', async (req, res) => {
                         ShopBounusPoints: bounus
                     };
                     let shopAcctChangeRecommendPointAmount = 0;
-                    let bounusRate = await db.BounusPointRate.findOne({
-                        where:{
-                            ShopId:customerInfo.ShopId
-                        }
-                    },{
-                        transaction: transaction
-                    });
-                    recommendPoints = recharged * bounusRate.RecommendRate;
-                    indirectRecommendPoints = recharged * bounusRate.IndirectRecommendRate;
-                    bounus = recharged * bounusRate.ShopBounusPointRate;
+
                     let shopInfo = await db.ShopInfo.findOne({
                         where:{
                             ShopId : customerInfo.ShopId
@@ -207,6 +198,44 @@ router.post('/userpoints', async (req, res) => {
                     },{
                         transaction: transaction
                     });
+
+                    let bounusRate = await db.BounusPointRate.findOne({
+                        where:{
+                            ShopId:customerInfo.ShopId
+                        }
+                    },{
+                        transaction: transaction
+                    });
+                    logger.info(`bounusRate.Level:${bounusRate.Level}`);
+                    switch (bounusRate.Level) {
+                        case 0:
+                            bounusRate = await db.BounusPointRate.findOne({
+                                where:{
+                                    ShopId: 1
+                                }
+                            },{
+                                transaction: transaction
+                            });
+                            break;
+                        case 1:
+                            bounusRate = await db.BounusPointRate.findOne({
+                                where:{
+                                    ShopId: shopInfo.ParentShopId
+                                }
+                            },{
+                                transaction: transaction
+                        });
+                            break;
+                        default:
+                            
+                            break;
+                    }
+                    logger.info(`bounusRate: RecommendRate:${bounusRate.RecommendRate},Indirect:${bounusRate.IndirectRecommendRate},ShopBounus:${bounusRate.ShopBounusPointRate}`);
+                    recommendPoints = recharged * bounusRate.RecommendRate;
+                    indirectRecommendPoints = recharged * bounusRate.IndirectRecommendRate;
+                    bounus = recharged * bounusRate.ShopBounusPointRate;
+                    
+                    
                     let custAcctInfo = await db.CustomerAccountInfo.findOne(
                         {
                             where: {
