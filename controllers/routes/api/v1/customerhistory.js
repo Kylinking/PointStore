@@ -8,17 +8,21 @@ const Op = require('sequelize').Op;
 router.get('/customerhistory', async (req, res) => {
     let logger = res.locals.logger;
     let operateShopId = res.locals.shopid;
-    let phone = isNaN(util.checkPhone(req.query.Phone))?null:req.query.Phone
-    let page = util.makeNumericValue(req.query.Page,1);
-    let pageSize = util.makeNumericValue(req.query.Size,20);
+    let phone = isNaN(util.checkPhone(req.query.Phone)) ? null : req.query.Phone
+    let page = util.makeNumericValue(req.query.Page, 1);
+    let pageSize = util.makeNumericValue(req.query.Size, 20);
     let offset = (page - 1) * pageSize;
     let type = req.query.Type || null;
     let startDate = req.query.Start || null;
     let endDate = req.query.end || null;
     let db = res.locals.db;
     const duration = moment.duration(30, "days");
-    if (phone == null){
-        res.json({Error:{Message:"客户手机号码不能为空"}}).end()
+    if (phone == null) {
+        res.json({
+            Error: {
+                Message: "客户手机号码不能为空"
+            }
+        }).end()
         return;
     }
     logger.info(`startDate:${startDate},endDate:${endDate},phone:${phone}`);
@@ -44,18 +48,18 @@ router.get('/customerhistory', async (req, res) => {
         }
     };
     let customer = await db.CustomerInfo.findOne({
-        where:{
-            Phone:phone
+        where: {
+            Phone: phone
         }
     });
-    if (!customer){
+    if (!customer) {
         res.json({
-            Data:{}
+            Data: {}
         }).end()
         return;
     }
 
-    
+
     let role = await util.getRoleAsync(operateShopId);
     logger.info(role);
     if (role == 'normal') {
@@ -68,7 +72,7 @@ router.get('/customerhistory', async (req, res) => {
             return;
         }
     } else if (role == "admin") {
-        if (!await util.isSubordinateAsync(operateShopId,customer.ShopId)) {
+        if (!await util.isSubordinateAsync(operateShopId, customer.ShopId)) {
             res.json({
                 Error: {
                     Message: "无权限查询其它总店下客户明细"
@@ -78,16 +82,16 @@ router.get('/customerhistory', async (req, res) => {
         }
         whereObj.CustomerId = customer.CustomerId;
         whereObj.ShopId = customer.ShopId;
-    } 
+    }
     whereObj.CustomerId = customer.CustomerId;
     //whereObj.ShopId = customer.ShopId;
     logger.info(whereObj);
     let include = [{
-        model:db.ShopInfo,
-        where:{}
-    },{
-        model:db.CustomerInfo,
-        where:{}
+        model: db.ShopInfo,
+        where: {}
+    }, {
+        model: db.CustomerInfo,
+        where: {}
     }];
     let instance = await db.CustomerAccountChange.findAndCountAll({
         where: whereObj,
@@ -106,9 +110,11 @@ router.get('/customerhistory', async (req, res) => {
         res.json({
             Data: data,
             Meta: {
-                Pages: pages,
-                Size: pageSize,
-                TotalRows: instance.count
+                PageSize: pageSize,
+                TotalPages: pages,
+                CurrentRows: instance.rows.length,
+                TotalRows: instance.count,
+                CurrentPage: page
             }
         }).end();
     } else {

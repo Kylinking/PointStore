@@ -103,9 +103,11 @@ router.get('/shophistory', async (req, res) => {
         res.json({
             Data: data,
             Meta:{
-                Pages: pages,
-                Size: pageSize,
-                TotalRows:instance.count
+                PageSize:pageSize,
+                    TotalPages: pages,
+                    CurrentRows: instance.rows.length,
+                    TotalRows:instance.count,
+                    CurrentPage:page
             }
         }).end();
     } else {

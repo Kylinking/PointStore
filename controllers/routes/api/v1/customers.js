@@ -210,10 +210,15 @@ router.get('/customers', async (req, res) => {
     instance.rows.forEach(row => {
         json.Data.push(row);
     });
-    json.Meta["Pages"] = Math.ceil(pages);
-    json.Meta["Size"] = pageSize;
+    // PageSize: pageSize,
+    //     TotalPages: pages,
+    //     CurrentRows: instance.rows.length,
+    //     TotalRows: instance.count,
+    //     CurrentPage: page
+    json.Meta["TotalPages"] = pages;
+    json.Meta["CurrentRows"] = instance.rows.length;
     json.Meta["TotalRows"] = instance.count;
-
+    json.Meta["CurrentPage"] = page;
     res.json(json).end();
 });
 

@@ -43,15 +43,15 @@ router.get('/shops', async (req, res, next) => {
             where: whereObj
         });
         let pages = Math.ceil( rows / pageSize);
-        if (page > pages) {
-            logger.warn("查询分页溢出");
-            json.Meta["Pages"] = Math.ceil(pages);
-            json.Meta["Size"] = pageSize;
-            json.Meta["TotalRows"] = rows;
-            json["Message"] = "查询分页溢出";
-            res.json(json).end();
-          //  return;
-        }
+        // if (page > pages) {
+        //     logger.warn("查询分页溢出");
+        //     json.Meta["Pages"] = Math.ceil(pages);
+        //     json.Meta["Size"] = pageSize;
+        //     json.Meta["TotalRows"] = rows;
+        //     json["Message"] = "查询分页溢出";
+        //     res.json(json).end();
+        //   //  return;
+        // }
         shopInfo.findAll({
                 where: whereObj,
                 limit: pageSize,
@@ -61,9 +61,10 @@ router.get('/shops', async (req, res, next) => {
                 results.forEach(result => {
                     json.Data.push(result);
                 });
-                json.Meta["Pages"] = Math.ceil(pages);
-                json.Meta["Size"] = pageSize;
+                json.Meta["TotalPages"] = pages;
+                json.Meta["CurrentRows"] = results.length;
                 json.Meta["TotalRows"] = rows;
+                json.Meta["CurrentPage"] = page;
                 res.json(json).end();
             })
     } else if (roleOfOperatedShopId == 'admin') {
@@ -78,15 +79,15 @@ router.get('/shops', async (req, res, next) => {
             let offset = (page - 1) * pageSize;
             let rows = await shopInfo.count();
             let pages = Math.ceil(rows / pageSize);
-            if (page > pages) {
-                logger.warn("查询分页溢出");
-                json.Meta["Pages"] = Math.ceil(pages);
-                json.Meta["Size"] = pageSize;
-                json.Meta["TotalRows"] = instance.count;
-                json["Message"] = "查询分页溢出";
-                res.json(json).end();
-             //   return;
-            }
+            // if (page > pages) {
+            //     logger.warn("查询分页溢出");
+            //     json.Meta["Pages"] = Math.ceil(pages);
+            //     json.Meta["Size"] = pageSize;
+            //     json.Meta["TotalRows"] = instance.count;
+            //     json["Message"] = "查询分页溢出";
+            //     res.json(json).end();
+            //  //   return;
+            // }
             shopInfo.findAll({
                     where: {
                         ParentShopId: operateShopId
@@ -98,9 +99,10 @@ router.get('/shops', async (req, res, next) => {
                     results.forEach(result => {
                         json.Data.push(result);
                     });
-                    json.Meta["Pages"] = Math.ceil(pages);
-                    json.Meta["Size"] = pageSize;
-                    json.Meta["TotalRows"] = rows;
+                    json.Meta["TotalPages"] = pages;
+    json.Meta["CurrentRows"] = results.length;
+    json.Meta["TotalRows"] = rows;
+    json.Meta["CurrentPage"] = page;
                     res.json(json).end();
                 })
         } else if (queryShopId !=null){ 

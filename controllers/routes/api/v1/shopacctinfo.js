@@ -98,9 +98,11 @@ router.get('/shoppoints', async (req, res) => {
             res.json({
                 Data: data,
                 Meta:{
-                    Pages: pages,
-                    Size: pageSize,
-                    TotalRows:instance.count
+                    PageSize:pageSize,
+                    TotalPages: pages,
+                    CurrentRows: instance.rows.length,
+                    TotalRows:instance.count,
+                    CurrentPage:page
                 }
                 
             }).end();
@@ -108,9 +110,11 @@ router.get('/shoppoints', async (req, res) => {
             res.json({
                 Data: [],
                 Meta:{
-                    Pages: 0,
-                    Size: pageSize,
-                    TotalRows:0
+                    PageSize:pageSize,
+                    TotalPages: 0,
+                    CurrentRows: 0,
+                    TotalRows:0,
+                    CurrentPage:page
                 }
             }).end();
         }

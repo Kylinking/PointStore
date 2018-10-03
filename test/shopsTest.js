@@ -34,10 +34,11 @@ describe('总店取分店信息',()=>{
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
-                res.body.Meta.should.have.property('Pages');
-                res.body.Meta.should.have.property('Size');
-                res.body.Meta.Pages.should.be.gt(0);
-                res.body.Meta.Size.should.be.gt(0);
+                res.body.Meta.should.have.property('TotalPages');
+                res.body.Meta.should.have.property('CurrentPage');
+                res.body.Meta.should.have.property('TotalRows');
+                res.body.Meta.should.have.property('CurrentRows');
+                res.body.Meta.CurrentPage.should.be.gt(0);
                 res.body.Data.should.have.length(2);
                 done(); 
             })
@@ -55,10 +56,12 @@ describe('Super Get shopInfos',()=>{
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
-                res.body.Meta.should.have.property('Pages');
-                res.body.Meta.should.have.property('Size');
-                res.body.Meta.Pages.should.be.gt(0);
-                res.body.Meta.Size.should.be.gt(0);
+                res.body.Meta.should.have.property('TotalPages');
+                res.body.Meta.should.have.property('CurrentPage');
+                res.body.Meta.should.have.property('TotalRows');
+                res.body.Meta.should.have.property('CurrentRows');
+                res.body.Meta.TotalPages.should.be.gt(0);
+                res.body.Meta.TotalPages.should.be.gt(0);
                 res.body.Data.should.have.length(2);
                 done(); 
             })
@@ -76,10 +79,12 @@ describe('Super Get some shopInfos',()=>{
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
-                res.body.Meta.should.have.property('Pages');
-                res.body.Meta.should.have.property('Size');
-                res.body.Meta.Pages.should.be.gt(0);
-                res.body.Meta.Size.should.be.gt(0);
+                res.body.Meta.should.have.property('TotalPages');
+                res.body.Meta.should.have.property('CurrentPage');
+                res.body.Meta.should.have.property('TotalRows');
+                res.body.Meta.should.have.property('CurrentRows');
+                res.body.Meta.TotalPages.should.be.gt(0);
+                res.body.Meta.CurrentRows.should.be.gt(0);
                 res.body.Data.should.have.length(2);
                 done(); 
             })
