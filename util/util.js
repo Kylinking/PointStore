@@ -99,7 +99,7 @@ var util = {
         return NaN;
     },
     checkPhone:function(value){
-        if (/^[0-9]{3,4}-?[0-9]+$/.test(value))
+        if (/^[0-9]{3,4}-?[0-9]{0,7}$/.test(value))
           return value;
         return NaN;
     },

@@ -140,8 +140,18 @@ router.use('/' + version,
         return;
     }
     if (phone!=null && isNaN(util.checkPhone(phone))){
-        logger.info(`phone 不是有效电话号码`);
-        res.json({Error:{Message:`phone:${phone}不是有效电话号码`}}).end();
+        //
+        //res.json({Error:{Message:`phone:${phone}不是有效电话号码`}}).end();
+        if(String(phone).length <3){
+            logger.info(`phone:${phone},error: 号码过短`);
+            res.json({Error:{Message:"号码过短"}}).end();
+        }
+        else 
+        {
+            logger.info(`phone 不是有效电话号码`);
+            res.json({Error:{Message:`phone:${phone}不是有效电话号码`}}).end();
+            
+        }
         return;
     }
     if (page!=null && isNaN(util.checkInt(page))){
@@ -165,6 +175,7 @@ router.use('/' + version,
 
 
 router.use((err, req, res, next) => {
+    res.locals.logger.error(err.message);
     res.json({
         Error: {
             Message: err.message
