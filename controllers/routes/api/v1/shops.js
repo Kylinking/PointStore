@@ -321,6 +321,7 @@ router.post('/shops', async (req, res, next) => {
             IndirectRecommendRate:0.05,
             ShopBounusPointRate:0,
             ShopId: newShop.ShopId,
+            Level: 0
         }, {
             transaction: transaction
         });
