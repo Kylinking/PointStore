@@ -17,11 +17,14 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 
-app.use(express.static(__dirname+'/doc'));
-app.get('/',(req,res)=>{
-    let tmp = path.resolve(__dirname+'/doc/index.html');
-    res.sendFile(path.resolve(__dirname+'/doc/index.html'));
-})
+app.use('/doc',express.static(__dirname+'/doc/'));
+app.use('/',express.static(__dirname+'/frontend/'));
+// app.get('/',(req,res)=>{
+//     res.sendFile(path.resolve(__dirname+'/frontend/index.html'));
+// });
+// app.get('/doc',(req,res)=>{
+//   res.sendFile(path.resolve(__dirname+'/doc/index.html'));
+// });
 //log everything in the info level 
 app.all('*', function (req, res, next) {
   try {
