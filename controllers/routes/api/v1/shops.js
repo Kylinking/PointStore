@@ -162,7 +162,13 @@ router.get('/shops', async (req, res, next) => {
                     }).end();
                 } else {
                     res.json({
-                        Data: [info.dataValues]
+                        Data: [info.dataValues],
+                        Meta: {
+                            TotalPages:1,
+                            TotalRows:1,
+                            CurrentPage:1,
+                            CurrentRows:1
+                        }
                     }).end();
                 }
             });
