@@ -207,9 +207,22 @@ router.get('/customers', async (req, res) => {
         Meta:{}
     };
     let pages = Math.ceil(instance.count / pageSize);
-    instance.rows.forEach(row => {
-        json.Data.push(row);
-    });
+    for (let row of instance.rows) {
+        //add CustomerAccountInfo to records
+        //json.Data.push(row.CustomerId);
+        let value = row.dataValues;
+        try {
+            let record = await res.locals.db.CustomerAccountInfo.findOne({
+                where: {
+                    CustomerId: row.CustomerId
+                }
+            })
+            value["CustomerAccountInfo"] = record;
+            json.Data.push(value);
+        } catch (err) {
+            logger.info(err);
+        }
+    }
     // PageSize: pageSize,
     //     TotalPages: pages,
     //     CurrentRows: instance.rows.length,
