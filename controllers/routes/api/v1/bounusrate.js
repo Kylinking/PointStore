@@ -76,7 +76,6 @@ router.get('/bounusrate', async (req, res) => {
                     TotalRows: instance.count,
                     CurrentPage: page
                 }
-
             }).end();
         } else {
             res.json({
@@ -102,7 +101,7 @@ router.get('/bounusrate', async (req, res) => {
 
 router.patch('/bounusrate', async (req, res) => {
     let logger = res.locals.logger;
-    logger.info(`GET bounusrate`);
+    logger.info(`PATCH bounusrate`);
     let operateShopId = res.locals.shopid;
     let db = res.locals.db;
     let queryShopId = util.makeNumericValue(req.body.ShopId, null);
@@ -175,9 +174,7 @@ router.patch('/bounusrate', async (req, res) => {
                     TotalRows: instance.count,
                     CurrentPage: page
                 }
-
-            }).end();
-            
+            }).end();            
         }
     } catch (error) {
         logger.error(error);
@@ -186,16 +183,8 @@ router.patch('/bounusrate', async (req, res) => {
                 Message: error
             }
         }).end();
-        return;
     }
-
 })
-
-
-
-
-
-
 
 // error 
 router.use('/bounusrate', (req, res) => {

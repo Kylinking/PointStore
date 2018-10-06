@@ -37,6 +37,11 @@
 <li><a href="#2-%E5%AE%A2%E6%88%B7%E7%A7%AF%E5%88%86%E5%8F%98%E5%8A%A8">2 客户积分变动</a></li>
 </ul>
 </li>
+<li><a href="#%E5%A5%96%E5%8A%B1%E6%AF%94%E4%BE%8B">奖励比例</a><ul class="list">
+<li><a href="#1-%E8%8E%B7%E5%8F%96%E5%A5%96%E5%8A%B1%E6%AF%94%E4%BE%8B%E4%BF%A1%E6%81%AF">1 获取奖励比例信息</a></li>
+<li><a href="#2-%E8%AE%BE%E7%BD%AE%E5%A5%96%E5%8A%B1%E6%AF%94%E4%BE%8B%E4%BF%A1%E6%81%AF">2 设置奖励比例信息</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><p>BaseURL: #################</p>
@@ -118,10 +123,10 @@
 <li>操作权限：Superman，总店，分店</li>
 <li>请求参数：<ul class="list">
 <li>Name,Address,Phone 为必输字段</li>
-<li>操作ID只能是总店或Superman，操作ID是分店，则报错。</li>
+<li>操作Id只能是总店或Superman，操作Id是分店，则报错。</li>
 <li>ParentShopId 表示店面归属。<ul class="list">
-<li>若操作ID是Superman, ParentShopId 输入 Superman ID，则创建的是总店。输入总店ID，将创建该总店下的分店，输入分店ID或无对应分店信息存在，将报错。</li>
-<li>若操作ID是总店，将忽略ParentShopId字段，创建该总店下的分店</li>
+<li>若操作Id是Superman, ParentShopId 输入 Superman Id，则创建的是总店。输入总店Id，将创建该总店下的分店，输入分店Id或无对应分店信息存在，将报错。</li>
+<li>若操作Id是总店，将忽略ParentShopId字段，创建该总店下的分店</li>
 </ul>
 </li>
 <li>Status 表示店面状态 1 为正常 0 为注销</li>
@@ -159,7 +164,7 @@
 <li>操作权限：Superman，总店，分店</li>
 <li>请求参数<ul class="list">
 <li>全部为可选参数</li>
-<li>Type 字段只有在操作ID是Superman时会起作用<ul class="list">
+<li>Type 字段只有在操作Id是Superman时会起作用<ul class="list">
 <li>1：表示取总店信息，如果有总店ShopId，则只返回该总店信息</li>
 <li>2：表示取分店信息，如果有总店ShopId，则返回该总店下所有分店信息</li>
 </ul>
@@ -271,8 +276,8 @@
 <li>操作权限：Superman,分店</li>
 <li>请求参数：<ul class="list">
 <li>Phone，Sex为必输字段</li>
-<li>当操作ID是Superman时，ShopId也是必输字段，使客户归属于某一分店</li>
-<li>RecommendCustomerId 表示推荐客户ID</li>
+<li>当操作Id是Superman时，ShopId也是必输字段，使客户归属于某一分店</li>
+<li>RecommendCustomerId 表示推荐客户Id</li>
 </ul>
 </li>
 <li>响应参数：<ul class="list">
@@ -307,7 +312,7 @@
 <li>操作权限 Superman,总店,分店</li>
 <li>请求参数<ul class="list">
 <li>所有参数都是可选参数</li>
-<li>ShopId 在操作ID是Superman和总店的时候用于限定查询归属于特定分店的客户信息</li>
+<li>ShopId 在操作Id是Superman和总店的时候用于限定查询归属于特定分店的客户信息</li>
 <li>Phone、Name支持部分匹配查询</li>
 <li>RecommendCustomerId 查询同一推荐人推荐的客户信息</li>
 </ul>
@@ -349,7 +354,7 @@
 <li>当CustomerId为空时，Phone参数作为修改客户信息的条件使用</li>
 </ul>
 </li>
-<li>ShopId 只有在操作ID是Superman是有效</li>
+<li>ShopId 只有在操作Id是Superman是有效</li>
 </ul>
 </li>
 <li>响应参数<ul class="list">
@@ -408,7 +413,7 @@
 <td style="text-align:center">GET</td>
 <td style="text-align:center">ShopId,Page,Size</td>
 <td style="text-align:center">Array</td>
-<td style="text-align:left">[{id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />ShopId,ShopInfo}]</td>
+<td style="text-align:left">[{Id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />ShopId,ShopInfo}]</td>
 </tr>
 </tbody>
 </table>
@@ -416,20 +421,20 @@
 <li>操作权限 Superman,分店，总店</li>
 <li>请求参数<ul class="list">
 <li>全部为可选参数</li>
-<li>当操作ID是Superman时：<ul class="list">
+<li>当操作Id是Superman时：<ul class="list">
 <li>若ShopId是总店，则返回该总店下所有分店的账户信息</li>
 <li>若ShopId是分店，则返回该分店账户信息</li>
 <li>若ShopId为空，则返回所有分店账户信息</li>
 </ul>
 </li>
-<li>当操作ID是总店时：<ul class="list">
+<li>当操作Id是总店时：<ul class="list">
 <li>若ShopId为空，或是该总店，则返回总店下所有分店的账户信息</li>
 <li>若ShopId为该总店下属分店，则返回该分店账户信息</li>
 <li>其它情况返回错误信息</li>
 </ul>
 </li>
-<li>当操作ID是分店时：<ul class="list">
-<li>ShopId若不为空，则在ShopId与操作ID相同时，返回该分店账户信息</li>
+<li>当操作Id是分店时：<ul class="list">
+<li>ShopId若不为空，则在ShopId与操作Id相同时，返回该分店账户信息</li>
 <li>其它情况返回错误信息</li>
 </ul>
 </li>
@@ -463,7 +468,7 @@
 <td style="text-align:center">GET</td>
 <td style="text-align:center">ShopId,Phone,Page,Size</td>
 <td style="text-align:center">Array</td>
-<td style="text-align:left">[{id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />RemainPoints,<br />IndirectRecommendPoints, <br />CustomerId,CustomerInfo}]</td>
+<td style="text-align:left">[{Id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />RemainPoints,<br />IndirectRecommendPoints, <br />CustomerId,CustomerInfo}]</td>
 </tr>
 </tbody>
 </table>
@@ -471,20 +476,20 @@
 <li>操作权限：Superman，总店，分店</li>
 <li>请求参数<ul class="list">
 <li>全部为可选参数</li>
-<li>当操作ID是Superman时：<ul class="list">
+<li>当操作Id是Superman时：<ul class="list">
 <li>若ShopId是总店，则返回该总店下所有分店的客户的账户信息</li>
 <li>若ShopId是分店，则返回该分店下的客户账户信息</li>
 <li>若ShopId为空，则返回全部分店的客户账户信息</li>
 </ul>
 </li>
-<li>当操作ID是总店时：<ul class="list">
+<li>当操作Id是总店时：<ul class="list">
 <li>若ShopId为空，或是该总店，则返回总店下所有分店的客户账户信息</li>
 <li>若ShopId为该总店下属分店，则返回该分店的客户账户信息</li>
 <li>其它情况返回错误信息</li>
 </ul>
 </li>
-<li>当操作ID是分店时：<ul class="list">
-<li>ShopId若不为空，则在ShopId与操作ID相同时，返回该分店客户账户信息</li>
+<li>当操作Id是分店时：<ul class="list">
+<li>ShopId若不为空，则在ShopId与操作Id相同时，返回该分店客户账户信息</li>
 <li>其它情况返回错误信息</li>
 </ul>
 </li>
@@ -492,7 +497,7 @@
 </ul>
 </li>
 <li>响应参数<ul class="list">
-<li>id 序号</li>
+<li>Id 序号</li>
 <li>RemainPoints:Integer 客户可消费余额</li>
 <li>ShopBounusPoints 客户受赠积分</li>
 <li>ChargedPoints 客户累积充值积分</li>
@@ -521,7 +526,7 @@
 <td style="text-align:center">POST</td>
 <td style="text-align:center"><font color=red>Phone</font>,<br />Cost, Recharged<br />ShopBounusPoints,<br />RecommendPoints,<br />IndirectRecommendPoints</td>
 <td style="text-align:center">Object</td>
-<td style="text-align:left">{id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />RemainPoints,<br />IndirectRecommendPoints, <br />CustomerId,CustomerInfo}</td>
+<td style="text-align:left">{Id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />RemainPoints,<br />IndirectRecommendPoints, <br />CustomerId,CustomerInfo}</td>
 </tr>
 </tbody>
 </table>
@@ -539,6 +544,78 @@
 </li>
 <li>积分变动请求涉及客户账户、推荐客户账户、二级推荐客户账户、流水、店面账户、店面账户变动、客户账户变动等多张表的变化。</li>
 <li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
+</ul>
+<h2 id="奖励比例"><a class="header-link" href="#奖励比例"></a>奖励比例</h2>
+<h3 id="1-获取奖励比例信息"><a class="header-link" href="#1-获取奖励比例信息"></a>1 获取奖励比例信息</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">URL</th>
+<th style="text-align:center">METHOD</th>
+<th style="text-align:center">PARAMS</th>
+<th style="text-align:center">RESPONSE TYPE</th>
+<th style="text-align:left">RESPONSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/api/v1/bounusrate</td>
+<td style="text-align:center">GET</td>
+<td style="text-align:center">ShopId,Page,Size</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:left">[{RecommendRate, IndirectRecommendRate,<br /> ShopBounusPointRate, Level， Meta：{Object}}]</td>
+</tr>
+</tbody>
+</table>
+<ul class="list">
+<li>操作权限 Superman, 总店，分店</li>
+<li>请求参数 <ul class="list">
+<li>ShopId, Page, Size都是可选参数</li>
+<li>ShopId为总店Id时，返回总店以及下属分店的比例信息</li>
+</ul>
+</li>
+<li>返回参数<ul class="list">
+<li>RecommendRate：Float 推荐积分比例</li>
+<li>IndirectRecommendRate：Float 二级推荐积分比例</li>
+<li>ShopBounusPointRate：Float 店铺奖励积分比例</li>
+<li>Level：Integer 积分生效层级，0 依Superman积分比例计算，1 依总店比例计算， 2 依自身比例计算。此参数只对分店有效。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-设置奖励比例信息"><a class="header-link" href="#2-设置奖励比例信息"></a>2 设置奖励比例信息</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">URL</th>
+<th style="text-align:center">METHOD</th>
+<th style="text-align:center">PARAMS</th>
+<th style="text-align:center">RESPONSE TYPE</th>
+<th style="text-align:left">RESPONSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/api/v1/bounusrate</td>
+<td style="text-align:center">PATCH</td>
+<td style="text-align:center">ShopId,RecommendRate, <br />IndirectRecommendRate,<br /> ShopBounusPointRate, Level，Page,Size</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:left">[{RecommendRate, IndirectRecommendRate,<br /> ShopBounusPointRate, Level， Meta：{Object}}]</td>
+</tr>
+</tbody>
+</table>
+<ul class="list">
+<li>操作权限 Superman, 总店，分店</li>
+<li>请求参数 <ul class="list">
+<li>RecommendRate：Float 推荐积分比例</li>
+<li>IndirectRecommendRate：Float 二级推荐积分比例</li>
+<li>ShopBounusPointRate：Float 店铺奖励积分比例</li>
+<li>Level：Integer 积分生效层级,只有总店和Superman能够设置，分店无权限设置</li>
+</ul>
+</li>
+<li>返回参数<ul class="list">
+<li>返回受影响的信息</li>
+</ul>
+</li>
 </ul>
     </article>
   </body>
