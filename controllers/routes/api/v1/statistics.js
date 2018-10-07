@@ -186,7 +186,7 @@ router.get('/statistics/shop', async (req, res) => {
             include: includeObj
         });
         json.Data.push({
-            Date: moment(startDate).add(i + offset, "days").format("YYYY-MM-DD"),
+            Date: moment(startDate).add(i + offset, "days").format("YYYY-MM-DDT00:00:00"),
             NewCustomer: newCustomers || 0,
             AccumulateCustomedPoints: accumulateCustomedPoints || 0,
             AccumulateChargedPoints: accumulateReChargedPoints || 0,
@@ -230,8 +230,8 @@ router.get('/statistics/shop', async (req, res) => {
         logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}新增${accumulateReChargedPoints}分充值积分`);
         json.Duration = {
             TotalCustomer: nowCustomers || 0,
-            StartDate: moment(startDate).format("YYYY-MM-DD"),
-            EndDate: moment(endDate).format("YYYY-MM-DD"),
+            StartDate: moment(startDate).format("YYYY-MM-DDT00:00:00"),
+            EndDate: moment(endDate).format("YYYY-MM-DDT00:00:00"),
             ShopId: queryShopId || operateShopId,
             NewCustomer: newCustomers || 0,
             CustomedPoints: accumulateCustomedPoints || 0,
