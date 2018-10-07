@@ -68,7 +68,6 @@ router.get('/statistics/shop', async (req, res) => {
         whereObj = {
             ShopId: operateShopId
         };
-        totalWhereObj = whereObj;
     } else if (role === "superman") {
         if (queryShopId != null) {
             if (queryRole == "admin") {
