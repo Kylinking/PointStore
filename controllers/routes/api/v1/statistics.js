@@ -39,13 +39,12 @@ router.get('/statistics/shop', async (req, res) => {
     let role = await util.getRoleAsync(operateShopId);
     let queryRole = await util.getRoleAsync(queryShopId);
     let newCustomers = 0;
-    let totalCustomers = 0
+    let nowCustomers = 0;
     let accumulateCustomedPoints = 0;
     let accumulateBounusPoints = 0;
     let accumulateRecommendPoints = 0;
     let accumulateReChargedPoints = 0;
     let whereObj = {};
-    let totalWhereObj = {};
     let includeObj = [];
     let durationObj = {
         [Op.between]: [
@@ -54,7 +53,7 @@ router.get('/statistics/shop', async (req, res) => {
         ]
     };
     let currentRows = (duration - offset);
-    if ((duration-offset) > pageSize){
+    if ((duration - offset) > pageSize) {
         currentRows = pageSize;
     }
     if (role === 'normal') {
@@ -114,7 +113,7 @@ router.get('/statistics/shop', async (req, res) => {
             }]
         }
     }
-    totalCustomers = await db.CustomerInfo.count({
+    nowCustomers = await db.CustomerInfo.count({
         where: whereObj,
         include: includeObj
     });
@@ -124,12 +123,17 @@ router.get('/statistics/shop', async (req, res) => {
         Duration: {}
     }
     let dayCondition = {};
-    for (let i=0;i<currentRows;i++){
-       // dayCondition = moment(startDate).add(i+offset,"days").format("YYYY-MM-DD HH:mm:ss");
+    let totalCustomedPoints = 0;
+    let totalChargedPoints = 0;
+    let totalShopBounusPoints = 0;
+    let totalRecommendPoints = 0;
+    let totalCustomer = 0;
+    for (let i = 0; i < currentRows; i++) {
+        // dayCondition = moment(startDate).add(i+offset,"days").format("YYYY-MM-DD HH:mm:ss");
         dayCondition = {
             [Op.between]: [
-                moment(startDate).add(i+offset,"days").format("YYYY-MM-DD HH:mm:ss"),
-                moment(startDate).add(i+offset+1,"days").format("YYYY-MM-DD HH:mm:ss")
+                moment(startDate).add(i + offset, "days").format("YYYY-MM-DD"),
+                moment(startDate).add(i + offset + 1, "days").format("YYYY-MM-DD")
             ]
         }
         whereObj.CreatedAt = dayCondition;
@@ -154,18 +158,47 @@ router.get('/statistics/shop', async (req, res) => {
             include: includeObj
         });
 
+        whereObj.CreatedAt = {
+            [Op.lte]: [moment(startDate).add(i + offset + 1, "days").format("YYYY-MM-DD")]
+        }
+
+        totalCustomer = await db.CustomerInfo.count({
+            where: whereObj,
+            include: includeObj
+        });
+        totalCustomedPoints = await db.ShopAccountChange.sum('CustomedPoints', {
+            where: whereObj,
+            include: includeObj
+        });
+        totalShopBounusPoints = await db.ShopAccountChange.sum('ShopBounusPoints', {
+            where: whereObj,
+            include: includeObj
+        });
+        totalRecommendPoints = await db.ShopAccountChange.sum('RecommendPoints', {
+            where: whereObj,
+            include: includeObj
+        });
+        totalChargedPoints = await db.ShopAccountChange.sum('ChargedPoints', {
+            where: whereObj,
+            include: includeObj
+        });
         json.Data.push({
-            Date:moment(startDate).add(i+offset,"days").format("YYYY-MM-DD"),
+            Date: moment(startDate).add(i + offset, "days").format("YYYY-MM-DD"),
             NewCustomer: newCustomers || 0,
-            CustomedPoints: accumulateCustomedPoints || 0,
-            ChargedPoints: accumulateReChargedPoints || 0,
-            ShopBounusPoints: accumulateBounusPoints || 0,
-            RecommendPoints: accumulateRecommendPoints || 0
+            AccumulateCustomedPoints: accumulateCustomedPoints || 0,
+            AccumulateChargedPoints: accumulateReChargedPoints || 0,
+            AccumulateShopBounusPoints: accumulateBounusPoints || 0,
+            AccumulateRecommendPoints: accumulateRecommendPoints || 0,
+            TotalCustomer: totalCustomer || 0,
+            TotalCustomedPoints: totalCustomedPoints || 0,
+            TotalChargedPoints: totalChargedPoints || 0,
+            TotalShopBounusPoints: totalShopBounusPoints || 0,
+            TotalRecommendPoints: totalRecommendPoints || 0,
         });
         logger.info(json.Data[i]);
     }
     whereObj.CreatedAt = durationObj;
-    try {        
+    try {
         newCustomers = await db.CustomerInfo.count({
             where: whereObj,
             include: includeObj
@@ -186,16 +219,16 @@ router.get('/statistics/shop', async (req, res) => {
             where: whereObj,
             include: includeObj
         });
-        logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}有${totalCustomers}位客户`);
+        logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}有${nowCustomers}位客户`);
         logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}有${newCustomers}位新增客户`);
         logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}新增${accumulateCustomedPoints}分消费积分`);
         logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}新增${accumulateBounusPoints}分奖励积分`);
         logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}新增${accumulateRecommendPoints}分推荐积分`);
         logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}新增${accumulateReChargedPoints}分充值积分`);
         json.Duration = {
-            TotalCustomer: totalCustomers || 0,
-            StartDate: moment(startDate).format("YYYY-MM-DD HH:mm:ss"),
-            EndDate: moment(endDate).format("YYYY-MM-DD HH:mm:ss"),
+            TotalCustomer: nowCustomers || 0,
+            StartDate: moment(startDate).format("YYYY-MM-DD"),
+            EndDate: moment(endDate).format("YYYY-MM-DD"),
             ShopId: queryShopId || operateShopId,
             NewCustomer: newCustomers || 0,
             CustomedPoints: accumulateCustomedPoints || 0,
