@@ -81,7 +81,6 @@ router.get('/shoppoints', async (req, res) => {
         }
         whereObj.ShopId = operateShopId;
     }
-
     try {
         let instance = await db.ShopAccountInfo.findAndCountAll({
             where: whereObj,
