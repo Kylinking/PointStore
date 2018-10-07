@@ -42,6 +42,7 @@
 <li><a href="#2-%E8%AE%BE%E7%BD%AE%E5%A5%96%E5%8A%B1%E6%AF%94%E4%BE%8B%E4%BF%A1%E6%81%AF">2 设置奖励比例信息</a></li>
 </ul>
 </li>
+<li><a href="#%E7%BB%9F%E8%AE%A1%E5%8F%82%E6%95%B0">统计参数</a></li>
 </ul>
 </li>
 <li><p>BaseURL: #################</p>
@@ -524,7 +525,7 @@
 <tr>
 <td style="text-align:center">/api/v1/userpoints</td>
 <td style="text-align:center">POST</td>
-<td style="text-align:center"><font color=red>Phone</font>,<br />Cost, Recharged<br />ShopBounusPoints,<br />RecommendPoints,<br />IndirectRecommendPoints</td>
+<td style="text-align:center"><font color=red>Phone</font>,<br />Cost, Recharged<br /></td>
 <td style="text-align:center">Object</td>
 <td style="text-align:left">{Id,CustomedPoints,<br />RecommendPoints,<br />ChargedPoints,<br />ShopBounusPoints,<br />RemainPoints,<br />IndirectRecommendPoints, <br />CustomerId,CustomerInfo}</td>
 </tr>
@@ -578,7 +579,10 @@
 <li>RecommendRate：Float 推荐积分比例</li>
 <li>IndirectRecommendRate：Float 二级推荐积分比例</li>
 <li>ShopBounusPointRate：Float 店铺奖励积分比例</li>
-<li>Level：Integer 积分生效层级，0 依Superman积分比例计算，1 依总店比例计算， 2 依自身比例计算。此参数只对分店有效。</li>
+<li>Level：Integer 积分生效层级，0 依Superman积分比例计算，1 依总店比例计算， 2 依自身比例计算。此参数只对分店有效。<ul class="list">
+<li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -616,6 +620,49 @@
 <li>返回受影响的信息</li>
 </ul>
 </li>
+<li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
+</ul>
+<h2 id="统计参数"><a class="header-link" href="#统计参数"></a>统计参数</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">URL</th>
+<th style="text-align:center">METHOD</th>
+<th style="text-align:center">PARAMS</th>
+<th style="text-align:center">RESPONSE TYPE</th>
+<th style="text-align:left">RESPONSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/api/v1/statistics</td>
+<td style="text-align:center">GET</td>
+<td style="text-align:center">ShopId,Start,End,Recent</td>
+<td style="text-align:center">Object</td>
+<td style="text-align:left">{TotalCustomer, StartDate,EndDate,<br /> ShopId, NewCustomer,CustomedPoints,<br />ChargedPoints,ShopBounusPoints,<br />RecommendPoints}</td>
+</tr>
+</tbody>
+</table>
+<ul class="list">
+<li>操作权限 Superman, 总店，分店</li>
+<li>请求参数 <ul class="list">
+<li>Start: 开始日期</li>
+<li>End: 结束日期</li>
+<li>Recent: 统计计数天数，默认为以Start开始的7天或以End结束的7天，当Start与End同时存在时，Recent失效。</li>
+<li>ShopId: 为分店时，计算该分店的数据，为总店时，计算该总店下所有分店的数据，为Superman时，计算全局数据。</li>
+</ul>
+</li>
+<li>返回参数<ul class="list">
+<li>TotalCustomer：总客户数</li>
+<li>StartDate,EndDate：统计的开始和结束日期</li>
+<li>NewCustomer：新增客户数</li>
+<li>CustomedPoints：消费积分数</li>
+<li>ChargedPoints：充值积分数</li>
+<li>ShopBounusPoints：奖励积分数</li>
+<li>RecommendPoints：推荐积分数</li>
+</ul>
+</li>
+<li><a href="#api%E8%AF%B4%E6%98%8E" >回到顶部</a></li>
 </ul>
     </article>
   </body>
