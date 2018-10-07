@@ -131,8 +131,8 @@ router.get('/statistics/shop', async (req, res) => {
         // dayCondition = moment(startDate).add(i+offset,"days").format("YYYY-MM-DD HH:mm:ss");
         dayCondition = {
             [Op.between]: [
-                moment(startDate).add(i + offset, "days").format("YYYY-MM-DD"),
-                moment(startDate).add(i + offset + 1, "days").format("YYYY-MM-DD")
+                moment(startDate).add(i + offset, "days").format("YYYY-MM-DD 00:00:00"),
+                moment(startDate).add(i + offset + 1, "days").format("YYYY-MM-DD 00:00:00")
             ]
         }
         whereObj.CreatedAt = dayCondition;
@@ -156,10 +156,14 @@ router.get('/statistics/shop', async (req, res) => {
             where: whereObj,
             include: includeObj
         });
-
-        whereObj.CreatedAt = {
-            [Op.lte]: [moment(startDate).add(i + offset + 1, "days").format("YYYY-MM-DD")]
+        logger.info("==================")
+        logger.info(whereObj);
+        let con = {
+            [Op.lt]: moment(startDate).add(i + offset, "days").format("YYYY-MM-DD 23:59:59")
         }
+        whereObj.CreatedAt =  con;
+        logger.info("==================")
+        logger.info(whereObj);
 
         totalCustomer = await db.CustomerInfo.count({
             where: whereObj,
