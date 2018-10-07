@@ -637,9 +637,9 @@
 <tr>
 <td style="text-align:center">/api/v1/statistics/shop</td>
 <td style="text-align:center">GET</td>
-<td style="text-align:center">ShopId,Start,End,Recent</td>
+<td style="text-align:center">ShopId,Start,End,Recent<br />Page,Size</td>
 <td style="text-align:center">Object</td>
-<td style="text-align:left">{TotalCustomer, StartDate,EndDate,<br /> ShopId, NewCustomer,CustomedPoints,<br />ChargedPoints,ShopBounusPoints,<br />RecommendPoints}</td>
+<td style="text-align:left"><font color=green>Data</font>:[{Date,NewCustomer,<br />CustomedPoints,ChargedPoints,<br />ShopBounusPoints,<br />RecommendPoints}]<br /><font color=green>Duration</font>:{TotalCustomer, StartDate,EndDate,<br /> ShopId, NewCustomer,<br />CustomedPoints,ChargedPoints,<br />ShopBounusPoints,<br />RecommendPoints}<br /><font color=green>Meta:</font>{TotalPages,CurrentRows,<br />TotalRows,CurrentPage}</td>
 </tr>
 </tbody>
 </table>
@@ -653,6 +653,8 @@
 </ul>
 </li>
 <li>返回参数<ul class="list">
+<li>Data:Array，包含每天的统计数据</li>
+<li>Duration:Object, 包含Start至End期间的统计数据</li>
 <li>TotalCustomer：总客户数</li>
 <li>StartDate,EndDate：统计的开始和结束日期</li>
 <li>NewCustomer：新增客户数</li>

@@ -8,6 +8,7 @@ const Op = require('sequelize').Op;
 router.get('/statistics/shop', async (req, res) => {
     let logger = res.locals.logger;
     logger.info('statistics start');
+    const dayOfmills = 24 * 60 * 60 * 1000;
     let operateShopId = res.locals.shopid;
     let type = req.query.Type || null;
     let startDate = req.query.Start || null;
@@ -15,8 +16,9 @@ router.get('/statistics/shop', async (req, res) => {
     let db = res.locals.db;
     let duration = util.makeNumericValue(req.query.Recent, 7);
     let queryShopId = util.makeNumericValue(req.query.ShopId, null);
-    let now = Date.parse(moment().format());
-    let today = Date.parse(moment().format("MM DD YYYY"));
+    let page = util.makeNumericValue(req.query.Page, 1);
+    let pageSize = util.makeNumericValue(req.query.Size, 20);
+    let offset = (page - 1) * pageSize;
     endDate = Date.parse(moment(endDate).format(""));
     startDate = Date.parse(moment(startDate).format(""));
     if (isNaN(endDate) && isNaN(startDate)) {
@@ -30,6 +32,7 @@ router.get('/statistics/shop', async (req, res) => {
         if (endDate < startDate) {
             [endDate, startDate] = [startDate, endDate];
         }
+        duration = (endDate - startDate) / dayOfmills;
     }
     logger.info(`startDate:${startDate},endDate:${endDate},queryShopId:${queryShopId},duration:${duration}`);
 
@@ -50,6 +53,10 @@ router.get('/statistics/shop', async (req, res) => {
             moment(endDate).format("YYYY-MM-DD HH:mm:ss")
         ]
     };
+    let currentRows = (duration - offset);
+    if ((duration-offset) > pageSize){
+        currentRows = pageSize;
+    }
     if (role === 'normal') {
         if (queryShopId != null && queryShopId != operateShopId) {
             res.json({
@@ -111,13 +118,58 @@ router.get('/statistics/shop', async (req, res) => {
         where: whereObj,
         include: includeObj
     });
-    whereObj.CreatedAt = durationObj;
-    try {
+    let json = {
+        Data: [],
+        Meta: {},
+        Duration: {}
+    }
+    let dayCondition = {};
+    for (let i=0;i<currentRows;i++){
+       // dayCondition = moment(startDate).add(i+offset,"days").format("YYYY-MM-DD HH:mm:ss");
+        dayCondition = {
+            [Op.between]: [
+                moment(startDate).add(i+offset,"days").format("YYYY-MM-DD HH:mm:ss"),
+                moment(startDate).add(i+offset+1,"days").format("YYYY-MM-DD HH:mm:ss")
+            ]
+        }
+        whereObj.CreatedAt = dayCondition;
         newCustomers = await db.CustomerInfo.count({
             where: whereObj,
             include: includeObj
         });
-        
+        accumulateCustomedPoints = await db.ShopAccountChange.sum('CustomedPoints', {
+            where: whereObj,
+            include: includeObj
+        });
+        accumulateBounusPoints = await db.ShopAccountChange.sum('ShopBounusPoints', {
+            where: whereObj,
+            include: includeObj
+        });
+        accumulateRecommendPoints = await db.ShopAccountChange.sum('RecommendPoints', {
+            where: whereObj,
+            include: includeObj
+        });
+        accumulateReChargedPoints = await db.ShopAccountChange.sum('ChargedPoints', {
+            where: whereObj,
+            include: includeObj
+        });
+
+        json.Data.push({
+            Date:moment(startDate).add(i+offset,"days").format("YYYY-MM-DD"),
+            NewCustomer: newCustomers || 0,
+            CustomedPoints: accumulateCustomedPoints || 0,
+            ChargedPoints: accumulateReChargedPoints || 0,
+            ShopBounusPoints: accumulateBounusPoints || 0,
+            RecommendPoints: accumulateRecommendPoints || 0
+        });
+        logger.info(json.Data[i]);
+    }
+    whereObj.CreatedAt = durationObj;
+    try {        
+        newCustomers = await db.CustomerInfo.count({
+            where: whereObj,
+            include: includeObj
+        });
         accumulateCustomedPoints = await db.ShopAccountChange.sum('CustomedPoints', {
             where: whereObj,
             include: includeObj
@@ -140,19 +192,23 @@ router.get('/statistics/shop', async (req, res) => {
         logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}新增${accumulateBounusPoints}分奖励积分`);
         logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}新增${accumulateRecommendPoints}分推荐积分`);
         logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}新增${accumulateReChargedPoints}分充值积分`);
-        res.json({
-            Data: {
-                TotalCustomer: totalCustomers || 0,
-                StartDate: moment(startDate).format("YYYY-MM-DD HH:mm:ss"),
-                EndDate: moment(endDate).format("YYYY-MM-DD HH:mm:ss"),
-                ShopId: queryShopId || operateShopId,                
-                NewCustomer: newCustomers|| 0,
-                CustomedPoints: accumulateCustomedPoints|| 0,
-                ChargedPoints: accumulateReChargedPoints|| 0,
-                ShopBounusPoints: accumulateBounusPoints|| 0,
-                RecommendPoints: accumulateRecommendPoints|| 0
-            }
-        }).end();
+        json.Duration = {
+            TotalCustomer: totalCustomers || 0,
+            StartDate: moment(startDate).format("YYYY-MM-DD HH:mm:ss"),
+            EndDate: moment(endDate).format("YYYY-MM-DD HH:mm:ss"),
+            ShopId: queryShopId || operateShopId,
+            NewCustomer: newCustomers || 0,
+            CustomedPoints: accumulateCustomedPoints || 0,
+            ChargedPoints: accumulateReChargedPoints || 0,
+            ShopBounusPoints: accumulateBounusPoints || 0,
+            RecommendPoints: accumulateRecommendPoints || 0
+        };
+        let pages = Math.ceil(duration / pageSize);
+        json.Meta["TotalPages"] = pages;
+        json.Meta["CurrentRows"] = currentRows;
+        json.Meta["TotalRows"] = duration;
+        json.Meta["CurrentPage"] = page;
+        res.json(json).end();
     } catch (error) {
         logger.error(error);
         res.end();
