@@ -115,10 +115,10 @@ describe('分店建分店', () => {
 describe('总店建分店', () => {
     it('it should create a shopInfo and return info', (done) => {
         let data = {
-            Name: "总店建分店",
+            Name: "分店1",
             Address: "市中区",
             Status: 1,
-            Phone: '125125125'
+            Phone: '12345678902'
         };
         chai.request(server)
             .post('/api/v1/shops')
@@ -142,10 +142,10 @@ describe('总店建分店', () => {
 describe('Superman建总店', () => {
     it('it should create a shopInfo and return info', (done) => {
         let data = {
-            Name: "新总店",
+            Name: "总店1",
             Address: "市中区",
             Status: 1,
-            Phone: '013013013',
+            Phone: '12345678901',
         };
         chai.request(server)
             .post('/api/v1/shops')
@@ -402,4 +402,516 @@ describe('Superman改分店', () => {
 });
 
 
-
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店2",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678911',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店3",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678913',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店4",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678914',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店5",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678915',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店6",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678916',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店7",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678917',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店8",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678918',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店9",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678919',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店10",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678920',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店11",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678921',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店12",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678922',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店13",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678923',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店14",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678924',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店15",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678925',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店16",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678926',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店17",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678927',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店18",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678928',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店19",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678929',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});
+describe('Superman建分店', () => {
+    it('it should create a shopInfo and return info', (done) => {
+        let data = {
+            Name: "分店20",
+            Address: "市中区",
+            Status: 1,
+            Phone: '12345678930',
+            ParentShopId:11,
+        };
+        chai.request(server)
+            .post('/api/v1/shops')
+            .set("TOKEN",tokenSuperman)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('ShopId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
+                res.body.Data.should.have.property('ParentShopId');
+                done();
+            });
+    });
+});

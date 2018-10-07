@@ -13,7 +13,7 @@ chai.use(chaiHttp);
 describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
-            Phone:122222,
+            Phone:13890651236,
             Recharged:20
         }
         chai.request(server)
@@ -33,11 +33,25 @@ describe('客户充值', () => {
 describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
-            Phone:111222229,
-            Recharged:2000,
-            RecommendPoints:200,
-            IndirectRecommendPoints:130,
-            ShopBounusPoints:20
+            Phone:13981312368,
+            Recharged:200,
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                done();
+            });
+    });
+});
+describe('客户消费', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13890651236,
+            Cost:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -47,32 +61,388 @@ describe('客户充值', () => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
-                res.body.Data.RemainPoints.should.be.eq(2000);
                 done();
             });
     });
 });
-
-describe('客户消费', () => {
+describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
-            Phone:122222,
-            Cost:20
+            Phone:13981312368,
+            Recharged:25
         }
         chai.request(server)
             .post('/api/v1/userpoints')
-            .set("TOKEN",token124)
+            .set("TOKEN",token)
             .send(data)
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
-                res.body.Data.RemainPoints.should.be.eq(120);
                 done();
             });
     });
 });
-
+describe('客户消费', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Cost:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户消费', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Cost:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户消费', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Cost:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户充值', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Recharged:25
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户消费', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Cost:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户充值', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Recharged:25
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户消费', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Cost:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户充值', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Recharged:25
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户消费', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Cost:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户充值', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Recharged:25
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户消费', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Cost:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户充值', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Recharged:25
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户消费', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Cost:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户充值', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Recharged:25
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户消费', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Cost:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户充值', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Recharged:25
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户消费', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Cost:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户充值', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Recharged:25
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户消费', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Cost:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
+describe('客户充值', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            Recharged:25
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Data');
+                done();
+            });
+    });
+});
 // describe('客户推荐奖励', () => {
 //     it('返回客户账户信息', (done) => {
 //         let data = {
