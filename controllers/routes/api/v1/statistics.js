@@ -17,15 +17,15 @@ router.get('/statistics/shop', async (req, res) => {
     let queryShopId = util.makeNumericValue(req.query.ShopId, null);
     let now = Date.parse(moment().format());
     let today = Date.parse(moment().format("MM DD YYYY"));
-    endDate = Date.parse(moment(endDate).format("MM DD YYYY"));
-    startDate = Date.parse(moment(startDate).format("MM DD YYYY"));
+    endDate = Date.parse(moment(endDate).format(""));
+    startDate = Date.parse(moment(startDate).format(""));
     if (isNaN(endDate) && isNaN(startDate)) {
         endDate = Date.parse(moment().format());
-        startDate = Date.parse(moment().subtract(duration, 'days').format("MM DD YYYY"));
+        startDate = Date.parse(moment().subtract(duration, 'days').format(""));
     } else if (isNaN(endDate) && !isNaN(startDate)) {
-        endDate = Date.parse(moment(startDate).add(duration, 'days').format("MM DD YYYY"));
+        endDate = Date.parse(moment(startDate).add(duration, 'days').format(""));
     } else if (!isNaN(endDate) && isNaN(startDate)) {
-        startDate = Date.parse(moment(endDate).subtract(duration, 'days').format("MM DD YYYY"));
+        startDate = Date.parse(moment(endDate).subtract(duration, 'days').format(""));
     } else {
         if (endDate < startDate) {
             [endDate, startDate] = [startDate, endDate];
@@ -107,16 +107,17 @@ router.get('/statistics/shop', async (req, res) => {
             }]
         }
     }
+    totalCustomers = await db.CustomerInfo.count({
+        where: whereObj,
+        include: includeObj
+    });
     whereObj.CreatedAt = durationObj;
     try {
         newCustomers = await db.CustomerInfo.count({
             where: whereObj,
             include: includeObj
         });
-        totalCustomers = await db.CustomerInfo.count({
-            where: whereObj,
-            include: includeObj
-        });
+        
         accumulateCustomedPoints = await db.ShopAccountChange.sum('CustomedPoints', {
             where: whereObj,
             include: includeObj
@@ -141,22 +142,21 @@ router.get('/statistics/shop', async (req, res) => {
         logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}新增${accumulateReChargedPoints}分充值积分`);
         res.json({
             Data: {
+                TotalCustomer: totalCustomers || 0,
                 StartDate: moment(startDate).format("YYYY-MM-DD HH:mm:ss"),
                 EndDate: moment(endDate).format("YYYY-MM-DD HH:mm:ss"),
-                ShopId: queryShopId || operateShopId,
-                TotalCustomer: totalCustomers,
-                NewCustomer: newCustomers,
-                CustomedPoints: accumulateCustomedPoints,
-                ChargedPoints: accumulateReChargedPoints,
-                ShopBounusPoints: accumulateBounusPoints,
-                RecommendPoints: accumulateRecommendPoints
+                ShopId: queryShopId || operateShopId,                
+                NewCustomer: newCustomers|| 0,
+                CustomedPoints: accumulateCustomedPoints|| 0,
+                ChargedPoints: accumulateReChargedPoints|| 0,
+                ShopBounusPoints: accumulateBounusPoints|| 0,
+                RecommendPoints: accumulateRecommendPoints|| 0
             }
         }).end();
     } catch (error) {
         logger.error(error);
         res.end();
     }
-
 });
 
 // error 
