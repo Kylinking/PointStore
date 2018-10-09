@@ -55,7 +55,7 @@ var util = {
     },
     isBelongsToByPhoneAsync:async function(customerPhone,shopId){
         if (!customerPhone || !shopId) return false;
-        if (await this.isSupermanAsync(shopId)) return true;
+        //if (await this.isSupermanAsync(shopId)) return false;
         var instance = await db.CustomerInfo.findOne({
             where:{
                 Phone:customerPhone
@@ -63,12 +63,12 @@ var util = {
         });
         if (!instance) return false;
         if (instance.ShopId == shopId) return true;
-        if (await this.isSubordinateAsync(shopId,instance.ShopId)) return true;
+        //if (await this.isSubordinateAsync(shopId,instance.ShopId)) return true;
         return false;
     },
     isBelongsToByIdAsync:async function(customerId,shopId){
         if (!customerId || !shopId) return false;
-        if (await this.isSupermanAsync(shopId)) return true;
+        //if (await this.isSupermanAsync(shopId)) return false;
         var instance = await db.CustomerInfo.findOne({
             where:{
                 CustomerId:customerId
@@ -76,7 +76,7 @@ var util = {
         });
         if (!instance) return false;
         if (instance.ShopId == shopId) return true;
-        if (await this.isSubordinateAsync(shopId,instance.ShopId)) return true;
+       // if (await this.isSubordinateAsync(shopId,instance.ShopId)) return true;
         return false;
     },
     getRoleAsync: async function (shopId){

@@ -25,14 +25,22 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    ChargedMoney: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
+    CustomedMoney: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
     Date: {
       type: DataTypes.BIGINT,
       allowNull: false,
     }
-  },{
-    updatedAt:'UpdatedAt',
-    createdAt:'CreatedAt'
-});
+  }, {
+    updatedAt: 'UpdatedAt',
+    createdAt: 'CreatedAt'
+  });
 
   TransactionDetail.associate = function (models) {
     models.TransactionDetail.belongsTo(models.ShopInfo, {
@@ -53,7 +61,7 @@ module.exports = (sequelize, DataTypes) => {
 
     models.TransactionDetail.belongsTo(models.CustomerInfo, {
       onDelete: "CASCADE",
-      as:'RecommendCustomer',
+      as: 'RecommendCustomer',
       foreignKey: {
         name: 'RecommendCustomerId',
         allowNull: true
@@ -61,7 +69,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     models.TransactionDetail.belongsTo(models.CustomerInfo, {
       onDelete: "CASCADE",
-      as:'IndirectRecommendCustomer',
+      as: 'IndirectRecommendCustomer',
       foreignKey: {
         name: 'IndirectRecommendCustomerId',
         allowNull: true

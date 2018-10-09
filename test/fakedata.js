@@ -45,6 +45,15 @@ module.exports = async (models) => {
         Type:1,
         ParentShopId: 1
     });
+    await models.ShopInfo.create({
+        ShopId: 123,
+        Name: "春华路分店",
+        Phone: "12345678905",
+        Address: "市中区",
+        Status: 1,
+        Type:2,
+        ParentShopId: 12
+    });
     await models.ShopAccountInfo.create({
         CustomedPoints:80,
         RecommendPoints:160,
@@ -82,15 +91,7 @@ module.exports = async (models) => {
         ShopId: 11,
         Level:1
     });
-    await models.ShopInfo.create({
-        ShopId: 123,
-        Name: "春华路分店",
-        Phone: "12345678905",
-        Address: "市中区",
-        Status: 1,
-        Type:2,
-        ParentShopId: 12
-    });
+    
     await models.ShopAccountInfo.create({
         CustomedPoints:40,
         RecommendPoints:80,

@@ -144,8 +144,26 @@ router.post('/customers', async (req, res) => {
             return;
         }
     });
-
-    let role = await util.getRoleAsync(operateShopId);
+    let operatedShop = undefined;
+    let queryShop = undefined;
+    try {
+        operatedShop = await res.locals.db.ShopInfo.findOne({
+            where: {
+                ShopId: operateShopId
+            }
+        });
+        if (shopId != null){
+            queryShop = await res.locals.db.ShopInfo.findOne({
+                where: {
+                    ShopId: shopId
+                }
+            });
+        }
+    } catch (error) {
+        logger.error(error);
+        res.json(error).end();
+    }
+    //let role = await util.getRoleAsync(operateShopId);
     let createCondition = {
         Name: name,
         Address: address,
@@ -154,43 +172,40 @@ router.post('/customers', async (req, res) => {
         Sex: sex,
         Age: age,
     };
-    if (role == 'admin') {
-        res.json({
-            Error: {
-                Message: "无权创建客户信息"
-            }
-        }).end();
-        return;
-    } else if (role == 'superman') {
-        if (shopId == null || await util.isAdminShopAsync(shopId)) {
-            res.json({
-                Error: {
-                    Message: "需要客户归属分店Id"
-                }
-            }).end();
-            return;
-        }
-        if (!await util.isBelongsToByIdAsync(recommendCustomerId, shopId)) {
-            createCondition.RecommendCustomerId = null;
-        } else {
-            createCondition.RecommendCustomerId = recommendCustomerId;
-        }
-        createCondition.ShopId = shopId;
-    } else {
-        if (shopId !== null && shopId != operateShopId) {
-            res.json({
-                Error: {
-                    Message: "无权创建其它店面客户信息"
-                }
-            }).end();
-            return;
-        }
-        if (!await util.isBelongsToByIdAsync(recommendCustomerId, operateShopId)) {
-            createCondition.RecommendCustomerId = null;
-        } else {
-            createCondition.RecommendCustomerId = recommendCustomerId;
-        }
+    if (operatedShop.Type === 1) {
         createCondition.ShopId = operateShopId;
+    } else if (operatedShop.Type === 0) {
+        if (shopId == null || await util.isSupermanAsync(shopId)) {
+            res.json({
+                Error: {
+                    Message: "需要客户归属总店Id"
+                }
+            }).end();
+            return;
+        }else{
+            if (queryShop.Type == 1){
+                createCondition.ShopId = shopId;
+            }else if(queryShop.Type == 2){
+                createCondition.ShopId = queryShop.ParentShopId;
+            }
+        }
+        if (!await util.isBelongsToByIdAsync(recommendCustomerId, createCondition.ShopId)) {
+            createCondition.RecommendCustomerId = null;
+        } else {
+            createCondition.RecommendCustomerId = recommendCustomerId;
+        }
+    } else {
+        if (shopId !== null && shopId !== operatedShop.ParentShopId) {
+            res.json({
+                Error: {
+                    Message: `无权创建其它店面客户信息,ShopId:${shopId}.`
+                }
+            }).end();
+            return;
+        }
+        else{
+            createCondition.ShopId = operatedShop.ParentShopId;
+        }
     }
 
     res.locals.db.sequelize.transaction(transaction => {
@@ -201,7 +216,7 @@ router.post('/customers', async (req, res) => {
                 res.json({
                     Data: row
                 }).end();
-                //logger.info(row);
+                logger.info(row);
                 return res.locals.db.CustomerAccountInfo.create({
                     CustomerId: row.CustomerId,
                     ShopBounusPoints: 0,
@@ -209,11 +224,12 @@ router.post('/customers', async (req, res) => {
                     RecommendPoints: 0,
                     IndirectRecommendPoints: 0,
                     CustomedPoints: 0,
-                    RemainPoints: 0
+                    RemainPoints: 0,
+                    ChargedMoney:0,
+                    CustomedMoney:0
                 }, {
                     transaction: transaction
                 });
-
             })
             .catch(
                 error => {

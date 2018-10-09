@@ -21,6 +21,14 @@ module.exports = (sequelize, DataTypes) => {
             type:DataTypes.INTEGER,
             allowNull:false,
         },
+        ChargedMoney:{
+            type:DataTypes.FLOAT,
+            allowNull:false,
+        },
+        CustomedMoney: {
+            type: DataTypes.FLOAT,
+            allowNull: false,
+        },
     },{
         updatedAt:'UpdatedAt',
         createdAt:'CreatedAt'
