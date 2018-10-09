@@ -65,16 +65,17 @@ router.get('/customers', async (req, res) => {
             case 1:
                 if (queryShopId != null) {
                     if (queryShop.Type == 1) {
+                        if (queryShopId != operateShopId) {
+                            throw `无权限查询ShopId:${queryShopId}店面客户信息`;
+                        }
                         whereObj.ShopId = queryShopId;
                     } else if (queryShop.Type == 2) {
+                        if (queryShop.ParentShopId != operateShopId) {
+                            throw `无权限查询ShopId:${queryShopId}店面客户信息`;
+                        }
                         whereObj.ShopId = queryShop.ParentShopId;
-                    } else {
-                        res.json({
-                            Error: {
-                                Message: `无权查询ShopId:${queryShopId}客户信息`
-                            }
-                        }).end();
-                        return;
+                    } else {                       
+                        throw `无权查询ShopId:${queryShopId}客户信息`            
                     }
                 } else {
                     whereObj.ShopId = operateShopId;

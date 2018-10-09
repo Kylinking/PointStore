@@ -6,6 +6,7 @@ const Op = require('sequelize').Op;
 
 router.get('/userpoints', async (req, res) => {
     let logger = res.locals.logger;
+    let db = res.locals.db;
     let phone = isNaN(util.checkPhone(req.query.Phone)) ? null : req.query.Phone;
     let shopId = util.makeNumericValue(req.query.ShopId, null);
     let page = util.makeNumericValue(req.query.Page, 1);
@@ -14,78 +15,103 @@ router.get('/userpoints', async (req, res) => {
     let acctInfo = res.locals.db.CustomerAccountInfo;
     let operateShopId = res.locals.shopid;
     let whereCustomerInfoObj = {};
-    let whereShopInfoObj = {};
-    let roleOfOperatedShopId = await util.getRoleAsync(operateShopId);
-    if (phone != null) {
-        whereCustomerInfoObj.Phone = phone;
-    }
-    logger.info(`Phone:${phone},`)
-    if (roleOfOperatedShopId == 'superman') {
-        if (shopId != null && shopId != operateShopId) {
-            if (await util.isAdminShopAsync(shopId)) {
-                whereShopInfoObj.ParentShopId = shopId;
-            } else {
-                whereShopInfoObj.ShopId = shopId;
+    try {
+        let operateShop = await db.ShopInfo.findOne({
+            where: {
+                ShopId: operateShopId
+            }
+        });
+        if (phone != null) {
+            whereCustomerInfoObj.Phone = phone;
+        }
+        logger.info(`Phone:${phone},`);
+        let queryShop = null;
+        if (shopId != null) {
+            queryShop = await db.ShopInfo.findOne({
+                where: {
+                    ShopId: shopId
+                }
+            });
+            if (queryShop == null) {
+                throw `ShopId:${queryShopId}店面不存在`;
             }
         }
-    } else if (roleOfOperatedShopId == 'admin') {
-        whereShopInfoObj.ParentShopId = operateShopId;
-        if ((shopId != null && !await util.isSubordinateAsync(operateShopId, shopId)) ||
-            (phone != null && !await util.isBelongsToByPhoneAsync(phone, operateShopId))) {
-            res.json({
-                Error: {
-                    Message: "无权查询其它总店下用户账户"
+        logger.info("operateShop:");
+        logger.info(operateShop);
+        logger.info("queryShop:");
+        logger.info(queryShop);
+        switch (operateShop.Type) {
+            case 0:
+                if (shopId != null) {
+                    if (queryShop.Type == 1) {
+                        whereCustomerInfoObj.ShopId = queryShopId;
+                    } else if (queryShop.Type == 2) {
+                        whereCustomerInfoObj.ShopId = queryShop.ParentShopId;
+                    }
                 }
-            }).end();
-            return;
-        }
-    } else {
-        if ((shopId != null && shopId != operateShopId) ||
-            (phone != null && !await util.isBelongsToByPhoneAsync(phone, operateShopId))) {
-            res.json({
-                Error: {
-                    Message: "无权查询其它店面用户账户"
+                break;
+            case 1:
+                if (shopId != null) {
+                    if (queryShop.Type == 1) {
+                        if (queryShopId != operateShopId) {
+                            throw `无权限查询ShopId:${queryShopId}店面客户账户`;
+                        }
+                        whereCustomerInfoObj.ShopId = operateShopId;
+                    } else if (queryShop.Type == 2) {
+                        if (queryShop.ParentShopId != operateShopId) {
+                            throw `无权限查询ShopId:${queryShopId}店面客户账户`;
+                        }
+                        whereCustomerInfoObj.ShopId = queryShop.ParentShopId;
+                    } else {
+                        throw `无权查询ShopId:${queryShopId}店面客户账户`;
+                    }
+                } else {
+                    whereCustomerInfoObj.ShopId = operateShopId;
                 }
-            }).end();
-            return;
-        } else {
-            whereShopInfoObj.ShopId = operateShopId;
+                break;
+            default:
+                whereCustomerInfoObj.ShopId = operateShop.ParentShopId;
+                break;
         }
-    }
-    logger.info(whereShopInfoObj);
-    logger.info(whereCustomerInfoObj);
-    acctInfo.findAndCountAll({
-        include: [{
-            model: res.locals.db.CustomerInfo,
-            where: whereCustomerInfoObj,
+        logger.info(whereCustomerInfoObj);
+        let instance = await acctInfo.findAndCountAll({
             include: [{
-                model: res.locals.db.ShopInfo,
-                where: whereShopInfoObj
-            }]
-        }],
-        offset: offset,
-        limit: pageSize
-    }).then((instance) => {
-        let pages = Math.ceil(instance.count / pageSize);
-        let json = {
-            Data: [],
-            Meta: {}
-        };
-        instance.rows.forEach((row) => {
-            json.Data.push(row);
-        });
-        json.Meta["TotalPages"] = pages;
-        json.Meta["CurrentRows"] = instance.rows.length;
-        json.Meta["TotalRows"] = instance.count;
-        json.Meta["CurrentPage"] = page;
-        res.json(json).end();
-    }).catch(err => {
+                model: db.CustomerInfo,
+                where: whereCustomerInfoObj,
+                include: [{
+                    model: db.ShopInfo,
+                    where:{},
+                    require:true
+                }]
+            }],
+            offset: offset,
+            limit: pageSize
+        })
+        if (instance) {
+            let pages = Math.ceil(instance.count / pageSize);
+            let json = {
+                Data: [],
+                Meta: {}
+            };
+            instance.rows.forEach((row) => {
+                json.Data.push(row);
+            });
+            json.Meta["TotalPages"] = pages;
+            json.Meta["CurrentRows"] = instance.rows.length;
+            json.Meta["TotalRows"] = instance.count;
+            json.Meta["CurrentPage"] = page;
+            res.json(json).end();
+        } else {
+            throw "无账户信息";
+        }
+    } catch (err) {
+        logger.error(err);
         res.json({
             Error: {
                 Message: err
             }
         }).end();
-    });
+    }
 });
 
 router.post('/userpoints', async (req, res) => {
