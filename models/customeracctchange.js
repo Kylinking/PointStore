@@ -31,11 +31,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     ChargedMoney: {
       type: DataTypes.FLOAT,
-      allowNull: false,
+      allowNull: true,
     },
     CustomedMoney: {
       type: DataTypes.FLOAT,
-      allowNull: false,
+      allowNull: true,
     },
   }, {
     updatedAt: 'UpdatedAt',

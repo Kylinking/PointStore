@@ -16,6 +16,7 @@ router.get('/customerhistory', async (req, res) => {
     let startDate = req.query.Start || null;
     let endDate = req.query.end || null;
     let db = res.locals.db;
+    let queryShopId = util.makeNumericValue(req.query.ShopId, null);
     const duration = moment.duration(30, "days");
     if (phone == null) {
         res.json({
@@ -47,43 +48,63 @@ router.get('/customerhistory', async (req, res) => {
             [Op.lte]: endDate
         }
     };
-    let customer = await db.CustomerInfo.findOne({
-        where: {
-            Phone: phone
+    let operateShop = await db.ShopInfo.findOne({
+        where:{
+            ShopId:operateShopId
         }
     });
+    let whereCustomer = {
+        Phone: phone
+    };
+    switch (operateShop.Type) {
+        case 0:
+            break;
+        case 1:
+            whereCustomer.ShopId = operateShopId;
+            break;
+        default:
+            whereCustomer.ShopId = operateShop.ParentShopId;
+            break;
+    }
+
+    let customer = await db.CustomerInfo.findOne({
+        where: whereCustomer
+    });
+    
     if (!customer) {
         res.json({
             Data: {}
         }).end()
         return;
     }
-
-
-    let role = await util.getRoleAsync(operateShopId);
-    logger.info(role);
-    if (role == 'normal') {
-        if (customer.ShopId != operateShopId) {
-            res.json({
-                Error: {
-                    Message: "无权限查询其它分店客户明细"
-                }
-            }).end();
-            return;
-        }
-    } else if (role == "admin") {
-        if (!await util.isSubordinateAsync(operateShopId, customer.ShopId)) {
-            res.json({
-                Error: {
-                    Message: "无权限查询其它总店下客户明细"
-                }
-            }).end();
-            return;
-        }
-        whereObj.CustomerId = customer.CustomerId;
-        whereObj.ShopId = customer.ShopId;
-    }
+    
+    // let role = await util.getRoleAsync(operateShopId);
+    // logger.info(role);
+    // if (role == 'normal') {
+    //     if (customer.ShopId != operateShopId) {
+    //         res.json({
+    //             Error: {
+    //                 Message: "无权限查询其它分店客户明细"
+    //             }
+    //         }).end();
+    //         return;
+    //     }
+    // } else if (role == "admin") {
+    //     if (!await util.isSubordinateAsync(operateShopId, customer.ShopId)) {
+    //         res.json({
+    //             Error: {
+    //                 Message: "无权限查询其它总店下客户明细"
+    //             }
+    //         }).end();
+    //         return;
+    //     }
+    //     whereObj.CustomerId = customer.CustomerId;
+    //     whereObj.ShopId = customer.ShopId;
+    // }
     whereObj.CustomerId = customer.CustomerId;
+    if (queryShopId != null){
+        whereObj.ShopId = queryShopId;
+    }
     //whereObj.ShopId = customer.ShopId;
     logger.info(whereObj);
     let include = [{
