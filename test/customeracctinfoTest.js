@@ -20,11 +20,11 @@ describe('总店取客户账户信息', () => {
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
-                res.body.Data.should.have.length(4);
                 res.body.Meta.should.have.property('TotalPages');
                 res.body.Meta.should.have.property('CurrentPage');
                 res.body.Meta.should.have.property('TotalRows');
                 res.body.Meta.should.have.property('CurrentRows');
+                res.body.Meta.TotalRows.should.eq(23);
                 done();
             });
     });
@@ -41,11 +41,11 @@ describe('Superman取客户账户信息', () => {
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
-                res.body.Data.should.have.length(4);
                 res.body.Meta.should.have.property('TotalPages');
                 res.body.Meta.should.have.property('CurrentPage');
                 res.body.Meta.should.have.property('TotalRows');
                 res.body.Meta.should.have.property('CurrentRows');
+                res.body.Meta.TotalRows.should.eq(23);
                 done();
             });
     });
@@ -61,11 +61,11 @@ describe('Superman取客户账户信息', () => {
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
-                res.body.Data.should.have.length(7);
                 res.body.Meta.should.have.property('TotalPages');
                 res.body.Meta.should.have.property('CurrentPage');
                 res.body.Meta.should.have.property('TotalRows');
                 res.body.Meta.should.have.property('CurrentRows');
+                res.body.Meta.TotalRows.should.eq(28);
                 done();
             });
     });
@@ -81,11 +81,11 @@ describe('分店取客户账户信息', () => {
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
-                res.body.Data.should.have.length(3);
                 res.body.Meta.should.have.property('TotalPages');
                 res.body.Meta.should.have.property('CurrentPage');
                 res.body.Meta.should.have.property('TotalRows');
                 res.body.Meta.should.have.property('CurrentRows');
+                res.body.Meta.TotalRows.should.eq(23);
                 done();
             });
     });
@@ -95,7 +95,7 @@ describe('Superman取客户账户信息', () => {
     it('返回1条数据', (done) => {
         chai.request(server)
             .get('/api/v1/userpoints')
-            .query({Phone:111111})
+            .query({Phone:13890651234})
             .set("TOKEN",tokenSuperman)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -116,7 +116,7 @@ describe('分店取客户账户信息', () => {
     it('返回1条数据', (done) => {
         chai.request(server)
             .get('/api/v1/userpoints')
-            .query({Phone:111111})
+            .query({Phone:13890651234})
             .set("TOKEN",token)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -133,16 +133,17 @@ describe('分店取客户账户信息', () => {
     });
 });
 
-describe('分店取不同分店客户账户信息', () => {
+describe('分店取不同总店客户账户信息', () => {
     it('返回错误', (done) => {
         chai.request(server)
             .get('/api/v1/userpoints')
-            .query({Phone:122222})
+            .query({Phone:13890651237})
             .set("TOKEN",token)
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Error');
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.length(0);
                 done();
             });
     });
@@ -152,12 +153,13 @@ describe('总店取不同总店下的客户账户信息', () => {
     it('返回错误', (done) => {
         chai.request(server)
             .get('/api/v1/userpoints')
-            .query({Phone:122222})
+            .query({Phone:13890651236})
             .set("TOKEN",tokenOtherAdmin)
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Error');
+                res.body.Data.should.have.length(0);
+                res.body.should.have.property('Data');
                 done();
             });
     });
