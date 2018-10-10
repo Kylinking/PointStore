@@ -56,8 +56,10 @@ module.exports = async (models) => {
     });
     await models.ShopAccountInfo.create({
         CustomedPoints:80,
+        CustomedMoney:0,
         RecommendPoints:160,
         ChargedPoints:260,
+        ChargedMoney:260,
         ShopBounusPoints:100,
         ShopId:12
     });
@@ -82,6 +84,8 @@ module.exports = async (models) => {
         RecommendPoints:80,
         ChargedPoints:130,
         ShopBounusPoints:50,
+        CustomedMoney:0,
+        ChargedMoney:0,
         ShopId:11
     });
     await models.BounusPointRate.create({
@@ -97,6 +101,8 @@ module.exports = async (models) => {
         RecommendPoints:80,
         ChargedPoints:130,
         ShopBounusPoints:50,
+        CustomedMoney:0,
+        ChargedMoney:0,
         ShopId:123
     });
     
@@ -128,6 +134,8 @@ module.exports = async (models) => {
         RecommendPoints:80,
         ChargedPoints:130,
         ShopBounusPoints:50,
+        CustomedMoney:0,
+        ChargedMoney:0,
         ShopId:112
     });
     await models.ShopInfo.create({
@@ -144,6 +152,8 @@ module.exports = async (models) => {
         RecommendPoints:80,
         ChargedPoints:130,
         ShopBounusPoints:50,
+        CustomedMoney:0,
+        ChargedMoney:0,
         ShopId:124
     });
     await models.BounusPointRate.create({
@@ -160,7 +170,7 @@ module.exports = async (models) => {
         Phone: 13890651234,
         Sex: "女",
         Age: 13,
-        ShopId: 123,
+        ShopId: 12,
     });
     await models.CustomerInfo.create({
         Name: "小张",
@@ -169,7 +179,7 @@ module.exports = async (models) => {
         Phone: 13890651235,
         Sex: "女",
         Age: 13,
-        ShopId: 123,
+        ShopId: 12,
         RecommendCustomerId:1
     });
     await models.CustomerInfo.create({
@@ -179,7 +189,7 @@ module.exports = async (models) => {
         Phone: 13890651236,
         Sex: "女",
         Age: 13,
-        ShopId: 124,
+        ShopId: 12,
     });
     await models.CustomerInfo.create({
         Name: "小强",
@@ -188,7 +198,7 @@ module.exports = async (models) => {
         Phone: 13890651237,
         Sex: "男",
         Age: 13,
-        ShopId: 112,
+        ShopId: 11,
     });
     await models.CustomerAccountInfo.create({
         RemainPoints:100,
@@ -197,6 +207,8 @@ module.exports = async (models) => {
         RecommendPoints:30,
         IndirectRecommendPoints:10,
         CustomedPoints:20,
+        CustomedMoney:0,
+        ChargedMoney:0,
         CustomerId:1
     });
     await models.CustomerAccountInfo.create({
@@ -206,6 +218,8 @@ module.exports = async (models) => {
         RecommendPoints:30,
         IndirectRecommendPoints:10,
         CustomedPoints:20,
+        CustomedMoney:0,
+        ChargedMoney:0,
         CustomerId:2
     });
     await models.CustomerAccountInfo.create({
@@ -215,6 +229,8 @@ module.exports = async (models) => {
         RecommendPoints:30,
         IndirectRecommendPoints:10,
         CustomedPoints:20,
+        CustomedMoney:0,
+        ChargedMoney:0,
         CustomerId:3
     });
     await models.CustomerAccountInfo.create({
@@ -222,6 +238,8 @@ module.exports = async (models) => {
         ShopBounusPoints:30,
         ChargedPoints:70,
         RecommendPoints:30,
+        CustomedMoney:0,
+        ChargedMoney:0,
         IndirectRecommendPoints:10,
         CustomedPoints:20,
         CustomerId:4

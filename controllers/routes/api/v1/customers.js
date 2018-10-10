@@ -40,7 +40,7 @@ router.get('/customers', async (req, res) => {
                     ShopId: queryShopId
                 }
             });
-            if (queryShop == null){
+            if (queryShop == null) {
                 throw `ShopId:${queryShopId}店面不存在`;
             }
         }
@@ -74,8 +74,8 @@ router.get('/customers', async (req, res) => {
                             throw `无权限查询ShopId:${queryShopId}店面客户信息`;
                         }
                         whereObj.ShopId = queryShop.ParentShopId;
-                    } else {                       
-                        throw `无权查询ShopId:${queryShopId}客户信息`            
+                    } else {
+                        throw `无权查询ShopId:${queryShopId}客户信息`
                     }
                 } else {
                     whereObj.ShopId = operateShopId;
@@ -162,88 +162,75 @@ router.post('/customers', async (req, res) => {
                 }
             });
         }
-    } catch (error) {
-        logger.error(error);
-        res.json(error).end();
-    }
-    //let role = await util.getRoleAsync(operateShopId);
-    let createCondition = {
-        Name: name,
-        Address: address,
-        Status: status,
-        Phone: phone,
-        Sex: sex,
-        Age: age,
-    };
-    if (operatedShop.Type === 1) {
-        createCondition.ShopId = operateShopId;
-    } else if (operatedShop.Type === 0) {
-        if (shopId == null || await util.isSupermanAsync(shopId)) {
-            res.json({
-                Error: {
-                    Message: "需要客户归属总店Id"
+
+        //let role = await util.getRoleAsync(operateShopId);
+        let createCondition = {
+            Name: name,
+            Address: address,
+            Status: status,
+            Phone: phone,
+            Sex: sex,
+            Age: age,
+        };
+        if (operatedShop.Type === 1) {
+            createCondition.ShopId = operateShopId;
+        } else if (operatedShop.Type === 0) {
+            if (shopId == null || await util.isSupermanAsync(shopId)) {
+                throw "需要客户归属总店Id"
+            } else {
+                if (queryShop.Type == 1) {
+                    createCondition.ShopId = shopId;
+                } else if (queryShop.Type == 2) {
+                    createCondition.ShopId = queryShop.ParentShopId;
                 }
-            }).end();
-            return;
+            }
+            if (!await util.isBelongsToByIdAsync(recommendCustomerId, createCondition.ShopId)) {
+                createCondition.RecommendCustomerId = null;
+            } else {
+                createCondition.RecommendCustomerId = recommendCustomerId;
+            }
         } else {
-            if (queryShop.Type == 1) {
-                createCondition.ShopId = shopId;
-            } else if (queryShop.Type == 2) {
-                createCondition.ShopId = queryShop.ParentShopId;
+            if (shopId !== null && shopId !== operatedShop.ParentShopId) {
+                throw `无权创建该店面客户信息,ShopId:${shopId}.`;
+            } else {
+                createCondition.ShopId = operatedShop.ParentShopId;
             }
         }
-        if (!await util.isBelongsToByIdAsync(recommendCustomerId, createCondition.ShopId)) {
-            createCondition.RecommendCustomerId = null;
-        } else {
-            createCondition.RecommendCustomerId = recommendCustomerId;
-        }
-    } else {
-        if (shopId !== null && shopId !== operatedShop.ParentShopId) {
-            res.json({
-                Error: {
-                    Message: `无权创建其它店面客户信息,ShopId:${shopId}.`
-                }
-            }).end();
-            return;
-        } else {
-            createCondition.ShopId = operatedShop.ParentShopId;
-        }
-    }
-
-    res.locals.db.sequelize.transaction(transaction => {
-        return customerInfo.create(createCondition, {
-                transaction: transaction
-            })
-            .then((row) => {
-                res.json({
-                    Data: row
-                }).end();
-                logger.info(row);
-                return res.locals.db.CustomerAccountInfo.create({
-                    CustomerId: row.CustomerId,
-                    ShopBounusPoints: 0,
-                    ChargedPoints: 0,
-                    RecommendPoints: 0,
-                    IndirectRecommendPoints: 0,
-                    CustomedPoints: 0,
-                    RemainPoints: 0,
-                    ChargedMoney: 0,
-                    CustomedMoney: 0
-                }, {
+        logger.info(`createCondition:${createCondition.toString()}`);
+        res.locals.db.sequelize.transaction(transaction => {
+            return customerInfo.create(createCondition, {
                     transaction: transaction
-                });
-            })
-            .catch(
-                error => {
-                    logger.error(error);
+                })
+                .then((row) => {
                     res.json({
-                        Error: {
-                            Message: error
-                        }
+                        Data: row
                     }).end();
-                }
-            );
-    });
+                    logger.info(row);
+                    return res.locals.db.CustomerAccountInfo.create({
+                        CustomerId: row.CustomerId,
+                        ShopBounusPoints: 0,
+                        ChargedPoints: 0,
+                        RecommendPoints: 0,
+                        IndirectRecommendPoints: 0,
+                        CustomedPoints: 0,
+                        RemainPoints: 0,
+                        ChargedMoney: 0,
+                        CustomedMoney: 0
+                    }, {
+                        transaction: transaction
+                    });
+                })
+                .catch(
+                    error => {
+                        logger.error(error);
+                        res.json({Error:{Message:error}}).end();
+                    }
+                );
+        });
+    } catch (error) {
+        logger.error(error);
+        res.json({Error:{Message:error}}).end();
+    }
 });
 
 router.delete('/customers', async (req, res) => {
@@ -304,10 +291,10 @@ router.delete('/customers', async (req, res) => {
             }).end();
         });
     } else {
-        logger.info(`客户不存在`);
+        logger.info(`无此客户`);
         res.json({
             Error: {
-                Message: "客户不存在"
+                Message: "无此客户"
             }
         }).end();
     }

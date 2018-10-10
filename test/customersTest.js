@@ -67,7 +67,7 @@ describe('分店取所有用户信息', () => {
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
-                res.body.Data.should.have.length(2);
+                res.body.Data.should.have.length(3);
                 done();
             });
     });
@@ -117,7 +117,7 @@ describe('Superman取分店用户信息', () => {
                 res.body.should.be.a('object'); 
                 res.body.should.have.property('Data');
                 res.body.Data.should.be.a('array');
-                res.body.Data.should.have.length(2);
+                res.body.Data.should.have.length(3);
                 done();
             });
     });
@@ -220,7 +220,15 @@ describe('总店建用户', () => {
             .send(customer)
             .end((err, res) => {
                 res.should.have.status(200);
-                res.body.should.have.property('Error'); 
+                res.body.should.have.property('Data'); 
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('CustomerId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Sex');
+                res.body.Data.should.have.property('Age');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
                 done();
             });
     });
@@ -267,7 +275,14 @@ describe('Superman建用户带总店ShopId', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Error');
+                res.body.should.have.property('Data');
+                res.body.Data.should.have.property('CustomerId');
+                res.body.Data.should.have.property('Name');
+                res.body.Data.should.have.property('Sex');
+                res.body.Data.should.have.property('Age');
+                res.body.Data.should.have.property('Address');
+                res.body.Data.should.have.property('Status');
+                res.body.Data.should.have.property('Phone');
                 done();
             });
     });
@@ -340,7 +355,7 @@ describe('Superman建用户带分店ShopId Status 1', () => {
 describe('分店删用户', () => {
     it('it should set a customerinfo status=0 and return customerinfo', (done) => {
         let customer = {
-            Phone:111111
+            Phone:13890651236
         };
         chai.request(server)
             .delete('/api/v1/customers')
@@ -365,7 +380,7 @@ describe('分店删用户', () => {
 describe('分店重复删用户', () => {
     it('it should return error', (done) => {
         let customer = {
-            Phone:111111
+            Phone:13890651236
         };
         chai.request(server)
             .delete('/api/v1/customers')
@@ -381,10 +396,10 @@ describe('分店重复删用户', () => {
     });
 });
 
-describe('分店删别家分店用户', () => {
+describe('分店删别家总店用户', () => {
     it('it should return error', (done) => {
         let customer = {
-            Phone:111777779
+            Phone:13890651237
         };
         chai.request(server)
             .delete('/api/v1/customers')
@@ -403,7 +418,7 @@ describe('分店删别家分店用户', () => {
 describe('总店删用户', () => {
     it('it should return error', (done) => {
         let customer = {
-            Phone:144444
+            Phone:111777779
         };
         chai.request(server)
             .delete('/api/v1/customers')
@@ -420,9 +435,9 @@ describe('总店删用户', () => {
 });
 
 describe('Superman删用户', () => {
-    it('it should return error', (done) => {
+    it('it should return info', (done) => {
         let customer = {
-            Phone:144444
+            Phone:13890651234
         };
         chai.request(server)
             .delete('/api/v1/customers')
@@ -441,7 +456,7 @@ describe('Superman删用户', () => {
 describe('Superman重复删用户', () => {
     it('it should return error', (done) => {
         let customer = {
-            Phone:144444
+            Phone:13890651234
         };
         chai.request(server)
             .delete('/api/v1/customers')
@@ -994,7 +1009,7 @@ describe('Superman建用户带分店ShopId Status 1', () => {
             Phone: 13981312369,
             Sex: "男",
             Age: 11,
-            ShopId:'123'
+            ShopId:'11'
         };
         chai.request(server)
             .post('/api/v1/customers')
@@ -1025,7 +1040,7 @@ describe('Superman建用户带分店ShopId Status 1', () => {
             Phone: 13981312370,
             Sex: "男",
             Age: 11,
-            ShopId:'123'
+            ShopId:'12'
         };
         chai.request(server)
             .post('/api/v1/customers')
