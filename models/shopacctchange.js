@@ -13,6 +13,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    ChargedMoney: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    CustomedMoney: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     Date: {
       type: DataTypes.BIGINT,
       allowNull: false,

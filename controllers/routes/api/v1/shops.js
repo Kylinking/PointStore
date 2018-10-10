@@ -9,15 +9,15 @@ router.get('/shops', async (req, res, next) => {
     let operateShopId = res.locals.shopid;
     let shopInfo = res.locals.db.ShopInfo;
     let logger = res.locals.logger;
-    let queryShopId = util.makeNumericValue(req.query.ShopId,null);
+    let queryShopId = util.makeNumericValue(req.query.ShopId, null);
     let queryType = util.makeNumericValue(req.query.Type, 0);
-    let phone = isNaN(util.checkPhone(req.query.Phone))? null:req.query.Phone;
+    let phone = isNaN(util.checkPhone(req.query.Phone)) ? null : req.query.Phone;
     let roleOfOperatedShopId = await util.getRoleAsync(operateShopId);
     logger.info(`roleOfOperatedShopId:${roleOfOperatedShopId},queryType:${queryType} `);
     if (roleOfOperatedShopId == 'superman') {
         let json = {
             Data: [],
-            Meta:{}
+            Meta: {}
         };
         let whereObj = {};
         if (queryType !== 0) {
@@ -37,21 +37,12 @@ router.get('/shops', async (req, res, next) => {
             }
         }
         let page = util.makeNumericValue(req.query.Page, 1);
-        let pageSize = util.makeNumericValue(req.query.Size,20);
+        let pageSize = util.makeNumericValue(req.query.Size, 20);
         let offset = (page - 1) * pageSize;
         let rows = await shopInfo.count({
             where: whereObj
         });
-        let pages = Math.ceil( rows / pageSize);
-        // if (page > pages) {
-        //     logger.warn("查询分页溢出");
-        //     json.Meta["Pages"] = Math.ceil(pages);
-        //     json.Meta["Size"] = pageSize;
-        //     json.Meta["TotalRows"] = rows;
-        //     json["Message"] = "查询分页溢出";
-        //     res.json(json).end();
-        //   //  return;
-        // }
+        let pages = Math.ceil(rows / pageSize);
         shopInfo.findAll({
                 where: whereObj,
                 limit: pageSize,
@@ -71,23 +62,14 @@ router.get('/shops', async (req, res, next) => {
         if (queryShopId == null && phone == null) {
             let json = {
                 Data: [],
-                Meta:{}
+                Meta: {}
             };
             //无ShopId和Phone则返回所有分店信息，默认按20条分页，返回字段增加Pages表示总页数，Size表示每页条数
-            let page = util.makeNumericValue(req.query.Page,1);
-            let pageSize = util.makeNumericValue(req.query.Size,20);
+            let page = util.makeNumericValue(req.query.Page, 1);
+            let pageSize = util.makeNumericValue(req.query.Size, 20);
             let offset = (page - 1) * pageSize;
             let rows = await shopInfo.count();
             let pages = Math.ceil(rows / pageSize);
-            // if (page > pages) {
-            //     logger.warn("查询分页溢出");
-            //     json.Meta["Pages"] = Math.ceil(pages);
-            //     json.Meta["Size"] = pageSize;
-            //     json.Meta["TotalRows"] = instance.count;
-            //     json["Message"] = "查询分页溢出";
-            //     res.json(json).end();
-            //  //   return;
-            // }
             shopInfo.findAll({
                     where: {
                         ParentShopId: operateShopId
@@ -100,15 +82,19 @@ router.get('/shops', async (req, res, next) => {
                         json.Data.push(result);
                     });
                     json.Meta["TotalPages"] = pages;
-    json.Meta["CurrentRows"] = results.length;
-    json.Meta["TotalRows"] = rows;
-    json.Meta["CurrentPage"] = page;
+                    json.Meta["CurrentRows"] = results.length;
+                    json.Meta["TotalRows"] = rows;
+                    json.Meta["CurrentPage"] = page;
                     res.json(json).end();
                 })
-        } else if (queryShopId !=null){ 
+        } else if (queryShopId != null) {
             let whereObj = {};
-            if (!await util.isSubordinateAsync(operateShopId,queryShopId)){
-                res.json({Error:{Message:"无权查询其它总店下分店信息"}}).end();
+            if (!await util.isSubordinateAsync(operateShopId, queryShopId)) {
+                res.json({
+                    Error: {
+                        Message: "无权查询其它总店下分店信息"
+                    }
+                }).end();
                 return;
             }
             if (queryShopId != null) {
@@ -164,10 +150,10 @@ router.get('/shops', async (req, res, next) => {
                     res.json({
                         Data: [info.dataValues],
                         Meta: {
-                            TotalPages:1,
-                            TotalRows:1,
-                            CurrentPage:1,
-                            CurrentRows:1
+                            TotalPages: 1,
+                            TotalRows: 1,
+                            CurrentPage: 1,
+                            CurrentRows: 1
                         }
                     }).end();
                 }
@@ -291,57 +277,63 @@ router.post('/shops', async (req, res, next) => {
         if (parentShopId == operateShopId) {
             type = 1;
         }
-    }else{
+    } else {
         parentShopId = operateShopId;
         type = 2;
     }
     let newShop = undefined;
     res.locals.db.sequelize.transaction(async transaction => {
-        newShop = await shopInfo.create({
-            Name: name,
-            Address: address,
-            Status: util.makeNumericValue(status,1),
-            Phone: phone,
-            Type: type,
-            ParentShopId: parentShopId
-        }, {
-            transaction: transaction
+            newShop = await shopInfo.create({
+                Name: name,
+                Address: address,
+                Status: util.makeNumericValue(status, 1),
+                Phone: phone,
+                Type: type,
+                ParentShopId: parentShopId
+            }, {
+                transaction: transaction
+            })
+            let newAcctInfo = await res.locals.db.ShopAccountInfo.create({
+                CustomedPoints: 0,
+                RecommendPoints: 0,
+                ChargedPoints: 0,
+                ShopBounusPoints: 0,
+                ShopId: newShop.ShopId,
+                CustomedMoney:0,
+                ChargedMoney:0,
+            }, {
+                transaction: transaction
+            });
+            let newLogin = await res.locals.db.Login.create({
+                Id: newShop.ShopId,
+                Password: defaultPassword
+            }, {
+                transaction: transaction
+            });
+            let newBounusRate = await res.locals.db.BounusPointRate.create({
+                RecommendRate: 0.1,
+                IndirectRecommendRate: 0.05,
+                ShopBounusPointRate: 0,
+                ShopId: newShop.ShopId,
+                Level: 0
+            }, {
+                transaction: transaction
+            });
         })
-        let newAcctInfo = await res.locals.db.ShopAccountInfo.create({
-            CustomedPoints: 0,
-            RecommendPoints: 0,
-            ChargedPoints: 0,
-            ShopBounusPoints: 0,
-            ShopId: newShop.ShopId,
-        }, {
-            transaction: transaction
-        });
-        let newLogin = await res.locals.db.Login.create({
-            Id:newShop.ShopId,
-            Password:defaultPassword
-        }, {
-            transaction: transaction
-        });
-        let newBounusRate = await res.locals.db.BounusPointRate.create({
-            RecommendRate:0.1,
-            IndirectRecommendRate:0.05,
-            ShopBounusPointRate:0,
-            ShopId: newShop.ShopId,
-            Level: 0
-        }, {
-            transaction: transaction
-        });
-    })
-    .then(()=>{
-        logger.info(newShop);
-        res.json({
-            Data: newShop
-        }).end();
-    })
-    .catch(error=>{
-        logger.error(error);
-        res.json({Error:{Message:error}});
-    })
+        .then(() => {
+            logger.info(newShop);
+            res.json({
+                Data: newShop
+            }).end();
+        })
+        .catch(error => {
+            logger.error(error);
+            res.json({
+                Error: {
+                    Message: error
+                }
+            });
+        })
 });
 
 router.patch('/shops', async (req, res, next) => {
@@ -362,7 +354,7 @@ router.patch('/shops', async (req, res, next) => {
     let shopInfo = res.locals.db.ShopInfo;
     let queryShopId = req.body.ShopId || null;
     let phone = req.body.Phone || null;
-    let status =  util.makeNumericValue(req.body.Status,null);
+    let status = util.makeNumericValue(req.body.Status, null);
     logger.info(status);
     let name = req.body.Name || null;
     let address = req.body.Address || null;
