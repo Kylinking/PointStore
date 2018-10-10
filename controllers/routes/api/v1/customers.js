@@ -209,13 +209,14 @@ router.post('/customers', async (req, res) => {
                     return res.locals.db.CustomerAccountInfo.create({
                         CustomerId: row.CustomerId,
                         ShopBounusPoints: 0,
-                        ChargedPoints: 0,
+                        //ChargedPoints: 0,
                         RecommendPoints: 0,
                         IndirectRecommendPoints: 0,
                         CustomedPoints: 0,
                         RemainPoints: 0,
                         ChargedMoney: 0,
-                        CustomedMoney: 0
+                        CustomedMoney: 0,
+                        RemainMoney:0,
                     }, {
                         transaction: transaction
                     });

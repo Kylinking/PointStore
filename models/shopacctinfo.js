@@ -13,10 +13,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        ChargedPoints:{
-            type:DataTypes.INTEGER,
-            allowNull:false,
-        },
+        // ChargedPoints:{
+        //     type:DataTypes.INTEGER,
+        //     allowNull:false,
+        // },
         ShopBounusPoints:{
             type:DataTypes.INTEGER,
             allowNull:false,

@@ -9,14 +9,18 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        RemainMoney: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
         ShopBounusPoints: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        ChargedPoints: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
+        // ChargedPoints: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false,
+        // },
         RecommendPoints: {
             type: DataTypes.INTEGER,
             allowNull: false,

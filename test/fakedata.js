@@ -58,7 +58,7 @@ module.exports = async (models) => {
         CustomedPoints:80,
         CustomedMoney:0,
         RecommendPoints:160,
-        ChargedPoints:260,
+        //ChargedPoints:260,
         ChargedMoney:260,
         ShopBounusPoints:100,
         ShopId:12
@@ -82,7 +82,7 @@ module.exports = async (models) => {
     await models.ShopAccountInfo.create({
         CustomedPoints:40,
         RecommendPoints:80,
-        ChargedPoints:130,
+        //ChargedPoints:130,
         ShopBounusPoints:50,
         CustomedMoney:0,
         ChargedMoney:0,
@@ -99,7 +99,7 @@ module.exports = async (models) => {
     await models.ShopAccountInfo.create({
         CustomedPoints:40,
         RecommendPoints:80,
-        ChargedPoints:130,
+        //ChargedPoints:130,
         ShopBounusPoints:50,
         CustomedMoney:0,
         ChargedMoney:0,
@@ -132,7 +132,7 @@ module.exports = async (models) => {
     await models.ShopAccountInfo.create({
         CustomedPoints:40,
         RecommendPoints:80,
-        ChargedPoints:130,
+        //ChargedPoints:130,
         ShopBounusPoints:50,
         CustomedMoney:0,
         ChargedMoney:0,
@@ -150,7 +150,7 @@ module.exports = async (models) => {
     await models.ShopAccountInfo.create({
         CustomedPoints:40,
         RecommendPoints:80,
-        ChargedPoints:130,
+        //ChargedPoints:130,
         ShopBounusPoints:50,
         CustomedMoney:0,
         ChargedMoney:0,
@@ -203,45 +203,49 @@ module.exports = async (models) => {
     await models.CustomerAccountInfo.create({
         RemainPoints:100,
         ShopBounusPoints:20,
-        ChargedPoints:60,
+        //ChargedPoints:60,
         RecommendPoints:30,
         IndirectRecommendPoints:10,
         CustomedPoints:20,
         CustomedMoney:0,
         ChargedMoney:0,
+        RemainMoney:0,
         CustomerId:1
     });
     await models.CustomerAccountInfo.create({
         RemainPoints:120,
         ShopBounusPoints:30,
-        ChargedPoints:70,
+        //ChargedPoints:70,
         RecommendPoints:30,
         IndirectRecommendPoints:10,
         CustomedPoints:20,
         CustomedMoney:0,
+        RemainMoney:0,
         ChargedMoney:0,
         CustomerId:2
     });
     await models.CustomerAccountInfo.create({
         RemainPoints:120,
         ShopBounusPoints:30,
-        ChargedPoints:70,
+        //ChargedPoints:70,
         RecommendPoints:30,
         IndirectRecommendPoints:10,
         CustomedPoints:20,
         CustomedMoney:0,
         ChargedMoney:0,
+        RemainMoney:0,
         CustomerId:3
     });
     await models.CustomerAccountInfo.create({
         RemainPoints:120,
         ShopBounusPoints:30,
-        ChargedPoints:70,
+        //ChargedPoints:70,
         RecommendPoints:30,
         CustomedMoney:0,
         ChargedMoney:0,
         IndirectRecommendPoints:10,
         CustomedPoints:20,
+        RemainMoney:0,
         CustomerId:4
     });
    

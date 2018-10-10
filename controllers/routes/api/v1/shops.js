@@ -296,7 +296,7 @@ router.post('/shops', async (req, res, next) => {
             let newAcctInfo = await res.locals.db.ShopAccountInfo.create({
                 CustomedPoints: 0,
                 RecommendPoints: 0,
-                ChargedPoints: 0,
+                //ChargedPoints: 0,
                 ShopBounusPoints: 0,
                 ShopId: newShop.ShopId,
                 CustomedMoney:0,
