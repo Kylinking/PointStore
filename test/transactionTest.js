@@ -14,7 +14,7 @@ describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13890651236,
-            Recharged:20
+            RechargedMoney:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -34,7 +34,7 @@ describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Recharged:200,
+            RechargedMoney:200,
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -51,7 +51,7 @@ describe('客户消费', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13890651236,
-            Cost:20
+            CostMoney:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -69,7 +69,7 @@ describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Recharged:25
+            RechargedMoney:25
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -87,7 +87,7 @@ describe('客户消费', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Cost:20
+            CostMoney:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -105,7 +105,7 @@ describe('客户消费', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Cost:20
+            CostMoney:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -123,7 +123,7 @@ describe('客户消费', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Cost:20
+            CostMoney:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -141,7 +141,7 @@ describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Recharged:25
+            RechargedMoney:25
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -159,7 +159,7 @@ describe('客户消费', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Cost:20
+            CostMoney:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -177,7 +177,7 @@ describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Recharged:25
+            RechargedMoney:25
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -195,7 +195,7 @@ describe('客户消费', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Cost:20
+            CostMoney:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -213,7 +213,7 @@ describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Recharged:25
+            RechargedMoney:25
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -231,7 +231,7 @@ describe('客户消费', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Cost:20
+            CostMoney:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -249,7 +249,7 @@ describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Recharged:25
+            RechargedMoney:25
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -267,7 +267,7 @@ describe('客户消费', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Cost:20
+            CostMoney:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -285,7 +285,7 @@ describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Recharged:25
+            RechargedMoney:25
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -303,7 +303,7 @@ describe('客户消费', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Cost:20
+            CostMoney:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -321,7 +321,7 @@ describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Recharged:25
+            RechargedMoney:25
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -339,7 +339,7 @@ describe('客户消费', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Cost:20
+            CostMoney:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -357,7 +357,7 @@ describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Recharged:25
+            RechargedMoney:25
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -375,7 +375,7 @@ describe('客户消费', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Cost:20
+            CostMoney:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -393,7 +393,7 @@ describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Recharged:25
+            RechargedMoney:25
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -411,7 +411,7 @@ describe('客户消费', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Cost:20
+            CostMoney:20
         }
         chai.request(server)
             .post('/api/v1/userpoints')
@@ -429,7 +429,7 @@ describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
         let data = {
             Phone:13981312368,
-            Recharged:25
+            RechargedMoney:25
         }
         chai.request(server)
             .post('/api/v1/userpoints')

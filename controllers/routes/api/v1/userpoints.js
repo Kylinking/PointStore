@@ -139,7 +139,7 @@ router.post('/userpoints', async (req, res) => {
         }).end();
         return
     }
-    if (costMoney < 0 || rechargedMoney < 0 || costPoints < 0) {
+    if (costMoney < 0 || rechargedMoney < 0) {
         res.json({
             Error: {
                 Message: '交易金额和积分须大于0'
@@ -147,7 +147,15 @@ router.post('/userpoints', async (req, res) => {
         }).end();
         return;
     }
-    
+    if (costMoney == 0 && rechargedMoney==0){
+        res.json({
+            Error: {
+                Message: '需输入充值或交易积分'
+            }
+        }).end();
+        return;
+    }
+
     let operateShop = await db.ShopInfo.findOne({
         where:{
             ShopId:operateShopId
@@ -271,13 +279,14 @@ router.post('/userpoints', async (req, res) => {
                     });
                     if (costPoints != 0) {
                         pointToMoney = custAcctInfo.RemainPoints * adminBounusRate.PointToMoneyRate;
-                        if (costMoney <= pointToMoney + bounus) {
+                        if (costMoney <= pointToMoney ) {
                             costPoints = costMoney / adminBounusRate.PointToMoneyRate;
                             costMoney = 0;
                         } else {
-                            costMoney -= (bounus + pointToMoney);
-                            costPoints = custAcctInfo.RemainPoints+bounus;
+                            costMoney -= pointToMoney;
+                            costPoints = custAcctInfo.RemainPoints;
                         }
+                        pointToMoney = costPoints * adminBounusRate.PointToMoneyRate;
                     }
                     if (custAcctInfo.RemainMoney + rechargedMoney < costMoney) {
                         //res.json({Error:{Message:"本次消费积分余额不足"}}).end();
