@@ -36,15 +36,24 @@ router.get('/statistics/shop', async (req, res) => {
     }
     logger.info(`startDate:${startDate},endDate:${endDate},queryShopId:${queryShopId},duration:${duration}`);
 
-    let role = await util.getRoleAsync(operateShopId);
-    let queryRole = await util.getRoleAsync(queryShopId);
+    let queryShop = null;
+    if (queryShopId != null){
+        queryShop = await await db.ShopInfo.findOne({
+            where: {ShopId : queryShopId}
+        });
+    }
+    let operateShop = await db.ShopInfo.findOne({
+        where: {ShopId : operateShopId}
+    });
     let newCustomers = 0;
     let nowCustomers = 0;
     let accumulateCustomedPoints = 0;
     let accumulateBounusPoints = 0;
     let accumulateRecommendPoints = 0;
-    let accumulateReChargedPoints = 0;
+    let accumulateReChargedMoney = 0;
+    let accumulateCustomedMoney = 0;
     let whereObj = {};
+    let customerCountObj = {};
     let includeObj = [];
     let durationObj = {
         [Op.between]: [
@@ -56,7 +65,9 @@ router.get('/statistics/shop', async (req, res) => {
     if ((duration - offset) > pageSize) {
         currentRows = pageSize;
     }
-    if (role === 'normal') {
+
+    
+    if (operateShop.Type === 2) {
         if (queryShopId != null && queryShopId != operateShopId) {
             res.json({
                 Error: {
@@ -65,12 +76,11 @@ router.get('/statistics/shop', async (req, res) => {
             }).end();
             return;
         }
-        whereObj = {
-            ShopId: operateShopId
-        };
-    } else if (role === "superman") {
+        whereObj.ShopId = operateShopId;
+        customerCountObj.ShopId = operateShop.ParentShopId;
+    } else if (operateShop.Type === 0) {
         if (queryShopId != null) {
-            if (queryRole == "admin") {
+            if (queryShop.Type == 1) {
                 includeObj = [{
                     model: db.ShopInfo,
                     required: true,
@@ -78,7 +88,7 @@ router.get('/statistics/shop', async (req, res) => {
                         ParentShopId: queryShopId
                     }
                 }]
-            } else if (queryRole == "normal") {
+            } else if (queryShop.Type == 2) {
                 whereObj.ShopId = queryShopId;
             }
         }
@@ -92,7 +102,7 @@ router.get('/statistics/shop', async (req, res) => {
                 }).end();
                 return;
             }
-            if (queryRole == "superman") {
+            if (queryShop.Type == 0) {
                 res.json({
                     Error: {
                         Message: '无权查询其它店面统计信息。'
@@ -111,9 +121,10 @@ router.get('/statistics/shop', async (req, res) => {
                 }
             }]
         }
+        customerCountObj.ShopId = operateShopId;
     }
     nowCustomers = await db.CustomerInfo.count({
-        where: whereObj,
+        where: customerCountObj,
         include: includeObj
     });
     let json = {
@@ -123,7 +134,8 @@ router.get('/statistics/shop', async (req, res) => {
     }
     let dayCondition = {};
     let totalCustomedPoints = 0;
-    let totalChargedPoints = 0;
+    let totalChargedMoney = 0;
+    let totalCustomedMoney = 0;
     let totalShopBounusPoints = 0;
     let totalRecommendPoints = 0;
     let totalCustomer = 0;
@@ -136,8 +148,9 @@ router.get('/statistics/shop', async (req, res) => {
             ]
         }
         whereObj.CreatedAt = dayCondition;
+        customerCountObj.CreatedAt = dayCondition;
         newCustomers = await db.CustomerInfo.count({
-            where: whereObj,
+            where: customerCountObj,
             include: includeObj
         });
         accumulateCustomedPoints = await db.ShopAccountChange.sum('CustomedPoints', {
@@ -152,7 +165,11 @@ router.get('/statistics/shop', async (req, res) => {
             where: whereObj,
             include: includeObj
         });
-        accumulateReChargedPoints = await db.ShopAccountChange.sum('ChargedPoints', {
+        accumulateReChargedMoney = await db.ShopAccountChange.sum('ChargedMoney', {
+            where: whereObj,
+            include: includeObj
+        });
+        accumulateCustomedMoney = await db.ShopAccountChange.sum('CustomedMoney', {
             where: whereObj,
             include: includeObj
         });
@@ -162,11 +179,12 @@ router.get('/statistics/shop', async (req, res) => {
             [Op.lt]: moment(startDate).add(i + offset, "days").format("YYYY-MM-DD 23:59:59")
         }
         whereObj.CreatedAt =  con;
+        customerCountObj.CreatedAt = con;
         logger.info("==================")
         logger.info(whereObj);
 
         totalCustomer = await db.CustomerInfo.count({
-            where: whereObj,
+            where: customerCountObj,
             include: includeObj
         });
         totalCustomedPoints = await db.ShopAccountChange.sum('CustomedPoints', {
@@ -181,7 +199,11 @@ router.get('/statistics/shop', async (req, res) => {
             where: whereObj,
             include: includeObj
         });
-        totalChargedPoints = await db.ShopAccountChange.sum('ChargedPoints', {
+        totalChargedMoney = await db.ShopAccountChange.sum('ChargedMoney', {
+            where: whereObj,
+            include: includeObj
+        });
+        totalCustomedMoney = await db.ShopAccountChange.sum('CustomedMoney', {
             where: whereObj,
             include: includeObj
         });
@@ -189,12 +211,14 @@ router.get('/statistics/shop', async (req, res) => {
             Date: moment(startDate).add(i + offset, "days").format("YYYY-MM-DDT00:00:00Z"),
             NewCustomer: newCustomers || 0,
             AccumulateCustomedPoints: accumulateCustomedPoints || 0,
-            AccumulateChargedPoints: accumulateReChargedPoints || 0,
+            AccumulateChargedMoney: accumulateReChargedMoney || 0,
+            AccumulateCustomedMoney: accumulateCustomedMoney || 0,
             AccumulateShopBounusPoints: accumulateBounusPoints || 0,
             AccumulateRecommendPoints: accumulateRecommendPoints || 0,
             TotalCustomer: totalCustomer || 0,
             TotalCustomedPoints: totalCustomedPoints || 0,
-            TotalChargedPoints: totalChargedPoints || 0,
+            TotalChargedMoney: totalChargedMoney || 0,
+            TotalCustomedMoney: totalCustomedMoney || 0,
             TotalShopBounusPoints: totalShopBounusPoints || 0,
             TotalRecommendPoints: totalRecommendPoints || 0,
         });
@@ -218,7 +242,11 @@ router.get('/statistics/shop', async (req, res) => {
             where: whereObj,
             include: includeObj
         });
-        accumulateReChargedPoints = await db.ShopAccountChange.sum('ChargedPoints', {
+        accumulateReChargedMoney = await db.ShopAccountChange.sum('ChargedMoney', {
+            where: whereObj,
+            include: includeObj
+        });
+        accumulateCustomedMoney = await db.ShopAccountChange.sum('CustomedMoney', {
             where: whereObj,
             include: includeObj
         });
@@ -227,7 +255,7 @@ router.get('/statistics/shop', async (req, res) => {
         logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}新增${accumulateCustomedPoints}分消费积分`);
         logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}新增${accumulateBounusPoints}分奖励积分`);
         logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}新增${accumulateRecommendPoints}分推荐积分`);
-        logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}新增${accumulateReChargedPoints}分充值积分`);
+        logger.info(`${moment(startDate).format("YYYY-MM-DD HH:mm:ss")}至${moment(endDate).format("YYYY-MM-DD HH:mm:ss")}新增${accumulateReChargedMoney}分充值积分`);
         json.Duration = {
             TotalCustomer: nowCustomers || 0,
             StartDate: moment(startDate).format("YYYY-MM-DDT00:00:00Z"),
@@ -235,7 +263,8 @@ router.get('/statistics/shop', async (req, res) => {
             ShopId: queryShopId || operateShopId,
             NewCustomer: newCustomers || 0,
             CustomedPoints: accumulateCustomedPoints || 0,
-            ChargedPoints: accumulateReChargedPoints || 0,
+            CustomedMoney: accumulateCustomedMoney || 0,
+            ChargedMoney: accumulateReChargedMoney || 0,
             ShopBounusPoints: accumulateBounusPoints || 0,
             RecommendPoints: accumulateRecommendPoints || 0
         };

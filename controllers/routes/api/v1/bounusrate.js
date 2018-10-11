@@ -108,6 +108,7 @@ router.patch('/bounusrate', async (req, res) => {
     let recommendRate = util.makeNumericValue(req.body.RecommendRate, null);
     let indirectRecommendRate = util.makeNumericValue(req.body.IndirectRecommendRate, null);
     let shopBounusRate = util.makeNumericValue(req.body.ShopBounusRate, null);
+    let pointToMoneyRate = util.makeNumericValue(req.body.PointToMoneyRate, 0);
     let level = util.makeNumericValue(req.body.Level, 0);
     let page = util.makeNumericValue(req.body.Page, 1);
     let pageSize = util.makeNumericValue(req.body.Size, 20);
@@ -158,6 +159,7 @@ router.patch('/bounusrate', async (req, res) => {
             if (shopBounusRate != null) updateObj.ShopBounusRate = shopBounusRate;
             if (role == "admin" || role == "superman") {
                 if (level != null) updateObj.Level = level;
+                if (pointToMoneyRate != null) updateObj.PointToMoneyRate = pointToMoneyRate;
             }
             logger.info(updateObj);
             let data = [];

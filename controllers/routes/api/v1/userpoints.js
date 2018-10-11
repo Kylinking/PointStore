@@ -269,20 +269,22 @@ router.post('/userpoints', async (req, res) => {
                     }, {
                         transaction: transaction
                     });
-                    if (costPoints != 0 ){
+                    if (costPoints != 0) {
                         pointToMoney = custAcctInfo.RemainPoints * adminBounusRate.PointToMoneyRate;
+                        if (costMoney <= pointToMoney + bounus) {
+                            costPoints = costMoney / adminBounusRate.PointToMoneyRate;
+                            costMoney = 0;
+                        } else {
+                            costMoney -= (bounus + pointToMoney);
+                            costPoints = custAcctInfo.RemainPoints+bounus;
+                        }
                     }
-                    if (costMoney <= pointToMoney+bounus){
-                        costPoints = costMoney / adminBounusRate.PointToMoneyRate;
-                        costMoney = 0;
-                    }else{
-                        costMoney -= (bounus+pointToMoney);
-                        costPoints = custAcctInfo.RemainPoints;
-                    }
-
                     if (custAcctInfo.RemainMoney + rechargedMoney < costMoney) {
                         //res.json({Error:{Message:"本次消费积分余额不足"}}).end();
-                        throw "本次消费金额不足";
+                        throw({
+                            Message:`本次消费金额不足`,
+                            Mount:costMoney -custAcctInfo.RemainMoney-rechargedMoney
+                        });
                     }
                     
                     custAcctInfo = await db.CustomerAccountInfo.increment({
@@ -362,7 +364,7 @@ router.post('/userpoints', async (req, res) => {
                         CustomedPoints: costPoints,
                         ShopBounusPoints: bounus,
                         Date: date,
-                        ShopId: customerInfo.ShopId,
+                        ShopId: operateShopId,
                         CustomedMoney:costMoney,
                         ChargedMoney:rechargedMoney,
                         TransactionSeq: transactionInstance.TransactionSeq
@@ -377,7 +379,7 @@ router.post('/userpoints', async (req, res) => {
                             CustomerId: recommendCustomerInfo.CustomerId,
                             RecommendPoints: recommendPoints,
                             Date: date,
-                            ShopId: customerInfo.ShopId,
+                            ShopId: operateShopId,
                             TransactionSeq: transactionInstance.TransactionSeq
                         }, {
                             transaction: transaction
@@ -392,7 +394,7 @@ router.post('/userpoints', async (req, res) => {
                         custAcctChange = await db.CustomerAccountChange.create({
                             CustomerId: indirectRecommendCustomerInfo.CustomerId,
                             IndirectRecommendPoints: indirectRecommendPoints,
-                            ShopId: customerInfo.ShopId,
+                            ShopId: operateShopId,
                             Date: date,
                             TransactionSeq: transactionInstance.TransactionSeq
                         }, {
@@ -411,7 +413,7 @@ router.post('/userpoints', async (req, res) => {
                         ShopBounusPoints: bounus,
                         RecommendPoints: shopAcctChangeRecommendPointAmount,
                         Date: date,
-                        ShopId: customerInfo.ShopId,
+                        ShopId: operateShopId,
                         TransactionSeq: transactionInstance.TransactionSeq
                     }, {
                         transaction: transaction
@@ -435,6 +437,7 @@ router.post('/userpoints', async (req, res) => {
             logger.info(result);
             let json = {Data:{}};
             json.Data.TransactionDetail = {
+                ShopId:operateShopId,
                 ChargedMoney:rechargedMoney,
                 CustomedMoney:costMoney,
                 CustomedPoints:costPoints,

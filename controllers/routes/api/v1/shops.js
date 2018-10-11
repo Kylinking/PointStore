@@ -311,11 +311,12 @@ router.post('/shops', async (req, res, next) => {
                 transaction: transaction
             });
             let newBounusRate = await res.locals.db.BounusPointRate.create({
-                RecommendRate: 0.1,
+                RecommendRate: 0.06,
                 IndirectRecommendRate: 0.05,
-                ShopBounusPointRate: 0,
+                ShopBounusPointRate: 0.05,
                 ShopId: newShop.ShopId,
-                Level: 0
+                Level: 0,
+                PointToMoneyRate: newShop.Type == 1 ? 1:null,
             }, {
                 transaction: transaction
             });
