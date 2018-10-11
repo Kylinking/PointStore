@@ -57,7 +57,9 @@ app.use('/api', ApiRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
    //next(createError(404));
-   next();
+   logger.info("NO PATH");
+   res.json({Error:{Message:`Not Found Path:${req.path}`}}).end();
+   //next();
 });
 // error handler
 app.use(function (err, req, res, next) {

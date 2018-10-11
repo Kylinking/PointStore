@@ -472,4 +472,18 @@ router.post('/userpoints', async (req, res) => {
         });
 });
 
+
+// error 
+router.use('/userpoints', (req, res) => {
+    res.status(400);
+    res.json({
+        Error: {
+            Message: "No Service with " + req.method
+        }
+    }).end();
+})
+
+router.use((req, res, next) => {
+    next();
+})
 module.exports = router;
