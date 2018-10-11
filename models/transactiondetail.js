@@ -5,10 +5,6 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    // ChargedPoints: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: true,
-    // },
     RecommendPoints: {
       type: DataTypes.INTEGER,
       allowNull: true,

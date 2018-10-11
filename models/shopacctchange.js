@@ -1,14 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
   var ShopAccountChange = sequelize.define('ShopAccountChange', {
-    Id:{
-      type:DataTypes.INTEGER,
-      primaryKey:true,
+    Id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
       autoIncrement: true
-  },
-    // ChargedPoints: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: true,
-    // },
+    },
     CustomedPoints: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -33,10 +29,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-  },{
-    updatedAt:'UpdatedAt',
-    createdAt:'CreatedAt'
-});
+  }, {
+    updatedAt: 'UpdatedAt',
+    createdAt: 'CreatedAt'
+  });
   ShopAccountChange.associate = function (models) {
     models.ShopAccountChange.belongsTo(models.ShopInfo, {
       onDelete: "CASCADE",

@@ -3,7 +3,7 @@ let util = require('../../../../util/util');
 let express = require('express');
 let router = express.Router();
 const Op = require('sequelize').Op;
-
+let moment = require('moment');
 router.get('/userpoints', async (req, res) => {
     let logger = res.locals.logger;
     let db = res.locals.db;
@@ -129,7 +129,6 @@ router.post('/userpoints', async (req, res) => {
     let recommendPoints = 0
     let indirectRecommendPoints = 0
     let pointToMoney = 0;
-    let adminBounusRate = null;
     logger.info(`phone: ${phone}, operateShopId: ${operateShopId}, 
          costMoney: ${costMoney},rechargedMoney:${rechargedMoney}`);
     if (phone == null) {
@@ -164,14 +163,7 @@ router.post('/userpoints', async (req, res) => {
         }).end();
         return;
     }
-    if (costPoints != 0 ){
-        adminBounusRate = await db.BounusPointRate.findOne({
-            where: {
-                ShopId: operateShop.ParentShopId
-            }
-        }); 
-        pointToMoney = costPoints * adminBounusRate.PointToMoneyRate;
-    }
+
     if (!await util.isBelongsToByPhoneAsync(phone, operateShop.ParentShopId)) {
         res.json({
             Error: {
@@ -185,7 +177,11 @@ router.post('/userpoints', async (req, res) => {
     let indirectRecommendCustomerInfo = null;
     let date = Date.parse(Date());
     logger.info(date);
-    let json = {Data:{}};
+    let adminBounusRate = await db.BounusPointRate.findOne({
+        where: {
+            ShopId: operateShop.ParentShopId
+        }
+    });
     //用户账户表、用户账户变动表、店铺账户表、店铺账户变动表、明细表
     sequelize.transaction(transaction => {
             return db.CustomerInfo.findOne({
@@ -216,9 +212,8 @@ router.post('/userpoints', async (req, res) => {
                     let shopAcctInfoOptions = {
                         CustomedMoney: costMoney,
                         ChargedMoney:rechargedMoney,
-                        //ChargedPoints: recharged,
-                        CustomedPoints:costPoints,//  FIX !!!!!
-                        ShopBounusPoints: bounus
+                        CustomedPoints:costPoints,
+                        ShopBounusPoints: bounus,
                     };
                     let shopAcctChangeRecommendPointAmount = 0;
 
@@ -230,7 +225,13 @@ router.post('/userpoints', async (req, res) => {
                         transaction: transaction
                     });
 
-                    let bounusRate = null;
+                    let bounusRate  = await db.BounusPointRate.findOne({
+                        where: {
+                            ShopId: operateShopId
+                        }
+                    }, {
+                        transaction: transaction
+                    });
                     logger.info(`bounusRate.Level:${bounusRate.Level}`);
                     switch (bounusRate.Level) {
                         case 1:
@@ -246,13 +247,7 @@ router.post('/userpoints', async (req, res) => {
                             });
                             break;
                         default:
-                            bounusRate = await db.BounusPointRate.findOne({
-                                where: {
-                                    ShopId: operateShopId
-                                }
-                            }, {
-                                transaction: transaction
-                            });
+        
                             break;
                     }
                     logger.info(`bounusRate: RecommendRate:${bounusRate.RecommendRate},Indirect:${bounusRate.IndirectRecommendRate},ShopBounus:${bounusRate.ShopBounusPointRate}`);
@@ -261,10 +256,11 @@ router.post('/userpoints', async (req, res) => {
                     bounus = rechargedMoney * bounusRate.ShopBounusPointRate;
                     let transactionOptions = {
                         ChargedMoney: rechargedMoney,
-                   //     ChargedPoints: rechargedPoints,
                         CustomedPoints: costPoints,
                         Date: date,
                         CustomedMoney: costMoney,
+                        ShopId:operateShopId,
+                        CustomerId:customerInfo.CustomerId
                     };
                     let custAcctInfo = await db.CustomerAccountInfo.findOne({
                         where: {
@@ -273,10 +269,22 @@ router.post('/userpoints', async (req, res) => {
                     }, {
                         transaction: transaction
                     });
+                    if (costPoints != 0 ){
+                        pointToMoney = custAcctInfo.RemainPoints * adminBounusRate.PointToMoneyRate;
+                    }
+                    if (costMoney <= pointToMoney+bounus){
+                        costPoints = costMoney / adminBounusRate.PointToMoneyRate;
+                        costMoney = 0;
+                    }else{
+                        costMoney -= (bounus+pointToMoney);
+                        costPoints = custAcctInfo.RemainPoints;
+                    }
+
                     if (custAcctInfo.RemainMoney + rechargedMoney < costMoney) {
                         //res.json({Error:{Message:"本次消费积分余额不足"}}).end();
                         throw "本次消费金额不足";
                     }
+                    
                     custAcctInfo = await db.CustomerAccountInfo.increment({
                         RemainMoney: rechargedMoney - costMoney,
                         ChargedMoney:rechargedMoney,
@@ -293,13 +301,6 @@ router.post('/userpoints', async (req, res) => {
                     });
                     logger.info(custAcctInfo);
                     logger.info("customerInfo CustomerAccountInfo increment ");
-                    json.Data.RemainMoney = custAcctInfo.RemainMoney;
-                    json.Data.RemainPoints = custAcctInfo.RemainPoints;
-                    json.Data.ChargedMoney = rechargedMoney;
-                    json.Data.ShopBounusPoints = bounus;
-                    json.Data.CustomedMoney = costMoney;
-                    json.Data.CustomedPoints = costPoints;
-                    json.Data.PointToMoney = pointToMoney;
                     if (recommendCustomerInfo) {
                         await db.CustomerAccountInfo.increment({
                             RemainPoints: recommendPoints,
@@ -314,9 +315,7 @@ router.post('/userpoints', async (req, res) => {
                         logger.info("recommendCustomerInfo CustomerAccountInfo increment ");
                         transactionOptions.RecommendPoints = recommendPoints;
                         transactionOptions.RecommendCustomerId = recommendCustomerInfo.CustomerId;
-                        shopAcctInfoOptions.RecommendPoints += recommendPoints;
-                        json.Data.RecommendCustomerInfo = recommendCustomerInfo;
-                        json.Data.RecommendPoints = recommendPoints;
+                        shopAcctInfoOptions.RecommendPoints = recommendPoints;
                     }
                     if (indirectRecommendCustomerInfo) {
                         await db.CustomerAccountInfo.increment({
@@ -333,8 +332,6 @@ router.post('/userpoints', async (req, res) => {
                         transactionOptions.IndirectRecommendPoints = indirectRecommendPoints;
                         transactionOptions.IndirectRecommendCustomerId = indirectRecommendCustomerInfo.CustomerId;
                         shopAcctInfoOptions.RecommendPoints += indirectRecommendPoints;
-                        json.Data.IndirectRecommendCustomerInfo = indirectRecommendCustomerInfo;
-                        json.Data.IndirectRecommendPoints = indirectRecommendPoints;
                     }
                     let transactionInstance = await db.TransactionDetail.create(
                         transactionOptions, {
@@ -342,7 +339,9 @@ router.post('/userpoints', async (req, res) => {
                         }
                     );
                     logger.info("TransactionDetail create");
-                    await db.ShopAccountInfo.increment(
+                    logger.info(transactionInstance);
+                    logger.info(shopAcctInfoOptions);
+                    let shopAcctInfo = await db.ShopAccountInfo.increment(
                         shopAcctInfoOptions, {
                             where: {
                                 ShopId: {
@@ -357,21 +356,24 @@ router.post('/userpoints', async (req, res) => {
                         }
                     );
                     logger.info("ShopAccountInfo increment");
-                    await db.CustomerAccountChange.create({
+                    logger.info(shopAcctInfo);
+                    let custAcctChange = await db.CustomerAccountChange.create({
                         CustomerId: customerInfo.CustomerId,
-                        ChargedPoints: recharged,
-                        CustomedPoints: cost,
+                        CustomedPoints: costPoints,
                         ShopBounusPoints: bounus,
                         Date: date,
                         ShopId: customerInfo.ShopId,
+                        CustomedMoney:costMoney,
+                        ChargedMoney:rechargedMoney,
                         TransactionSeq: transactionInstance.TransactionSeq
                     }, {
                         transaction: transaction
                     });
 
                     logger.info("customerInfo CustomerAccountChange create");
+                    logger.info(custAcctChange);
                     if (recommendCustomerInfo && recommendPoints > 0) {
-                        await db.CustomerAccountChange.create({
+                        custAcctChange = await db.CustomerAccountChange.create({
                             CustomerId: recommendCustomerInfo.CustomerId,
                             RecommendPoints: recommendPoints,
                             Date: date,
@@ -382,9 +384,12 @@ router.post('/userpoints', async (req, res) => {
                         });
                         shopAcctChangeRecommendPointAmount += recommendPoints;
                         logger.info("recommendCustomerInfo CustomerAccountChange create");
-                    }
+                        logger.info(custAcctChange);
+                }else{
+                    recommendPoints = 0;
+                }
                     if (indirectRecommendCustomerInfo && indirectRecommendPoints > 0) {
-                        await db.CustomerAccountChange.create({
+                        custAcctChange = await db.CustomerAccountChange.create({
                             CustomerId: indirectRecommendCustomerInfo.CustomerId,
                             IndirectRecommendPoints: indirectRecommendPoints,
                             ShopId: customerInfo.ShopId,
@@ -395,11 +400,14 @@ router.post('/userpoints', async (req, res) => {
                         });
                         shopAcctChangeRecommendPointAmount += indirectRecommendPoints
                         logger.info("indirectRecommendCustomerInfo CustomerAccountChange create");
+                        logger.info(custAcctChange);
+                    }else {
+                        indirectRecommendPoints = 0;
                     }
-
-                    await db.ShopAccountChange.create({
-                        ChargedPoints: recharged,
-                        CustomedPoints: cost,
+                    let shopAcctChange = await db.ShopAccountChange.create({
+                        CustomedPoints: costPoints,
+                        ChargedMoney:rechargedMoney,
+                        CustomedMoney:costMoney,
                         ShopBounusPoints: bounus,
                         RecommendPoints: shopAcctChangeRecommendPointAmount,
                         Date: date,
@@ -408,7 +416,8 @@ router.post('/userpoints', async (req, res) => {
                     }, {
                         transaction: transaction
                     });
-
+                    logger.info("ShopAccountChange create");
+                    logger.info(shopAcctChange);
                     return db.CustomerAccountInfo.findOne({
                         where: {
                             CustomerId: customerInfo.CustomerId
@@ -424,9 +433,30 @@ router.post('/userpoints', async (req, res) => {
         })
         .then(result => {
             logger.info(result);
-            res.json({
-                Data: result
-            }).end();
+            let json = {Data:{}};
+            json.Data.TransactionDetail = {
+                ChargedMoney:rechargedMoney,
+                CustomedMoney:costMoney,
+                CustomedPoints:costPoints,
+                RecommendPoints:recommendPoints,
+                IndirectRecommendPoints:indirectRecommendPoints,
+                ShopBounusPoints:bounus,
+                Date:new Date(date),
+            }
+            json.Data.CustomerAccountInfo = result.dataValues;
+            if (recommendCustomerInfo){
+                json.Data.RecommendCustomerInfo = recommendCustomerInfo;
+                json.Data.RecommendPoints = recommendPoints;
+            }else{
+                json.Data.RecommendCustomerInfo = null;
+            }
+            if (indirectRecommendCustomerInfo){
+                json.Data.IndirectRecommendCustomerInfo = indirectRecommendCustomerInfo;
+                json.Data.IndirectRecommendPoints = indirectRecommendPoints;
+            }else{
+                json.Data.IndirectRecommendCustomerInfo = null;
+            }
+            res.json(json).end();
         })
         .catch(err => {
             // Rolled back
