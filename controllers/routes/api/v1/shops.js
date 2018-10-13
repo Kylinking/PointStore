@@ -16,7 +16,7 @@ router.get('/shops', async (req, res, next) => {
     logger.info(`roleOfOperatedShopId:${roleOfOperatedShopId},queryType:${queryType} `);
     if (roleOfOperatedShopId == 'superman') {
         let json = {
-            Data: [],
+            Array: [],
             Meta: {}
         };
         let whereObj = {};
@@ -50,7 +50,7 @@ router.get('/shops', async (req, res, next) => {
             })
             .then(results => {
                 results.forEach(result => {
-                    json.Data.push(result);
+                    json.Array.push(result);
                 });
                 json.Meta["TotalPages"] = pages;
                 json.Meta["CurrentRows"] = results.length;
@@ -61,16 +61,15 @@ router.get('/shops', async (req, res, next) => {
     } else if (roleOfOperatedShopId == 'admin') {
         if (queryShopId == null && phone == null) {
             let json = {
-                Data: [],
+                Array: [],
                 Meta: {}
             };
             //无ShopId和Phone则返回所有分店信息，默认按20条分页，返回字段增加Pages表示总页数，Size表示每页条数
             let page = util.makeNumericValue(req.query.Page, 1);
             let pageSize = util.makeNumericValue(req.query.Size, 20);
             let offset = (page - 1) * pageSize;
-            let rows = await shopInfo.count();
-            let pages = Math.ceil(rows / pageSize);
-            shopInfo.findAll({
+            
+            shopInfo.findAndCountAll({
                     where: {
                         ParentShopId: operateShopId
                     },
@@ -78,12 +77,13 @@ router.get('/shops', async (req, res, next) => {
                     offset: offset
                 })
                 .then(results => {
-                    results.forEach(result => {
-                        json.Data.push(result);
+                    results.rows.forEach(result => {
+                        json.Array.push(result);
                     });
+                    let pages = Math.ceil(results.count / pageSize);
                     json.Meta["TotalPages"] = pages;
-                    json.Meta["CurrentRows"] = results.length;
-                    json.Meta["TotalRows"] = rows;
+                    json.Meta["CurrentRows"] = results.rows.length;
+                    json.Meta["TotalRows"] = results.count;
                     json.Meta["CurrentPage"] = page;
                     res.json(json).end();
                 })
@@ -116,7 +116,7 @@ router.get('/shops', async (req, res, next) => {
                 } else {
                     logger.info(info.dataValues);
                     res.json({
-                        Data: [info.dataValues]
+                        Object: info.dataValues
                     }).end();
                 }
             });
@@ -148,13 +148,7 @@ router.get('/shops', async (req, res, next) => {
                     }).end();
                 } else {
                     res.json({
-                        Data: [info.dataValues],
-                        Meta: {
-                            TotalPages: 1,
-                            TotalRows: 1,
-                            CurrentPage: 1,
-                            CurrentRows: 1
-                        }
+                        Object: info.dataValues
                     }).end();
                 }
             });
@@ -223,7 +217,7 @@ router.delete('/shops', async (req, res, next) => {
     instance.set("Status", 0);
     instance.save().then(() => {
         res.json({
-            Data: {
+            Object: {
                 ShopId: instance.dataValues.ShopId,
                 Name: instance.dataValues.Name,
                 Address: instance.dataValues.Address,
@@ -324,7 +318,7 @@ router.post('/shops', async (req, res, next) => {
         .then(() => {
             logger.info(newShop);
             res.json({
-                Data: newShop
+                Object: newShop
             }).end();
         })
         .catch(error => {
@@ -412,7 +406,7 @@ router.patch('/shops', async (req, res, next) => {
         }
         instance.save().then((row) => {
             res.json({
-                Data: row
+                Object: row
             }).end();
         }).catch(err => {
             logger.info(err)

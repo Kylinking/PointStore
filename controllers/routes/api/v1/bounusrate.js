@@ -68,7 +68,7 @@ router.get('/bounusrate', async (req, res) => {
             })
             let pages = Math.ceil(instance.count / pageSize);
             res.json({
-                Data: data,
+                Array: data,
                 Meta: {
                     PageSize: pageSize,
                     TotalPages: pages,
@@ -79,7 +79,7 @@ router.get('/bounusrate', async (req, res) => {
             }).end();
         } else {
             res.json({
-                Data: [],
+                Array: [],
                 Meta: {
                     PageSize: pageSize,
                     TotalPages: 0,
@@ -168,7 +168,7 @@ router.patch('/bounusrate', async (req, res) => {
             }
             let pages = Math.ceil(instance.count / pageSize);
             res.json({
-                Data: data,
+                Array: data,
                 Meta: {
                     PageSize: pageSize,
                     TotalPages: pages,

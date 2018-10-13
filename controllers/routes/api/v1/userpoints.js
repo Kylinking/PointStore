@@ -91,11 +91,11 @@ router.get('/userpoints', async (req, res) => {
             logger.info(instance);
             let pages = Math.ceil(instance.count / pageSize);
             let json = {
-                Data: [],
+                Array: [],
                 Meta: {}
             };
             instance.rows.forEach((row) => {
-                json.Data.push(row);
+                json.Array.push(row);
             });
             json.Meta["TotalPages"] = pages;
             json.Meta["CurrentRows"] = instance.rows.length;
@@ -441,8 +441,8 @@ router.post('/userpoints', async (req, res) => {
         })
         .then(result => {
             logger.info(result);
-            let json = {Data:{}};
-            json.Data.TransactionDetail = {
+            let json = {Object:{}};
+            json.Object.TransactionDetail = {
                 ShopId:operateShopId,
                 ChargedMoney:rechargedMoney,
                 CustomedMoney:costMoney,
@@ -452,18 +452,18 @@ router.post('/userpoints', async (req, res) => {
                 ShopBounusPoints:bounus,
                 Date:new Date(date),
             }
-            json.Data.CustomerAccountInfo = result.dataValues;
+            json.Object.CustomerAccountInfo = result.dataValues;
             if (recommendCustomerInfo){
-                json.Data.RecommendCustomerInfo = recommendCustomerInfo;
-                json.Data.RecommendPoints = recommendPoints;
+                json.Object.RecommendCustomerInfo = recommendCustomerInfo;
+                json.Object.RecommendPoints = recommendPoints;
             }else{
-                json.Data.RecommendCustomerInfo = null;
+                json.Object.RecommendCustomerInfo = null;
             }
             if (indirectRecommendCustomerInfo){
-                json.Data.IndirectRecommendCustomerInfo = indirectRecommendCustomerInfo;
-                json.Data.IndirectRecommendPoints = indirectRecommendPoints;
+                json.Object.IndirectRecommendCustomerInfo = indirectRecommendCustomerInfo;
+                json.Object.IndirectRecommendPoints = indirectRecommendPoints;
             }else{
-                json.Data.IndirectRecommendCustomerInfo = null;
+                json.Object.IndirectRecommendCustomerInfo = null;
             }
             res.json(json).end();
         })

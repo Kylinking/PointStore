@@ -101,7 +101,7 @@ router.get('/shophistory', async (req, res) => {
         })
         let pages = Math.ceil(instance.count / pageSize);
         res.json({
-            Data: data,
+            Array: data,
             Meta:{
                 PageSize:pageSize,
                     TotalPages: pages,
@@ -112,7 +112,14 @@ router.get('/shophistory', async (req, res) => {
         }).end();
     } else {
         res.json({
-            Data: []
+            Array: [],
+            Meta:{
+                PageSize:0,
+                    TotalPages: 0,
+                    CurrentRows: 0,
+                    TotalRows:0,
+                    CurrentPage:page
+            }
         }).end();
     }
 });

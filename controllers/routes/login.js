@@ -66,7 +66,7 @@ router.post('/', async function  (req, res, next) {
         redisClient.expire(String(shopId), expireTime);
         logger.info(shopId + ": 登录成功");
         res.json({
-          Data: {
+          Object: {
             Message: "Login Success!",
             Token: token
           }

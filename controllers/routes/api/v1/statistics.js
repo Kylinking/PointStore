@@ -128,7 +128,7 @@ router.get('/statistics/shop', async (req, res) => {
         include: includeObj
     });
     let json = {
-        Data: [],
+        Array: [],
         Meta: {},
         Duration: {}
     }
@@ -207,7 +207,7 @@ router.get('/statistics/shop', async (req, res) => {
             where: whereObj,
             include: includeObj
         });
-        json.Data.push({
+        json.Array.push({
             Date: moment(startDate).add(i + offset, "days").format("YYYY-MM-DDT00:00:00Z"),
             NewCustomer: newCustomers || 0,
             AccumulateCustomedPoints: accumulateCustomedPoints || 0,
@@ -222,7 +222,7 @@ router.get('/statistics/shop', async (req, res) => {
             TotalShopBounusPoints: totalShopBounusPoints || 0,
             TotalRecommendPoints: totalRecommendPoints || 0,
         });
-        logger.info(json.Data[i]);
+        logger.info(json.Array[i]);
     }
     whereObj.CreatedAt = durationObj;
     try {

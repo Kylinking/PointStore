@@ -93,7 +93,7 @@ router.get('/customers', async (req, res) => {
             offset: offset
         });
         let json = {
-            Data: [],
+            Array: [],
             Meta: {}
         };
         let pages = Math.ceil(instance.count / pageSize);
@@ -106,7 +106,7 @@ router.get('/customers', async (req, res) => {
                 }
             })
             value["CustomerAccountInfo"] = record;
-            json.Data.push(value);
+            json.Array.push(value);
         }
         json.Meta["TotalPages"] = pages;
         json.Meta["CurrentRows"] = instance.rows.length;
@@ -203,7 +203,7 @@ router.post('/customers', async (req, res) => {
                 })
                 .then((row) => {
                     res.json({
-                        Data: row
+                        Object: row
                     }).end();
                     logger.info(row);
                     return res.locals.db.CustomerAccountInfo.create({
@@ -282,7 +282,7 @@ router.delete('/customers', async (req, res) => {
         instance.set('Status', 0);
         instance.save().then((row) => {
             res.json({
-                Data: row
+                Object: row
             }).end();
         }).catch((error) => {
             res.json({
@@ -361,7 +361,7 @@ router.patch('/customers', async (req, res) => {
         if (age != null) instance.set('Age', age);
         instance.save().then((row) => {
             res.json({
-                Data: row
+                Object: row
             }).end();
         }).catch((err) => {
             logger.error(err);

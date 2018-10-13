@@ -95,7 +95,7 @@ router.get('/shoppoints', async (req, res) => {
             })
             let pages = Math.ceil(instance.count / pageSize);
             res.json({
-                Data: data,
+                Array: data,
                 Meta:{
                     PageSize:pageSize,
                     TotalPages: pages,
@@ -107,7 +107,7 @@ router.get('/shoppoints', async (req, res) => {
             }).end();
         } else {
             res.json({
-                Data: [],
+                Array: [],
                 Meta:{
                     PageSize:pageSize,
                     TotalPages: 0,

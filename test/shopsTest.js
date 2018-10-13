@@ -9,16 +9,15 @@ const tokenOtherAdmin = require('../config/test.json').tokenOtherAdmin;
 chai.use(chaiHttp);
 
 describe('Get shopInfos',()=>{
-    it('it should return array', done=>{
+    it('it should return object', done=>{
         chai.request(server)
             .get('/api/v1/shops')
             .set("TOKEN",token)
             .end((err,res)=>{
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.be.a('array');
-                res.body.Data.should.have.length(1);
+                res.body.should.have.property('Object');
+                res.body.Object.should.be.a('Object');
                 done(); 
             })
     })
@@ -32,14 +31,14 @@ describe('总店取分店信息',()=>{
             .end((err,res)=>{
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.be.a('array');
+                res.body.should.have.property('Array');
+                res.body.Array.should.be.a('array');
                 res.body.Meta.should.have.property('TotalPages');
                 res.body.Meta.should.have.property('CurrentPage');
                 res.body.Meta.should.have.property('TotalRows');
                 res.body.Meta.should.have.property('CurrentRows');
                 res.body.Meta.CurrentPage.should.be.gt(0);
-                res.body.Data.should.have.length(2);
+                res.body.Array.should.have.length(2);
                 done(); 
             })
     })
@@ -54,15 +53,15 @@ describe('Super Get shopInfos',()=>{
             .end((err,res)=>{
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.be.a('array');
+                res.body.should.have.property('Array');
+                res.body.Array.should.be.a('array');
                 res.body.Meta.should.have.property('TotalPages');
                 res.body.Meta.should.have.property('CurrentPage');
                 res.body.Meta.should.have.property('TotalRows');
                 res.body.Meta.should.have.property('CurrentRows');
                 res.body.Meta.TotalPages.should.be.gt(0);
                 res.body.Meta.TotalPages.should.be.gt(0);
-                res.body.Data.should.have.length(2);
+                res.body.Array.should.have.length(2);
                 done(); 
             })
     })
@@ -77,15 +76,15 @@ describe('Super Get some shopInfos',()=>{
             .end((err,res)=>{
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.be.a('array');
+                res.body.should.have.property('Array');
+                res.body.Array.should.be.a('array');
                 res.body.Meta.should.have.property('TotalPages');
                 res.body.Meta.should.have.property('CurrentPage');
                 res.body.Meta.should.have.property('TotalRows');
                 res.body.Meta.should.have.property('CurrentRows');
                 res.body.Meta.TotalPages.should.be.gt(0);
                 res.body.Meta.CurrentRows.should.be.gt(0);
-                res.body.Data.should.have.length(2);
+                res.body.Array.should.have.length(2);
                 done(); 
             })
     })
@@ -127,13 +126,13 @@ describe('总店建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -154,13 +153,13 @@ describe('Superman建总店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -182,13 +181,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -241,12 +240,12 @@ describe('总店关分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
                 done();
             });
     });
@@ -283,12 +282,12 @@ describe('Superman关分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
                 done();
             });
     });
@@ -346,12 +345,12 @@ describe('总店改分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
                 done();
             });
     });
@@ -390,12 +389,12 @@ describe('Superman改分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
                 done();
             });
     });
@@ -418,13 +417,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -445,13 +444,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -472,13 +471,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -499,13 +498,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -526,13 +525,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -553,13 +552,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -580,13 +579,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -607,13 +606,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -634,13 +633,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -661,13 +660,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -688,13 +687,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -715,13 +714,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -742,13 +741,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -769,13 +768,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -796,13 +795,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -823,13 +822,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -850,13 +849,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -877,13 +876,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });
@@ -904,13 +903,13 @@ describe('Superman建分店', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('ShopId');
-                res.body.Data.should.have.property('Name');
-                res.body.Data.should.have.property('Address');
-                res.body.Data.should.have.property('Status');
-                res.body.Data.should.have.property('Phone');
-                res.body.Data.should.have.property('ParentShopId');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('ShopId');
+                res.body.Object.should.have.property('Name');
+                res.body.Object.should.have.property('Address');
+                res.body.Object.should.have.property('Status');
+                res.body.Object.should.have.property('Phone');
+                res.body.Object.should.have.property('ParentShopId');
                 done();
             });
     });

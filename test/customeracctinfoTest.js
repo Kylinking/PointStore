@@ -18,8 +18,8 @@ describe('总店取客户账户信息', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.be.a('array');
+                res.body.should.have.property('Array');
+                res.body.Array.should.be.a('array');
                 res.body.Meta.should.have.property('TotalPages');
                 res.body.Meta.should.have.property('CurrentPage');
                 res.body.Meta.should.have.property('TotalRows');
@@ -39,8 +39,8 @@ describe('Superman取客户账户信息', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.be.a('array');
+                res.body.should.have.property('Array');
+                res.body.Array.should.be.a('array');
                 res.body.Meta.should.have.property('TotalPages');
                 res.body.Meta.should.have.property('CurrentPage');
                 res.body.Meta.should.have.property('TotalRows');
@@ -59,8 +59,8 @@ describe('Superman取客户账户信息', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.be.a('array');
+                res.body.should.have.property('Array');
+                res.body.Array.should.be.a('array');
                 res.body.Meta.should.have.property('TotalPages');
                 res.body.Meta.should.have.property('CurrentPage');
                 res.body.Meta.should.have.property('TotalRows');
@@ -79,8 +79,8 @@ describe('分店取客户账户信息', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.be.a('array');
+                res.body.should.have.property('Array');
+                res.body.Array.should.be.a('array');
                 res.body.Meta.should.have.property('TotalPages');
                 res.body.Meta.should.have.property('CurrentPage');
                 res.body.Meta.should.have.property('TotalRows');
@@ -100,9 +100,9 @@ describe('Superman取客户账户信息', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.be.a('array');
-                res.body.Data.should.have.length(1);
+                res.body.should.have.property('Array');
+                res.body.Array.should.be.a('array');
+                res.body.Array.should.have.length(1);
                 res.body.Meta.should.have.property('TotalPages');
                 res.body.Meta.should.have.property('CurrentPage');
                 res.body.Meta.should.have.property('TotalRows');
@@ -121,9 +121,9 @@ describe('分店取客户账户信息', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.be.a('array');
-                res.body.Data.should.have.length(1);
+                res.body.should.have.property('Array');
+                res.body.Array.should.be.a('array');
+                res.body.Array.should.have.length(1);
                 res.body.Meta.should.have.property('TotalPages');
                 res.body.Meta.should.have.property('CurrentPage');
                 res.body.Meta.should.have.property('TotalRows');
@@ -142,8 +142,8 @@ describe('分店取不同总店客户账户信息', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.length(0);
+                res.body.should.have.property('Array');
+                res.body.Array.should.have.length(0);
                 done();
             });
     });
@@ -158,8 +158,8 @@ describe('总店取不同总店下的客户账户信息', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.Data.should.have.length(0);
-                res.body.should.have.property('Data');
+                res.body.Array.should.have.length(0);
+                res.body.should.have.property('Array');
                 done();
             });
     });

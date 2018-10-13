@@ -22,10 +22,10 @@ describe('Login with correct ShopId & Password', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('Token');
-                res.body.Data.Token.length.should.be.gt(0);
-                res.body.Data.should.have.property('Message');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('Token');
+                res.body.Object.Token.length.should.be.gt(0);
+                res.body.Object.should.have.property('Message');
                 done();
             });
     });
@@ -42,10 +42,10 @@ describe('Login with correct ShopId & Password', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('Token');
-                res.body.Data.Token.length.should.be.gt(0);
-                res.body.Data.should.have.property('Message');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('Token');
+                res.body.Object.Token.length.should.be.gt(0);
+                res.body.Object.should.have.property('Message');
                 done();
             });
     });
@@ -62,10 +62,10 @@ describe('Login with correct ShopId & Password', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('Token');
-                res.body.Data.Token.length.should.be.gt(0);
-                res.body.Data.should.have.property('Message');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('Token');
+                res.body.Object.Token.length.should.be.gt(0);
+                res.body.Object.should.have.property('Message');
                 done();
             });
     });
@@ -83,10 +83,10 @@ describe('Login with correct ShopId & Password', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('Token');
-                res.body.Data.Token.length.should.be.gt(0);
-                res.body.Data.should.have.property('Message');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('Token');
+                res.body.Object.Token.length.should.be.gt(0);
+                res.body.Object.should.have.property('Message');
                 done();
             });
     });
@@ -103,10 +103,10 @@ describe('Login with correct ShopId & Password', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.should.have.property('Token');
-                res.body.Data.Token.length.should.be.gt(0);
-                res.body.Data.should.have.property('Message');
+                res.body.should.have.property('Object');
+                res.body.Object.should.have.property('Token');
+                res.body.Object.Token.length.should.be.gt(0);
+                res.body.Object.should.have.property('Message');
                 done();
             });
     });
@@ -123,7 +123,7 @@ describe('Login with correct ShopId & fake Password', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.not.have.property('Data');
+                res.body.should.not.have.property('Object');
                 res.body.should.have.property('Error');
                 res.body.Error.should.have.property('Message');
                 res.body.Error.Message.should.be.eq("密码错误");
@@ -143,7 +143,7 @@ describe('Login with fake ShopId & fake Password', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.not.have.property('Data');
+                res.body.should.not.have.property('Object');
                 res.body.should.have.property('Error');
                 res.body.Error.should.have.property('Message');
                 res.body.Error.Message.should.be.eq("用户不存在");

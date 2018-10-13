@@ -10,25 +10,7 @@ const tokenOtherAdmin = require('../config/test.json').tokenOtherAdmin;
 const token124 = require('../config/test.json').token124;
 chai.use(chaiHttp);
 
-describe('客户充值', () => {
-    it('返回客户账户信息', (done) => {
-        let data = {
-            Phone:13890651236,
-            RechargedMoney:20
-        }
-        chai.request(server)
-            .post('/api/v1/userpoints')
-            .set("TOKEN",token124)
-            .send(data)
-            .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                res.body.Data.RemainPoints.should.be.eq(140);
-                done();
-            });
-    });
-});
+
 
 describe('客户充值', () => {
     it('返回客户账户信息', (done) => {
@@ -47,10 +29,29 @@ describe('客户充值', () => {
             });
     });
 });
+describe('客户充值', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            RechargedMoney:25
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Object');
+                done();
+            });
+    });
+});
+
 describe('客户消费', () => {
     it('返回客户账户信息', (done) => {
         let data = {
-            Phone:13890651236,
+            Phone:13981312368,
             CostMoney:20
         }
         chai.request(server)
@@ -60,7 +61,25 @@ describe('客户消费', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
+                done();
+            });
+    });
+});
+describe('客户消费', () => {
+    it('返回客户账户信息', (done) => {
+        let data = {
+            Phone:13981312368,
+            CostMoney:20
+        }
+        chai.request(server)
+            .post('/api/v1/userpoints')
+            .set("TOKEN",token)
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object'); 
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -78,7 +97,7 @@ describe('客户充值', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -96,43 +115,7 @@ describe('客户消费', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                done();
-            });
-    });
-});
-describe('客户消费', () => {
-    it('返回客户账户信息', (done) => {
-        let data = {
-            Phone:13981312368,
-            CostMoney:20
-        }
-        chai.request(server)
-            .post('/api/v1/userpoints')
-            .set("TOKEN",token)
-            .send(data)
-            .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                done();
-            });
-    });
-});
-describe('客户消费', () => {
-    it('返回客户账户信息', (done) => {
-        let data = {
-            Phone:13981312368,
-            CostMoney:20
-        }
-        chai.request(server)
-            .post('/api/v1/userpoints')
-            .set("TOKEN",token)
-            .send(data)
-            .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -150,7 +133,7 @@ describe('客户充值', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -168,7 +151,7 @@ describe('客户消费', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -186,7 +169,7 @@ describe('客户充值', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -204,7 +187,7 @@ describe('客户消费', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -222,7 +205,7 @@ describe('客户充值', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -240,7 +223,7 @@ describe('客户消费', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -258,7 +241,7 @@ describe('客户充值', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -276,7 +259,7 @@ describe('客户消费', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -294,7 +277,7 @@ describe('客户充值', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -312,7 +295,7 @@ describe('客户消费', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -330,7 +313,7 @@ describe('客户充值', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -348,7 +331,7 @@ describe('客户消费', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -366,7 +349,7 @@ describe('客户充值', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -384,7 +367,7 @@ describe('客户消费', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -402,43 +385,7 @@ describe('客户充值', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                done();
-            });
-    });
-});
-describe('客户消费', () => {
-    it('返回客户账户信息', (done) => {
-        let data = {
-            Phone:13981312368,
-            CostMoney:20
-        }
-        chai.request(server)
-            .post('/api/v1/userpoints')
-            .set("TOKEN",token)
-            .send(data)
-            .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
-                done();
-            });
-    });
-});
-describe('客户充值', () => {
-    it('返回客户账户信息', (done) => {
-        let data = {
-            Phone:13981312368,
-            RechargedMoney:25
-        }
-        chai.request(server)
-            .post('/api/v1/userpoints')
-            .set("TOKEN",token)
-            .send(data)
-            .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object'); 
-                res.body.should.have.property('Data');
+                res.body.should.have.property('Object');
                 done();
             });
     });
@@ -456,8 +403,8 @@ describe('客户充值', () => {
 //             .end((err, res) => {
 //                 res.should.have.status(200);
 //                 res.body.should.be.a('object'); 
-//                 res.body.should.have.property('Data');
-//                 res.body.Data.RemainPoints.should.be.eq(120);
+//                 res.body.should.have.property('Object');
+//                 res.body.Object.RemainPoints.should.be.eq(120);
 //                 done();
 //             });
 //     });
@@ -476,8 +423,8 @@ describe('客户充值', () => {
 //             .end((err, res) => {
 //                 res.should.have.status(200);
 //                 res.body.should.be.a('object'); 
-//                 res.body.should.have.property('Data');
-//                 res.body.Data.RemainPoints.should.be.eq(120);
+//                 res.body.should.have.property('Object');
+//                 res.body.Object.RemainPoints.should.be.eq(120);
 //                 done();
 //             });
 //     });
@@ -496,8 +443,8 @@ describe('客户充值', () => {
 //             .end((err, res) => {
 //                 res.should.have.status(200);
 //                 res.body.should.be.a('object'); 
-//                 res.body.should.have.property('Data');
-//                 res.body.Data.RemainPoints.should.be.eq(140);
+//                 res.body.should.have.property('Object');
+//                 res.body.Object.RemainPoints.should.be.eq(140);
 //                 done();
 //             });
 //     });
@@ -516,8 +463,8 @@ describe('客户充值', () => {
 //             .end((err, res) => {
 //                 res.should.have.status(200);
 //                 res.body.should.be.a('object'); 
-//                 res.body.should.have.property('Data');
-//                 res.body.Data.RemainPoints.should.be.eq(2020);
+//                 res.body.should.have.property('Object');
+//                 res.body.Object.RemainPoints.should.be.eq(2020);
 //                 done();
 //             });
 //     });
@@ -536,8 +483,8 @@ describe('客户充值', () => {
 //             .end((err, res) => {
 //                 res.should.have.status(200);
 //                 res.body.should.be.a('object'); 
-//                 res.body.should.have.property('Data');
-//                 res.body.Data.RemainPoints.should.be.eq(2020);
+//                 res.body.should.have.property('Object');
+//                 res.body.Object.RemainPoints.should.be.eq(2020);
 //                 done();
 //             });
 //     });
