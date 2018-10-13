@@ -48,9 +48,12 @@ app.all('*', function (req, res, next) {
   } catch (error) {
     logger.error(error);
   }
-  next();
+  if (req.method == 'OPTIONS') {
+    res.status(200).end();  
+  }else{
+    next();
+  }
 })
-
 app.use('/login', LoginRouter);
 
 app.use('/api', ApiRouter);
