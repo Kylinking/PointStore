@@ -147,7 +147,6 @@ router.get('/customerhistory', async (req, res) => {
 
 // error 
 router.use('/customerhistory', (req, res) => {
-    res.status(400);
     res.json({
         Error: {
             Message: "No Service with " + req.method

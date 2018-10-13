@@ -255,7 +255,6 @@ router.post('/userpoints', async (req, res) => {
                             });
                             break;
                         default:
-        
                             break;
                     }
                     logger.info(`bounusRate: RecommendRate:${bounusRate.RecommendRate},Indirect:${bounusRate.IndirectRecommendRate},ShopBounus:${bounusRate.ShopBounusPointRate}`);
@@ -294,8 +293,7 @@ router.post('/userpoints', async (req, res) => {
                             Message:`本次消费金额不足`,
                             Mount:costMoney -custAcctInfo.RemainMoney-rechargedMoney
                         });
-                    }
-                    
+                    }                   
                     custAcctInfo = await db.CustomerAccountInfo.increment({
                         RemainMoney: rechargedMoney - costMoney,
                         ChargedMoney:rechargedMoney,
@@ -380,7 +378,6 @@ router.post('/userpoints', async (req, res) => {
                     }, {
                         transaction: transaction
                     });
-
                     logger.info("customerInfo CustomerAccountChange create");
                     logger.info(custAcctChange);
                     if (recommendCustomerInfo && recommendPoints > 0) {
@@ -484,7 +481,6 @@ router.post('/userpoints', async (req, res) => {
 
 // error 
 router.use('/userpoints', (req, res) => {
-    res.status(400);
     res.json({
         Error: {
             Message: "No Service with " + req.method
