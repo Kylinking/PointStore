@@ -114,7 +114,7 @@ router.get('/shophistory', async (req, res) => {
         res.json({
             Array: [],
             Meta:{
-                PageSize:0,
+                PageSize:pageSize,
                     TotalPages: 0,
                     CurrentRows: 0,
                     TotalRows:0,

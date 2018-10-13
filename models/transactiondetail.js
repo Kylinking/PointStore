@@ -29,6 +29,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.FLOAT,
       allowNull: false,
     },
+    PointToMoneyRate: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
     Date: {
       type: DataTypes.BIGINT,
       allowNull: false,
