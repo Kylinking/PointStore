@@ -1,6 +1,30 @@
 var db = require('../models').db;
 
 var util = {
+    getShopByIdAsync:async function (shopId){
+        try {
+            let shop = await db.ShopInfo.findOne({
+                where:{
+                    ShopId:shopId
+                }
+            });
+            return shop;
+        }catch(error){
+            return null;
+        }
+    },
+    getBounusRateByIdAsync:async function (shopId){
+        try {
+            let rate = await db.BounusPointRate.findOne({
+                where:{
+                    ShopId:shopId
+                }
+            });
+            return rate;
+        }catch(error){
+            return null;
+        }
+    },
      isAdminShopAsync: async function (shopId) {
         if (isNaN(shopId)) return false;
         var shopInfo = db.ShopInfo;

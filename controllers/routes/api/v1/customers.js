@@ -137,11 +137,11 @@ router.post('/customers', async (req, res) => {
     let shopId = util.makeNumericValue(req.body.ShopId, null);
     let recommendCustomerId = util.makeNumericValue(req.body.RecommendCustomerId, null);
     logger.info(`phone:${phone},status:${status},name:${name},sex:${sex},age:${age},recommend:${recommendCustomerId}`);
-    [phone, sex].forEach(elem => {
+    [phone, sex,name].forEach(elem => {
         if (elem == null) {
             res.json({
                 Error: {
-                    Message: "Phone,Sex不能为空！"
+                    Message: "Name,Phone,Sex不能为空！"
                 }
             });
             return;

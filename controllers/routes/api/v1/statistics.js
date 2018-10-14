@@ -61,12 +61,12 @@ router.get('/statistics/shop', async (req, res) => {
             moment(endDate).format("YYYY-MM-DD HH:mm:ss")
         ]
     };
+
+
     let currentRows = (duration - offset);
     if ((duration - offset) > pageSize) {
         currentRows = pageSize;
     }
-
-    
     if (operateShop.Type === 2) {
         if (queryShopId != null && queryShopId != operateShopId) {
             res.json({
@@ -139,7 +139,7 @@ router.get('/statistics/shop', async (req, res) => {
     let totalShopBounusPoints = 0;
     let totalRecommendPoints = 0;
     let totalCustomer = 0;
-    for (let i = 0; i < currentRows; i++) {
+    for (let i = 0; i <= currentRows; i++) {
         // dayCondition = moment(startDate).add(i+offset,"days").format("YYYY-MM-DD HH:mm:ss");
         dayCondition = {
             [Op.between]: [

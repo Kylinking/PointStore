@@ -22,24 +22,7 @@ fs
         file = file.substring(0, file.lastIndexOf('.'));
         apis.push(require(path.join(__dirname, version, file)));
     });
-
-// router.use('/', (req, res, next) => {
-//     var apiFile = path.join(__dirname, req.path);
-//     if (apiFile.endsWith('\\')) {
-//         apiFile = apiFile.substring(0, apiFile.length - 1);
-//     }
-//     apiFile += '.js';
-//     if (!fs.existsSync(apiFile)) {
-//         res.status(404).json({
-//             Error: {
-//                 Message: "404 找不到该服务。"
-//             }
-//         }).end();
-//     } else {
-//         next();
-//     }
-// });
-
+    
 //Check authentication and expire time
 router.use('/' + version,
     async function Authentication(req, res, next) {

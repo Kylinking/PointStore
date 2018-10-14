@@ -4,7 +4,6 @@ let util = require('../../../../util/util');
 let router = express.Router();
 const Op = require('sequelize').Op;
 
-
 router.get('/shoppoints', async (req, res) => {
     let db = res.locals.db;
     let logger = res.locals.logger;
@@ -14,21 +13,17 @@ router.get('/shoppoints', async (req, res) => {
     let page = util.makeNumericValue(req.query.Page, 1);
     let pageSize = util.makeNumericValue(req.query.Size, 20);
     let offset = (page - 1) * pageSize;
-    let role = await util.getRoleAsync(operateShopId);
-    let queryRole = await util.getRoleAsync(queryShopId);
-    logger.info(`queryShopId:${queryShopId},page:${page},role:${role},queryRole:${queryRole}`);
+    logger.info(`queryShopId:${queryShopId},page:${page}`);
     let whereObj = {};
     let includeObj = {
         model: db.ShopInfo,
         require: true,
     }
+    let operateShop = await util.getShopByIdAsync(operateShopId);
+    let queryShop;
     if (queryShopId != null) {
-        let shopinfo = await db.ShopInfo.findOne({
-            where: {
-                ShopId: queryShopId
-            }
-        });
-        if (!shopinfo) {
+        queryShop = await util.getShopByIdAsync(queryShopId);
+        if (!queryShop) {
             res.json({
                 Error: {
                     Message: `该店面不存在。ShopId:${queryShopId}`
@@ -37,25 +32,27 @@ router.get('/shoppoints', async (req, res) => {
             return;
         }
     }
-    if (role == 'superman') {
+    if (operateShop.Type == 0) {
         if (queryShopId == operateShopId) {
             whereObj.ShopId = operateShopId;
-        } 
-        if (queryShopId == null){
+        }
+        if (queryShopId == null) {
 
-        }else if (queryRole == 'admin') {
+        } else if (queryShop.Type == 1) {
             if (queryType == 0) {
                 whereObj.ShopId = queryShopId;
-            }else{
+            } else {
                 includeObj.where = {
                     ParentShopId: queryShopId,
                 };
-            }           
+            }
+        }else{
+            whereObj.ShopId = queryShopId;
         }
-    } else if (role == 'admin') {
-        if ((queryRole == 'normal' && !await util.isSubordinateAsync(operateShopId, queryShopId)) ||
-            (queryRole == 'admin' && queryShopId != operateShopId) ||
-            queryRole == 'superman') {
+    } else if (operateShop.Type == 1) {
+        if (queryShop && ((queryShop.Type == 2 && queryShop.ParentShopId != operateShopId) ||
+                (queryShop.Type == 1 && queryShopId != operateShopId) ||
+                queryShop.Type == 0)) {
             res.json({
                 Error: {
                     Message: `无权限查询该店面账户信息.ShopId:${queryShopId}`
@@ -67,7 +64,7 @@ router.get('/shoppoints', async (req, res) => {
             includeObj.where = {
                 ParentShopId: operateShopId,
             };
-        }else {
+        } else {
             whereObj.ShopId = queryShopId;
         }
     } else {
@@ -82,6 +79,8 @@ router.get('/shoppoints', async (req, res) => {
         whereObj.ShopId = operateShopId;
     }
     try {
+        logger.info(whereObj);
+        logger.info(includeObj);
         let instance = await db.ShopAccountInfo.findAndCountAll({
             where: whereObj,
             include: [includeObj],
@@ -90,30 +89,71 @@ router.get('/shoppoints', async (req, res) => {
         });
         if (instance) {
             let data = [];
-            instance.rows.forEach(ele => {
-                data.push(ele);
-            })
+            let rootRate = await util.getBounusRateByIdAsync(1);
+            let adminRate;
+            if (operateShop.Type == 0) {
+                adminRate = null;
+            } else {
+                adminRate = queryShop ? await util.getBounusRateByIdAsync(queryShop) :
+                    await util.getBounusRateByIdAsync(operateShop.ParentShopId);
+            }
+            for (let ele of instance.rows) {
+                let rate = await util.getBounusRateByIdAsync(ele.ShopId);
+                logger.info(`${ele.Id}:${rate.dataValues.PointToMoneyRate}`);
+
+                if (rate) {
+                    switch (rate.Level) {
+                        case 0:
+                            rate = rootRate;
+                            break;
+                        case 1:
+                            rate = adminRate != null ? adminRate : await util.getBounusRateByIdAsync((await util.getShopByIdAsync(ele.ShopId)).ParentShopId);
+                            break;
+                        default:
+                            break;
+                    }
+                    let tmpShop = await util.getShopByIdAsync(ele.ShopId);
+                    logger.error(tmpShop.ParentShopId);                 
+                        if (tmpShop.Type == 2){
+                            logger.info(`tmpShop.ParentShopId:${tmpShop.ParentShopId}`);
+                            let t = await util.getBounusRateByIdAsync(tmpShop.ParentShopId);
+                            logger.error(t.PointToMoneyRate);
+                            rate.PointToMoneyRate = t.PointToMoneyRate;
+                        }
+                        logger.info(`${ele.Id}:${tmpShop.ShopId}:${rate.dataValues.PointToMoneyRate}`)
+                        ele.dataValues.BounusPointRate =  rate.dataValues; 
+                        
+                        logger.error(ele.ShopId);
+                        logger.info("yyyyy");   
+                        
+                        logger.info("Xxxxxxxxxxxxxxxxxxxxxxxxx");   
+                        logger.info(ele.dataValues);
+                        data.push(ele.dataValues);
+                        rate.dataValues = {};
+                }
+            }
             let pages = Math.ceil(instance.count / pageSize);
+            logger.info("============="); 
+            logger.info(data);
             res.json({
                 Array: data,
-                Meta:{
-                    PageSize:pageSize,
+                Meta: {
+                    PageSize: pageSize,
                     TotalPages: pages,
                     CurrentRows: instance.rows.length,
-                    TotalRows:instance.count,
-                    CurrentPage:page
+                    TotalRows: instance.count,
+                    CurrentPage: page
                 }
-                
             }).end();
         } else {
             res.json({
                 Array: [],
-                Meta:{
-                    PageSize:pageSize,
+                Meta: {
+                    PageSize: pageSize,
                     TotalPages: 0,
                     CurrentRows: 0,
-                    TotalRows:0,
-                    CurrentPage:page
+                    TotalRows: 0,
+                    CurrentPage: page
                 }
             }).end();
         }
