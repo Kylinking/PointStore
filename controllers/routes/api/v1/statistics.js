@@ -225,9 +225,10 @@ router.get('/statistics/shop', async (req, res) => {
         logger.info(json.Array[i]);
     }
     whereObj.CreatedAt = durationObj;
+    customerCountObj.CreatedAt = durationObj;
     try {
         newCustomers = await db.CustomerInfo.count({
-            where: whereObj,
+            where: customerCountObj,
             include: includeObj
         });
         accumulateCustomedPoints = await db.ShopAccountChange.sum('CustomedPoints', {
