@@ -56,9 +56,9 @@ router.get('/statistics/shop', async (req, res) => {
     let customerCountObj = {};
     let includeObj = [];
     let durationObj = {
-        [Op.between]: [
-            moment(startDate).format("YYYY-MM-DD HH:mm:ss"),
-            moment(endDate).format("YYYY-MM-DD HH:mm:ss")
+        [Op.and]:[
+            {[Op.gt]:moment(startDate).format("YYYY-MM-DD 00:00:00")},
+            {[Op.lt]:moment(endDate).add(1, "days").format("YYYY-MM-DD 00:00:00")}
         ]
     };
 
@@ -142,9 +142,9 @@ router.get('/statistics/shop', async (req, res) => {
     for (let i = 0; i <= currentRows; i++) {
         // dayCondition = moment(startDate).add(i+offset,"days").format("YYYY-MM-DD HH:mm:ss");
         dayCondition = {
-            [Op.between]: [
-                moment(startDate).add(i + offset, "days").format("YYYY-MM-DD 00:00:00"),
-                moment(startDate).add(i + offset + 1, "days").format("YYYY-MM-DD 00:00:00")
+            [Op.and]:[
+                {[Op.gt]:moment(startDate).add(i + offset, "days").format("YYYY-MM-DD 00:00:00")},
+                {[Op.lt]:moment(startDate).add(i + offset + 1, "days").format("YYYY-MM-DD 00:00:00")}
             ]
         }
         whereObj.CreatedAt = dayCondition;
@@ -176,7 +176,7 @@ router.get('/statistics/shop', async (req, res) => {
         logger.info("==================")
         logger.info(whereObj);
         let con = {
-            [Op.lt]: moment(startDate).add(i + offset, "days").format("YYYY-MM-DD 23:59:59")
+            [Op.lt]: moment(startDate).add(i + offset+1, "days").format("YYYY-MM-DD 00:00:00")
         }
         whereObj.CreatedAt =  con;
         customerCountObj.CreatedAt = con;
@@ -259,7 +259,7 @@ router.get('/statistics/shop', async (req, res) => {
         json.Duration = {
             TotalCustomer: nowCustomers || 0,
             StartDate: moment(startDate).format("YYYY-MM-DDT00:00:00Z"),
-            EndDate: moment(endDate).format("YYYY-MM-DDT00:00:00Z"),
+            EndDate: moment(endDate).format("YYYY-MM-DDT23:59:59Z"),
             ShopId: queryShopId || operateShopId,
             NewCustomer: newCustomers || 0,
             CustomedPoints: accumulateCustomedPoints || 0,
