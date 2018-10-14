@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
         RemainPoints: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            defaultValue:0
         },
         RemainMoney: {
             type: DataTypes.INTEGER,

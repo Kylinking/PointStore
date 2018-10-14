@@ -20,11 +20,13 @@ module.exports = (sequelize, DataTypes)=>{
         },
         Level:{
             type:DataTypes.INTEGER,
-            allowNull:true,
+            allowNull: false,
+            defaultValue:2
         },
         PointToMoneyRate:{
             type:DataTypes.FLOAT,
-            allowNull:true,
+            allowNull: false,
+            defaultValue:0
         }
     },{
         updatedAt:'UpdatedAt',

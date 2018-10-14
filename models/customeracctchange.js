@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
     // },
     CustomedPoints: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
+      defaultValue:0
     },
     Date: {
       type: DataTypes.BIGINT,
@@ -19,23 +20,28 @@ module.exports = (sequelize, DataTypes) => {
     },
     ShopBounusPoints: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
+      defaultValue:0
     },
     RecommendPoints: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
+      defaultValue:0
     },
     IndirectRecommendPoints: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
+      defaultValue:0
     },
     ChargedMoney: {
       type: DataTypes.FLOAT,
-      allowNull: true,
+      allowNull: false,
+      defaultValue:0
     },
     CustomedMoney: {
       type: DataTypes.FLOAT,
-      allowNull: true,
+      allowNull: false,
+      defaultValue:0
     },
   }, {
     updatedAt: 'UpdatedAt',
