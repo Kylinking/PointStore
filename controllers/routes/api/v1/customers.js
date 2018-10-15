@@ -135,9 +135,10 @@ router.post('/customers', async (req, res) => {
     let age = util.makeNumericValue(req.body.Age, null);
     let operateShopId = res.locals.shopid;
     let shopId = util.makeNumericValue(req.body.ShopId, null);
-    let recommendCustomerId = util.makeNumericValue(req.body.RecommendCustomerId, null);
-    logger.info(`phone:${phone},status:${status},name:${name},sex:${sex},age:${age},recommend:${recommendCustomerId}`);
-    [phone, sex,name].forEach(elem => {
+    let recommendCustomerId = null;
+    let recommendPhone = isNaN(util.checkPhone(req.body.Recommend)) ? null : req.body.Recommend;
+    logger.info(`phone:${phone},status:${status},name:${name},sex:${sex},age:${age},recommend:${recommendPhone}`);
+    [phone, sex, name].forEach(elem => {
         if (elem == null) {
             res.json({
                 Error: {
@@ -172,6 +173,7 @@ router.post('/customers', async (req, res) => {
             Sex: sex,
             Age: age,
         };
+
         if (operatedShop.Type === 1) {
             createCondition.ShopId = operateShopId;
         } else if (operatedShop.Type === 0) {
@@ -184,17 +186,27 @@ router.post('/customers', async (req, res) => {
                     createCondition.ShopId = queryShop.ParentShopId;
                 }
             }
-            if (!await util.isBelongsToByIdAsync(recommendCustomerId, createCondition.ShopId)) {
-                createCondition.RecommendCustomerId = null;
-            } else {
-                createCondition.RecommendCustomerId = recommendCustomerId;
-            }
         } else {
             if (shopId !== null && shopId !== operatedShop.ParentShopId) {
                 throw `无权创建该店面客户信息,ShopId:${shopId}.`;
             } else {
                 createCondition.ShopId = operatedShop.ParentShopId;
             }
+        }
+        if (recommendPhone != null) {
+            let recommendCustomer = await res.locals.db.CustomerInfo.findOne({
+                where: {
+                    Phone: recommendPhone
+                }
+            });
+            logger.info(recommendCustomer);
+            if (recommendCustomer != null)
+                recommendCustomerId = recommendCustomer.CustomerId;
+        }
+        if (!await util.isBelongsToByIdAsync(recommendCustomerId, createCondition.ShopId)) {
+            throw "推荐人电话号码不是本店会员号码";
+        } else {
+            createCondition.RecommendCustomerId = recommendCustomerId;
         }
         logger.info(`createCondition:${createCondition.toString()}`);
         res.locals.db.sequelize.transaction(transaction => {
@@ -216,7 +228,7 @@ router.post('/customers', async (req, res) => {
                         RemainPoints: 0,
                         ChargedMoney: 0,
                         CustomedMoney: 0,
-                        RemainMoney:0,
+                        RemainMoney: 0,
                     }, {
                         transaction: transaction
                     });
@@ -224,19 +236,27 @@ router.post('/customers', async (req, res) => {
                 .catch(
                     error => {
                         logger.error(error);
-                        if (error.name != null){
-                            if (error.errors[0].type == "unique violation"){
+                        if (error.name != null) {
+                            if (error.errors[0].type == "unique violation") {
                                 error = "客户联系电话已存在";
                             }
                         }
-                        
-                        res.json({Error:{Message:error}}).end();
+
+                        res.json({
+                            Error: {
+                                Message: error
+                            }
+                        }).end();
                     }
                 );
         });
     } catch (error) {
         logger.error(error);
-        res.json({Error:{Message:error}}).end();
+        res.json({
+            Error: {
+                Message: error
+            }
+        }).end();
     }
 });
 
