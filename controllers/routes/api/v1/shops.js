@@ -323,6 +323,11 @@ router.post('/shops', async (req, res, next) => {
         })
         .catch(error => {
             logger.error(error);
+            if (error.name != null){
+                if (error.errors[0].type == "unique violation"){
+                    error = "店面联系电话已存在";
+                }
+            }
             res.json({
                 Error: {
                     Message: error
@@ -427,7 +432,7 @@ router.patch('/shops', async (req, res, next) => {
 router.use('/shops', (req, res) => {
     res.json({
         Error: {
-            Message: "Not Found. \nNo Service with " + req.method
+            Message: "找不到 \nNo Service with " + req.method
         }
     }).end();
 })

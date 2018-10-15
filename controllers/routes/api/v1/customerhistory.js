@@ -78,29 +78,6 @@ router.get('/customerhistory', async (req, res) => {
         return;
     }
     
-    // let role = await util.getRoleAsync(operateShopId);
-    // logger.info(role);
-    // if (role == 'normal') {
-    //     if (customer.ShopId != operateShopId) {
-    //         res.json({
-    //             Error: {
-    //                 Message: "无权限查询其它分店客户明细"
-    //             }
-    //         }).end();
-    //         return;
-    //     }
-    // } else if (role == "admin") {
-    //     if (!await util.isSubordinateAsync(operateShopId, customer.ShopId)) {
-    //         res.json({
-    //             Error: {
-    //                 Message: "无权限查询其它总店下客户明细"
-    //             }
-    //         }).end();
-    //         return;
-    //     }
-    //     whereObj.CustomerId = customer.CustomerId;
-    //     whereObj.ShopId = customer.ShopId;
-    // }
     whereObj.CustomerId = customer.CustomerId;
     if (queryShopId != null){
         whereObj.ShopId = queryShopId;
@@ -156,7 +133,7 @@ router.get('/customerhistory', async (req, res) => {
 router.use('/customerhistory', (req, res) => {
     res.json({
         Error: {
-            Message: "No Service with " + req.method
+            Message: "无此服务： " + req.method
         }
     }).end();
 })

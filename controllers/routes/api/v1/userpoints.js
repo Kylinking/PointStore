@@ -488,7 +488,7 @@ router.post('/userpoints', async (req, res) => {
 router.use('/userpoints', (req, res) => {
     res.json({
         Error: {
-            Message: "No Service with " + req.method
+            Message: "无此服务： " + req.method
         }
     }).end();
 })

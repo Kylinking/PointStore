@@ -172,7 +172,7 @@ router.get('/shoppoints', async (req, res) => {
 router.use('/shoppoints', (req, res) => {
     res.json({
         Error: {
-            Message: "Not Found. \nNo Service with " + req.method
+            Message: "无此服务：" + req.method
         }
     }).end();
 })

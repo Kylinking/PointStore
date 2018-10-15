@@ -174,14 +174,14 @@ router.get('/statistics/shop', async (req, res) => {
             include: includeObj
         });
         logger.info("==================")
-        logger.info(whereObj);
+        logger.info(whereObj.CreatedAt);
         let con = {
             [Op.lt]: moment(startDate).add(i + offset+1, "days").format("YYYY-MM-DD 00:00:00")
         }
         whereObj.CreatedAt =  con;
         customerCountObj.CreatedAt = con;
         logger.info("==================")
-        logger.info(whereObj);
+        logger.info(whereObj.CreatedAt);
 
         totalCustomer = await db.CustomerInfo.count({
             where: customerCountObj,
@@ -285,7 +285,7 @@ router.get('/statistics/shop', async (req, res) => {
 router.use('/customerhistory', (req, res) => {
     res.json({
         Error: {
-            Message: "No Service with " + req.method
+            Message: "无此服务： " + req.method
         }
     }).end();
 })

@@ -224,6 +224,12 @@ router.post('/customers', async (req, res) => {
                 .catch(
                     error => {
                         logger.error(error);
+                        if (error.name != null){
+                            if (error.errors[0].type == "unique violation"){
+                                error = "客户联系电话已存在";
+                            }
+                        }
+                        
                         res.json({Error:{Message:error}}).end();
                     }
                 );
@@ -287,7 +293,7 @@ router.delete('/customers', async (req, res) => {
         }).catch((error) => {
             res.json({
                 Error: {
-                    Message: error
+                    Message: "数据写入失败"
                 }
             }).end();
         });

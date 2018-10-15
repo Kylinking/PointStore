@@ -61,7 +61,7 @@ app.use('/api', ApiRouter);
 app.use(function (req, res, next) {
    //next(createError(404));
    logger.info("NO PATH");
-   res.json({Error:{Message:`Not Found Path:${req.path}`}}).end();
+   res.json({Error:{Message:`找不到路径:${req.path}`}}).end();
    //next();
 });
 // error handler
@@ -71,7 +71,7 @@ app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   // render the error page
-  res.json({Error:{Message:"Not Found!"}}).end();
+  res.json({Error:{Message:"找不到路径!"}}).end();
   //res.status(err.status || 500).end();
   //res.render('error');
 });

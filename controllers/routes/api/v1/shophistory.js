@@ -128,7 +128,7 @@ router.get('/shophistory', async (req, res) => {
 router.use('/shophistory', (req, res) => {
     res.json({
         Error: {
-            Message: "No Service with " + req.method
+            Message: "无此服务： " + req.method
         }
     }).end();
 })
