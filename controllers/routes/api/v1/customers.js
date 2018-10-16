@@ -200,14 +200,16 @@ router.post('/customers', async (req, res) => {
                 }
             });
             logger.info(recommendCustomer);
-            if (recommendCustomer != null)
+            if (recommendCustomer != null){
                 recommendCustomerId = recommendCustomer.CustomerId;
-        }
+        
         if (!await util.isBelongsToByIdAsync(recommendCustomerId, createCondition.ShopId)) {
             throw "推荐人电话号码不是本店会员号码";
         } else {
             createCondition.RecommendCustomerId = recommendCustomerId;
         }
+        }
+    }
         logger.info(`createCondition:${createCondition.toString()}`);
         res.locals.db.sequelize.transaction(transaction => {
             return customerInfo.create(createCondition, {
