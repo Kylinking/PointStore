@@ -90,51 +90,32 @@ router.get('/shoppoints', async (req, res) => {
         if (instance) {
             let data = [];
             let rootRate = await util.getBounusRateByIdAsync(1);
-            let adminRate;
-            if (operateShop.Type == 0) {
-                adminRate = null;
-            } else {
-                adminRate = queryShop ? await util.getBounusRateByIdAsync(queryShop) :
-                    await util.getBounusRateByIdAsync(operateShop.ParentShopId);
-            }
+            let adminRate = null;
             for (let ele of instance.rows) {
                 let rate = await util.getBounusRateByIdAsync(ele.ShopId);
-                logger.info(`${ele.Id}:${rate.dataValues.PointToMoneyRate}`);
-
+                let tmpShop = await util.getShopByIdAsync(ele.ShopId);
                 if (rate) {
                     switch (rate.Level) {
                         case 0:
                             rate = rootRate;
                             break;
                         case 1:
-                            rate = adminRate != null ? adminRate : await util.getBounusRateByIdAsync((await util.getShopByIdAsync(ele.ShopId)).ParentShopId);
+                            let adminShop = await util.getShopByIdAsync(tmpShop.ParentShopId);
+                            rate = await util.getBounusRateByIdAsync(adminShop.ShopId);
                             break;
                         default:
                             break;
                     }
-                    let tmpShop = await util.getShopByIdAsync(ele.ShopId);
-                    logger.error(tmpShop.ParentShopId);                 
                         if (tmpShop.Type == 2){
-                            logger.info(`tmpShop.ParentShopId:${tmpShop.ParentShopId}`);
                             let t = await util.getBounusRateByIdAsync(tmpShop.ParentShopId);
-                            logger.error(t.PointToMoneyRate);
                             rate.PointToMoneyRate = t.PointToMoneyRate;
                         }
-                        logger.info(`${ele.Id}:${tmpShop.ShopId}:${rate.dataValues.PointToMoneyRate}`)
                         ele.dataValues.BounusPointRate =  rate.dataValues; 
-                        
-                        logger.error(ele.ShopId);
-                        logger.info("yyyyy");   
-                        
-                        logger.info("Xxxxxxxxxxxxxxxxxxxxxxxxx");   
-                        logger.info(ele.dataValues);
                         data.push(ele.dataValues);
                         rate.dataValues = {};
                 }
             }
             let pages = Math.ceil(instance.count / pageSize);
-            logger.info("============="); 
-            logger.info(data);
             res.json({
                 Array: data,
                 Meta: {
