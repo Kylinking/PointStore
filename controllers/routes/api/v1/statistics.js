@@ -119,7 +119,7 @@ router.get('/statistics/shop', async (req, res) => {
     }
     nowCustomers = await db.CustomerInfo.count({
         where: customerCountObj,
-        include: includeObj
+        //include: includeObj
     });
     let json = {
         Array: [],
@@ -145,7 +145,7 @@ router.get('/statistics/shop', async (req, res) => {
         customerCountObj.CreatedAt = dayCondition;
         newCustomers = await db.CustomerInfo.count({
             where: customerCountObj,
-            include: includeObj
+            //include: includeObj
         });
         logger.info(newCustomers);
         accumulateCustomedPoints = await db.ShopAccountChange.sum('CustomedPoints', {
@@ -185,7 +185,7 @@ router.get('/statistics/shop', async (req, res) => {
 
         totalCustomer = await db.CustomerInfo.count({
             where: customerCountObj,
-            include: includeObj
+            //include: includeObj
         });
         totalCustomedPoints = await db.ShopAccountChange.sum('CustomedPoints', {
             where: whereObj,
@@ -229,7 +229,7 @@ router.get('/statistics/shop', async (req, res) => {
     try {
         newCustomers = await db.CustomerInfo.count({
             where: customerCountObj,
-            include: includeObj
+            //include: includeObj
         });
         accumulateCustomedPoints = await db.ShopAccountChange.sum('CustomedPoints', {
             where: whereObj,
