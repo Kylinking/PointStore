@@ -84,6 +84,7 @@ router.get('/statistics/shop', async (req, res) => {
                 includeObj = [{
                     model: db.ShopInfo,
                     required: true,
+                    attributes: [],
                     where: {
                         ParentShopId: queryShopId
                     }
@@ -94,15 +95,7 @@ router.get('/statistics/shop', async (req, res) => {
         }
     } else { //admin
         if (queryShopId != null && queryShopId != operateShopId) {
-            if (!await util.isSubordinateAsync(operateShopId, queryShopId)) {
-                res.json({
-                    Error: {
-                        Message: '无权查询其它店面统计信息。'
-                    }
-                }).end();
-                return;
-            }
-            if (queryShop.Type == 0) {
+            if (!await util.isSubordinateAsync(operateShopId, queryShopId) || queryShop.Type == 0) {
                 res.json({
                     Error: {
                         Message: '无权查询其它店面统计信息。'
@@ -115,9 +108,10 @@ router.get('/statistics/shop', async (req, res) => {
         if (queryShopId == operateShopId || queryShopId == null) {
             includeObj = [{
                 model: db.ShopInfo,
+                attributes: [],
                 required: true,
                 where: {
-                    ShopId: operateShopId
+                    ParentShopId: operateShopId
                 }
             }]
         }
@@ -153,26 +147,32 @@ router.get('/statistics/shop', async (req, res) => {
             where: customerCountObj,
             include: includeObj
         });
+        logger.info(newCustomers);
         accumulateCustomedPoints = await db.ShopAccountChange.sum('CustomedPoints', {
             where: whereObj,
             include: includeObj
         });
+        logger.info(accumulateCustomedPoints);
         accumulateBounusPoints = await db.ShopAccountChange.sum('ShopBounusPoints', {
             where: whereObj,
             include: includeObj
         });
+        logger.info(accumulateBounusPoints);
         accumulateRecommendPoints = await db.ShopAccountChange.sum('RecommendPoints', {
             where: whereObj,
             include: includeObj
         });
+        logger.info(accumulateRecommendPoints);
         accumulateReChargedMoney = await db.ShopAccountChange.sum('ChargedMoney', {
             where: whereObj,
             include: includeObj
         });
+        logger.info(accumulateReChargedMoney);
         accumulateCustomedMoney = await db.ShopAccountChange.sum('CustomedMoney', {
             where: whereObj,
             include: includeObj
         });
+        logger.info(accumulateReChargedMoney);
         logger.info("==================")
         logger.info(whereObj.CreatedAt);
         let con = {
