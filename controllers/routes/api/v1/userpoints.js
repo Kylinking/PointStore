@@ -124,7 +124,7 @@ router.post('/userpoints', async (req, res) => {
     let costPoints = util.makeNumericValue(req.body.CostPoint, 0);
     //let rechargedPoints = util.makeNumericValue(req.body.RechargedPoint, 0);
     let costMoney = util.makeNumericValue(req.body.CostMoney, 0);
-    let rechargedMoney = 0;//util.makeNumericValue(req.body.RechargedMoney, 0);
+    let rechargedMoney = util.makeNumericValue(req.body.RechargedMoney, 0);
     let bounus = 0
     let recommendPoints = 0
     let indirectRecommendPoints = 0
@@ -150,7 +150,7 @@ router.post('/userpoints', async (req, res) => {
     if (costMoney == 0 && rechargedMoney==0){
         res.json({
             Error: {
-                Message: '需输入充值或交易积分'
+                Message: '需输入充值或交易金额'
             }
         }).end();
         return;
@@ -208,11 +208,17 @@ router.post('/userpoints', async (req, res) => {
                         throw "用户状态不正确，本次交易拒绝。";
                     }
                     recommendCustomerInfo = await customerInfo.getRecommendCustomerInfo();
+                    if (recommendCustomerInfo.Status == 0){
+                        recommendCustomerInfo = null;
+                    }
                     logger.info(customerInfo.dataValues);
 
                     recommendCustomerInfo && logger.info(recommendCustomerInfo.dataValues);
                     if (recommendCustomerInfo) {
                         indirectRecommendCustomerInfo = await recommendCustomerInfo.getRecommendCustomerInfo();
+                        if (indirectRecommendCustomerInfo.Status == 0){
+                            indirectRecommendCustomerInfo = null;
+                        }
                     }
 
                     indirectRecommendCustomerInfo && logger.info(indirectRecommendCustomerInfo.dataValues);
@@ -276,21 +282,22 @@ router.post('/userpoints', async (req, res) => {
                     recommendPoints = Math.floor(costMoney * bounusRate.RecommendRate);
                     indirectRecommendPoints = Math.floor(costMoney * bounusRate.IndirectRecommendRate);
                     bounus = Math.floor(costMoney * bounusRate.ShopBounusPointRate);
-                    // if (custAcctInfo.RemainMoney + rechargedMoney < costMoney) {
-                    //     //res.json({Error:{Message:"本次消费积分余额不足"}}).end();
-                    //     throw({
-                    //         Message:`本次消费金额不足`,
-                    //         Mount:costMoney -custAcctInfo.RemainMoney-rechargedMoney
-                    //     });
-                    // }    
+                    if (custAcctInfo.RemainMoney + rechargedMoney < costMoney) {
+                        res.json({Error:{Message:"本次消费积分余额不足"}}).end();
+                         throw({
+                             Message:`本次消费金额不足`,
+                             Mount:costMoney -custAcctInfo.RemainMoney-rechargedMoney
+                         });
+                    }    
                     let transactionOptions = {
-                        ChargedMoney: 0,
+                        ChargedMoney: rechargedMoney,
                         CustomedPoints: costPoints,
                         Date: date,
                         CustomedMoney: costMoney,
                         ShopId:operateShopId,
                         CustomerId:customerInfo.CustomerId,
-                        PointToMoneyRate:adminBounusRate.PointToMoneyRate
+                        PointToMoneyRate:adminBounusRate.PointToMoneyRate,
+                        ShopBounusPoints:bounus
                     };      
                     let shopAcctInfoOptions = {
                         CustomedMoney: costMoney,
@@ -299,7 +306,7 @@ router.post('/userpoints', async (req, res) => {
                         ShopBounusPoints: bounus,
                     };         
                     custAcctInfo = await db.CustomerAccountInfo.increment({
-                        RemainMoney: 0,
+                        RemainMoney: rechargedMoney - costMoney,
                         ChargedMoney:rechargedMoney,
                         CustomedMoney:costMoney,
                         ShopBounusPoints: bounus,
