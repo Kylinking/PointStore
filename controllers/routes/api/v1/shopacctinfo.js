@@ -46,7 +46,7 @@ router.get('/shoppoints', async (req, res) => {
                     ParentShopId: queryShopId,
                 };
             }
-        }else{
+        } else {
             whereObj.ShopId = queryShopId;
         }
     } else if (operateShop.Type == 1) {
@@ -90,14 +90,13 @@ router.get('/shoppoints', async (req, res) => {
         if (instance) {
             let data = [];
             let rootRate = await util.getBounusRateByIdAsync(1);
-            let adminRate = null;
             for (let ele of instance.rows) {
                 let rate = await util.getBounusRateByIdAsync(ele.ShopId);
                 let tmpShop = await util.getShopByIdAsync(ele.ShopId);
-                if (rate) {
+                if (rate != null) {
                     switch (rate.Level) {
                         case 0:
-                            rate = rootRate;
+                            rate = Object.assign(rootRate.toJSON());
                             break;
                         case 1:
                             let adminShop = await util.getShopByIdAsync(tmpShop.ParentShopId);
@@ -106,13 +105,12 @@ router.get('/shoppoints', async (req, res) => {
                         default:
                             break;
                     }
-                        if (tmpShop.Type == 2){
-                            let t = await util.getBounusRateByIdAsync(tmpShop.ParentShopId);
-                            rate.PointToMoneyRate = t.PointToMoneyRate;
-                        }
-                        ele.dataValues.BounusPointRate =  rate.dataValues; 
-                        data.push(ele.dataValues);
-                        rate.dataValues = {};
+                    if (tmpShop.Type == 2) {
+                        let t = await util.getBounusRateByIdAsync(tmpShop.ParentShopId);
+                        rate.PointToMoneyRate = t.PointToMoneyRate;
+                    }
+                    ele.dataValues.BounusPointRate = rate;
+                    data.push(ele);
                 }
             }
             let pages = Math.ceil(instance.count / pageSize);
