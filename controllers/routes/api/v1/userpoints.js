@@ -208,7 +208,7 @@ router.post('/userpoints', async (req, res) => {
                         throw "用户状态不正确，本次交易拒绝。";
                     }
                     recommendCustomerInfo = await customerInfo.getRecommendCustomerInfo();
-                    if (recommendCustomerInfo.Status == 0){
+                    if (recommendCustomerInfo && recommendCustomerInfo.Status == 0){
                         recommendCustomerInfo = null;
                     }
                     logger.info(customerInfo.dataValues);
@@ -216,7 +216,7 @@ router.post('/userpoints', async (req, res) => {
                     recommendCustomerInfo && logger.info(recommendCustomerInfo.dataValues);
                     if (recommendCustomerInfo) {
                         indirectRecommendCustomerInfo = await recommendCustomerInfo.getRecommendCustomerInfo();
-                        if (indirectRecommendCustomerInfo.Status == 0){
+                        if (indirectRecommendCustomerInfo && indirectRecommendCustomerInfo.Status == 0){
                             indirectRecommendCustomerInfo = null;
                         }
                     }
