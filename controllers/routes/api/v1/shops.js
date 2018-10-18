@@ -307,6 +307,7 @@ router.post('/shops', async (req, res, next) => {
             let newBounusRate = await res.locals.db.BounusPointRate.create({
                 RecommendRate: 0.06,
                 IndirectRecommendRate: 0.05,
+                ThirdRecommendRate: 0.01,
                 ShopBounusPointRate: 0.05,
                 ShopId: newShop.ShopId,
                 Level: 0,

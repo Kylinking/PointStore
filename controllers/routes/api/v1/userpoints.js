@@ -287,7 +287,7 @@ router.post('/userpoints', async (req, res) => {
                         }
                         pointToMoney = costPoints * adminBounusRate.PointToMoneyRate;
                     }
-                    logger.info(`bounusRate: RecommendRate:${bounusRate.RecommendRate},Indirect:${bounusRate.IndirectRecommendRate},ShopBounus:${bounusRate.ShopBounusPointRate}`);
+                    logger.info(`bounusRate: RecommendRate:${bounusRate.RecommendRate},Indirect:${bounusRate.IndirectRecommendRate},Third:${bounusRate.ThirdRecommendRate},ShopBounus:${bounusRate.ShopBounusPointRate}`);
                     recommendPoints = Math.floor(costMoney * bounusRate.RecommendRate);
                     indirectRecommendPoints = Math.floor(costMoney * bounusRate.IndirectRecommendRate);
                     thirdRecommendPoints =  Math.floor(costMoney * bounusRate.ThirdRecommendRate);
@@ -445,7 +445,7 @@ router.post('/userpoints', async (req, res) => {
                         }, {
                             transaction: transaction
                         });
-                        shopAcctChangeRecommendPointAmount += indirectRecommendPoints
+                        shopAcctChangeRecommendPointAmount += indirectRecommendPoints;
                         logger.info("indirectRecommendCustomerInfo CustomerAccountChange create");
                         logger.info(custAcctChange);
                     }else {
@@ -462,7 +462,7 @@ router.post('/userpoints', async (req, res) => {
                         }, {
                             transaction: transaction
                         });
-                        shopAcctChangeRecommendPointAmount += thirdRecommendPoints
+                        shopAcctChangeRecommendPointAmount += thirdRecommendPoints;
                         logger.info("thirdRecommendCustomerInfo CustomerAccountChange create");
                         logger.info(custAcctChange);
                     }else {

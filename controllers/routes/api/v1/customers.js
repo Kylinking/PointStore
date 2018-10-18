@@ -226,6 +226,7 @@ router.post('/customers', async (req, res) => {
                         //ChargedPoints: 0,
                         RecommendPoints: 0,
                         IndirectRecommendPoints: 0,
+                        ThirdRecommendPoints: 0,
                         CustomedPoints: 0,
                         RemainPoints: 0,
                         ChargedMoney: 0,

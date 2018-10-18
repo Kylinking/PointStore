@@ -107,6 +107,7 @@ router.patch('/bounusrate', async (req, res) => {
     let queryShopId = util.makeNumericValue(req.body.ShopId, null);
     let recommendRate = util.makeNumericValue(req.body.RecommendRate, null);
     let indirectRecommendRate = util.makeNumericValue(req.body.IndirectRecommendRate, null);
+    let thirdRecommendRate = util.makeNumericValue(req.body.ThirdRecommendRate, null);
     let shopBounusRate = util.makeNumericValue(req.body.ShopBounusRate, null);
     let pointToMoneyRate = util.makeNumericValue(req.body.PointToMoneyRate, 0);
     let level = util.makeNumericValue(req.body.Level, 0);
@@ -114,7 +115,7 @@ router.patch('/bounusrate', async (req, res) => {
     let pageSize = util.makeNumericValue(req.body.Size, 20);
     let offset = (page - 1) * pageSize;
     let role = await util.getRoleAsync(operateShopId);
-    logger.info(`operatedShopId:${operateShopId},queryShopId:${queryShopId},recommendRate:${recommendRate},indirectRecommendRate:${indirectRecommendRate},shopBounusRate:${shopBounusRate},level:${level},role:${role}`);
+    logger.info(`operatedShopId:${operateShopId},queryShopId:${queryShopId},recommendRate:${recommendRate},indirectRecommendRate:${indirectRecommendRate},thirdRecommendRate:${thirdRecommendRate},shopBounusRate:${shopBounusRate},level:${level},role:${role}`);
     try {
         let whereObj = {};
         let includeObj = {
@@ -156,6 +157,7 @@ router.patch('/bounusrate', async (req, res) => {
             let updateObj = {}
             if (recommendRate != null) updateObj.RecommendRate = recommendRate;
             if (indirectRecommendRate != null) updateObj.IndirectRecommendRate = indirectRecommendRate;
+            if (thirdRecommendRate != null) updateObj.ThirdRecommendRate = thirdRecommendRate;
             if (shopBounusRate != null) updateObj.ShopBounusRate = shopBounusRate;
             if (role == "admin" || role == "superman") {
                 if (level != null) updateObj.Level = level;
