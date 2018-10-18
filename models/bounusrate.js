@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes)=>{
             type:DataTypes.FLOAT,
             allowNull:false,
         },
+        ThirdRecommendRate:{
+            type:DataTypes.FLOAT,
+            allowNull:false,
+        },
         ShopBounusPointRate:{
             type:DataTypes.FLOAT,
             allowNull:false,

@@ -15,6 +15,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue:0
     },
+    ThirdRecommendPoints: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue:0
+    },
     ShopBounusPoints: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -76,6 +81,14 @@ module.exports = (sequelize, DataTypes) => {
       as: 'IndirectRecommendCustomer',
       foreignKey: {
         name: 'IndirectRecommendCustomerId',
+        allowNull: true
+      }
+    });
+    models.TransactionDetail.belongsTo(models.CustomerInfo, {
+      onDelete: "CASCADE",
+      as: 'ThirdRecommendCustomer',
+      foreignKey: {
+        name: 'ThirdRecommendCustomerId',
         allowNull: true
       }
     });
