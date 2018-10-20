@@ -62,13 +62,9 @@ router.get('/bounusrate', async (req, res) => {
             offset: offset
         });
         if (instance) {
-            let data = [];
-            instance.rows.forEach(ele => {
-                data.push(ele);
-            })
             let pages = Math.ceil(instance.count / pageSize);
             res.json({
-                Array: data,
+                Array: instance.rows,
                 Meta: {
                     PageSize: pageSize,
                     TotalPages: pages,
@@ -192,10 +188,9 @@ router.patch('/bounusrate', async (req, res) => {
 
 // error 
 router.use('/bounusrate', (req, res) => {
-    res.status(400);
     res.json({
         Error: {
-            Message: "No Service with " + req.method
+            Message: "无此服务" + req.method
         }
     }).end();
 })

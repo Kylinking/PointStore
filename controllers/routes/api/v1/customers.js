@@ -148,8 +148,8 @@ router.post('/customers', async (req, res) => {
             return;
         }
     });
-    let operatedShop = undefined;
-    let queryShop = undefined;
+    let operatedShop;
+    let queryShop;
     try {
         operatedShop = await res.locals.db.ShopInfo.findOne({
             where: {

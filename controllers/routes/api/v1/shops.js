@@ -310,7 +310,7 @@ router.post('/shops', async (req, res, next) => {
                 ThirdRecommendRate: 0.01,
                 ShopBounusPointRate: 0.05,
                 ShopId: newShop.ShopId,
-                Level: 0,
+                Level: newShop.Type == 2 ? 1:2,
                 PointToMoneyRate: newShop.Type == 1 ? 1:0,
             }, {
                 transaction: transaction

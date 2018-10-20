@@ -7,7 +7,6 @@ const secretAccessKey = globalConfig.sms.secretAccessKey;
 const accessKeyId = globalConfig.sms.accessKeyId;
 let router = express.Router();
 const Op = require('sequelize').Op;
-let moment = require('moment');
 router.get('/userpoints', async (req, res) => {
     let logger = res.locals.logger;
     let db = res.locals.db;

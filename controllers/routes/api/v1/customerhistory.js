@@ -101,7 +101,7 @@ router.get('/customerhistory', async (req, res) => {
     if (instance) {
         let data = [];
         instance.rows.forEach(ele => {
-            ele.dataValues.Date = moment(ele.Date).format("YYYY-MM-DDTHH:mm:ss");
+            ele.Date = new Date(ele.Date);
             data.push(ele);
         })
         let pages = Math.ceil(instance.count / pageSize);
