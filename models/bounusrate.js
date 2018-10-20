@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes)=>{
         ThirdRecommendRate:{
             type:DataTypes.FLOAT,
             allowNull:false,
+            defaultValue:0.01
         },
         ShopBounusPointRate:{
             type:DataTypes.FLOAT,

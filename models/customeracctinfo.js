@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         ThirdRecommendPoints: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            defaultValue:0
         },
         CustomedPoints: {
             type: DataTypes.INTEGER,
