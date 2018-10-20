@@ -163,8 +163,6 @@ router.post('/customers', async (req, res) => {
                 }
             });
         }
-
-        //let role = await util.getRoleAsync(operateShopId);
         let createCondition = {
             Name: name,
             Address: address,
@@ -173,7 +171,6 @@ router.post('/customers', async (req, res) => {
             Sex: sex,
             Age: age,
         };
-
         if (operatedShop.Type === 1) {
             createCondition.ShopId = operateShopId;
         } else if (operatedShop.Type === 0) {
@@ -200,16 +197,16 @@ router.post('/customers', async (req, res) => {
                 }
             });
             logger.info(recommendCustomer);
-            if (recommendCustomer != null){
+            if (recommendCustomer != null) {
                 recommendCustomerId = recommendCustomer.CustomerId;
-        
-        if (!await util.isBelongsToByIdAsync(recommendCustomerId, createCondition.ShopId)) {
-            throw "推荐人电话号码不是本店会员号码";
-        } else {
-            createCondition.RecommendCustomerId = recommendCustomerId;
+
+                if (!await util.isBelongsToByIdAsync(recommendCustomerId, createCondition.ShopId)) {
+                    throw "推荐人电话号码不是本店会员号码";
+                } else {
+                    createCondition.RecommendCustomerId = recommendCustomerId;
+                }
+            }
         }
-        }
-    }
         logger.info(`createCondition:${createCondition.toString()}`);
         res.locals.db.sequelize.transaction(transaction => {
             return customerInfo.create(createCondition, {
@@ -223,7 +220,6 @@ router.post('/customers', async (req, res) => {
                     return res.locals.db.CustomerAccountInfo.create({
                         CustomerId: row.CustomerId,
                         ShopBounusPoints: 0,
-                        //ChargedPoints: 0,
                         RecommendPoints: 0,
                         IndirectRecommendPoints: 0,
                         ThirdRecommendPoints: 0,
@@ -244,7 +240,6 @@ router.post('/customers', async (req, res) => {
                                 error = "客户联系电话已存在";
                             }
                         }
-
                         res.json({
                             Error: {
                                 Message: error
@@ -402,7 +397,6 @@ router.patch('/customers', async (req, res) => {
         })
     }
 });
-
 
 router.use('/customers', (req, res) => {
     res.json({

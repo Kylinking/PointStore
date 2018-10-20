@@ -28,9 +28,9 @@ var r1,r2,r3;
 // })
 // .catch(error=>{
 //     console.log(error);
-// })
-console.log(util.checkPhone("089-123"));
-console.log(util.checkPhone("089123"));
-console.log(util.checkPhone("089-1-23"));
-console.log(util.checkPhone("089123-"));
-console.log(util.checkPhone("-089123"));
+// }
+async function sendRechargeMessage(name,shop,recharge,remainMoney,remainPoints){
+    let param = JSON.stringify({name,shop,recharge,remainMoney,remainPoints});
+    console.log(param);
+}
+sendRechargeMessage('xiao','dian',1,2,3);

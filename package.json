@@ -7,6 +7,7 @@
     "test": "mocha --timeout 10000"
   },
   "dependencies": {
+    "@alicloud/sms-sdk": "^1.1.6",
     "body-parser": "^1.18.3",
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
