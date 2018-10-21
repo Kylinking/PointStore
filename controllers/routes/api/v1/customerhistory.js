@@ -95,7 +95,8 @@ router.get('/customerhistory', async (req, res) => {
         where: whereObj,
         include: include,
         limit: pageSize,
-        offset: offset
+        offset: offset,
+        order:[['id','DESC']]
     });
 
     if (instance) {
