@@ -38,7 +38,7 @@ router.get('/statistics/shop', async (req, res) => {
 
     let queryShop = null;
     if (queryShopId != null){
-        queryShop = await await db.ShopInfo.findOne({
+        queryShop = await db.ShopInfo.findOne({
             where: {ShopId : queryShopId}
         });
     }
