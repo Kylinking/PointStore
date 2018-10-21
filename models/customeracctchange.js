@@ -33,7 +33,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue:0
     },
-
     ThirdRecommendPoints: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -49,6 +48,16 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue:0
     },
+    RemainPoints: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue:0
+  },
+  RemainMoney: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue:0
+  },
   }, {
     updatedAt: 'UpdatedAt',
     createdAt: 'CreatedAt'
