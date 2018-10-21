@@ -16,13 +16,23 @@ router.get('/customers', async (req, res) => {
     let pageSize = util.makeNumericValue(req.query.Size, 20);
     let name = req.query.Name || null;
     let offset = (page - 1) * pageSize;
-    let recommendId = util.makeNumericValue(req.query.RecommendCustomerId, null);
+    let recommendPhone = isNaN(util.checkPhone(req.query.RecommendPhone)) ? null : req.query.RecommendPhone;
+    let recommendId = null;
+    let recommendCustomer;
     let whereObj = {};
     if (phone != null) whereObj.Phone = {
         [Op.like]: `%${phone}%`
     };
     if (name != null) whereObj.Name = {
         [Op.like]: `%${name}%`
+    };
+    if (recommendPhone != null) {
+        recommendCustomer = await customerInfo.findOne({
+            where:{Phone:recommendPhone}
+        });
+        if (recommendCustomer){
+            recommendId = recommendCustomer.CustomerId;
+        }
     };
     if (recommendId != null) {
         whereObj.RecommendCustomerId = recommendId;
@@ -337,11 +347,11 @@ router.patch('/customers', async (req, res) => {
     let sex = req.body.Sex || null;
     let age = util.makeNumericValue(req.body.Age, null);
     let customerId = util.makeNumericValue(req.body.customerid, null);
-    let recommendCustomerId = util.makeNumericValue(req.body.RecommendCustomerId, null);
+    //let recommendCustomerId = util.makeNumericValue(req.body.RecommendCustomerId, null);
+    let recommendPhone = isNaN(util.checkPhone(req.body.RecommendPhone)) ? null : req.body.RecommendPhone;
     logger.info(`PATCH /customers`);
     logger.info(`phone:${phone},status:${status},name:${name},address:${address},age:${age}`);
     if (customerId == null && phone == null) {
-        logger.error(err);
         res.json({
             Error: {
                 Message: "Phone和CustomerId不能同时为空"
@@ -370,31 +380,52 @@ router.patch('/customers', async (req, res) => {
             whereObj.ShopId = operateShop.ParentShopId;
             break;
     }
-    let instance = await customerInfo.findOne({
-        where: whereObj
-    });
-    if (instance) {
-        if (customerId != null && phone != null) {
-            instance.set("Phone", phone);
-        }
-        if (recommendCustomerId != null) instance.set('RecommendCustomerId', recommendCustomerId);
-        if (status != null) instance.set('Status', status);
-        if (address != null) instance.set('Address', address);
-        if (name != null) instance.set('Name', name);
-        if (sex != null) instance.set('Sex', sex);
-        if (age != null) instance.set('Age', age);
-        instance.save().then((row) => {
-            res.json({
-                Object: row
-            }).end();
-        }).catch((err) => {
-            logger.error(err);
-            res.json({
-                Error: {
-                    Message: err
+    try {
+        let instance = await customerInfo.findOne({
+            where: whereObj
+        });
+        if (instance) {
+            if (customerId != null && phone != null) {
+                instance.set("Phone", phone);
+            }
+            //if (recommendCustomerId != null) instance.set('RecommendCustomerId', recommendCustomerId);
+            if (recommendPhone != null) {
+                let recommendCustomer = await customerInfo.findOne({
+                    where: {
+                        Phone: recommendPhone
+                    }
+                });
+                if (recommendCustomer != null) {
+                    if (!await util.isBelongsToByIdAsync(recommendCustomer.CustomerId, instance.ShopId)) {
+                        throw "推荐人电话号码不是本店会员号码";
+                    } else {
+                        instance.set('RecommendCustomerId', recommendCustomer.CustomerId);
+                    }
+                } else {
+                    throw "推荐人电话号码不是本店会员号码";
                 }
-            }).end();
-        })
+            }
+            if (status != null) instance.set('Status', status);
+            if (address != null) instance.set('Address', address);
+            if (name != null) instance.set('Name', name);
+            if (sex != null) instance.set('Sex', sex);
+            if (age != null) instance.set('Age', age);
+            instance.save().then((row) => {
+                res.json({
+                    Object: row
+                }).end();
+            }).catch((err) => {
+                logger.error(err);
+                res.json({
+                    Error: {
+                        Message: err
+                    }
+                }).end();
+            })
+        }
+    } catch (error) {
+        logger.error(error);
+        res.json({Error:{Message:error}}).end();
     }
 });
 
