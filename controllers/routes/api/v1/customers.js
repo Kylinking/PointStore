@@ -98,7 +98,7 @@ router.get('/customers', async (req, res) => {
         logger.info(`whereObj:${whereObj},include:${includeObj}`);
         let instance = await customerInfo.findAndCountAll({
             where: whereObj,
-            include: includeObj,
+            //include: includeObj,
             limit: pageSize,
             offset: offset
         });
@@ -109,14 +109,19 @@ router.get('/customers', async (req, res) => {
         let pages = Math.ceil(instance.count / pageSize);
         for (let row of instance.rows) {
             //add CustomerAccountInfo to records
-            let value = row.dataValues;
             let record = await db.CustomerAccountInfo.findOne({
                 where: {
                     CustomerId: row.CustomerId
                 }
-            })
-            value["CustomerAccountInfo"] = record;
-            json.Array.push(value);
+            });
+            let recommendCustomer = await row.getRecommendCustomerInfo();
+            if (recommendCustomer){
+                row.dataValues["RecommendPhone"] = recommendCustomer.Phone;
+            }else{
+                row.dataValues["RecommendPhone"] = null;
+            }
+            row.dataValues["CustomerAccountInfo"] = record;
+            json.Array.push(row);
         }
         json.Meta["TotalPages"] = pages;
         json.Meta["CurrentRows"] = instance.rows.length;
@@ -146,7 +151,7 @@ router.post('/customers', async (req, res) => {
     let operateShopId = res.locals.shopid;
     let shopId = util.makeNumericValue(req.body.ShopId, null);
     let recommendCustomerId = null;
-    let recommendPhone = isNaN(util.checkPhone(req.body.Recommend)) ? null : req.body.Recommend;
+    let recommendPhone = isNaN(util.checkPhone(req.body.RecommendPhone)) ? null : req.body.RecommendPhone;
     logger.info(`phone:${phone},status:${status},name:${name},sex:${sex},age:${age},recommend:${recommendPhone}`);
     [phone, sex, name].forEach(elem => {
         if (elem == null) {
@@ -346,7 +351,7 @@ router.patch('/customers', async (req, res) => {
     let address = req.body.Address || null;
     let sex = req.body.Sex || null;
     let age = util.makeNumericValue(req.body.Age, null);
-    let customerId = util.makeNumericValue(req.body.customerid, null);
+    let customerId = util.makeNumericValue(req.body.CustomerId, null);
     //let recommendCustomerId = util.makeNumericValue(req.body.RecommendCustomerId, null);
     let recommendPhone = isNaN(util.checkPhone(req.body.RecommendPhone)) ? null : req.body.RecommendPhone;
     logger.info(`PATCH /customers`);
@@ -380,12 +385,16 @@ router.patch('/customers', async (req, res) => {
             whereObj.ShopId = operateShop.ParentShopId;
             break;
     }
+    logger.info(whereObj);
     try {
         let instance = await customerInfo.findOne({
             where: whereObj
         });
         if (instance) {
             if (customerId != null && phone != null) {
+                if (await customerInfo.findOne({where:{Phone:phone}})){
+                    throw "电话号码已存在";
+                }
                 instance.set("Phone", phone);
             }
             //if (recommendCustomerId != null) instance.set('RecommendCustomerId', recommendCustomerId);
