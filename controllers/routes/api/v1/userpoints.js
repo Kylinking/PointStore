@@ -7,6 +7,10 @@ const secretAccessKey = globalConfig.sms.secretAccessKey;
 const accessKeyId = globalConfig.sms.accessKeyId;
 let router = express.Router();
 const Op = require('sequelize').Op;
+
+let testSmsPhone = "17628185988";
+
+
 router.get('/userpoints', async (req, res) => {
     let logger = res.locals.logger;
     let db = res.locals.db;
@@ -604,7 +608,7 @@ router.use((req, res, next) => {
 })
 
 async function sendMessage(phone, template, params) {
-    return 'OK';
+    //return 'OK';
     let smsClient = new SMSClient({
         accessKeyId,
         secretAccessKey
@@ -635,7 +639,7 @@ async function sendCostMessage(name, shop, bounus, cost, remainMoney, remainPoin
         remainMoney,
         remainPoints
     });
-    phone = '17628185988';
+    phone = testSmsPhone;
     return sendMessage(phone, globalConfig.sms.costTemplate, param);
 }
 async function sendRecommendMessage(name, shop, cost, points, remainMoney, remainPoints, phone) {
@@ -647,7 +651,7 @@ async function sendRecommendMessage(name, shop, cost, points, remainMoney, remai
         remainMoney,
         remainPoints
     });
-    phone = '17628185988';
+    phone = testSmsPhone;
     return sendMessage(phone, globalConfig.sms.recommendTemplate, param);
 }
 async function sendRechargeMessage(name, shop, recharge, remainMoney, remainPoints, phone) {
@@ -658,7 +662,7 @@ async function sendRechargeMessage(name, shop, recharge, remainMoney, remainPoin
         remainMoney,
         remainPoints
     });
-    phone = '17628185988';
+    phone = testSmsPhone;
     return sendMessage(phone, globalConfig.sms.rechargeTemplate, param);
 }
 async function findAccountInfo(db, id, transaction) {
