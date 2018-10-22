@@ -280,13 +280,13 @@ router.post('/userpoints', async (req, res) => {
                     thirdRecommendPoints = Math.floor(costMoney * bounusRate.ThirdRecommendRate);
                     bounus = Math.floor(costMoney * bounusRate.ShopBounusPointRate);
                     if (customerAccountInfo.RemainMoney + rechargedMoney < costMoney) {
-                        res.json({
-                            Error: {
-                                Message: "本次消费积分余额不足"
-                            }
-                        }).end();
+                        // res.json({
+                        //     Error: {
+                        //         Message: "本次消费余额不足"
+                        //     }
+                        // }).end();
                         throw ({
-                            Message: `本次消费金额不足`,
+                            Message: `本次消费余额不足`,
                             Mount: costMoney - customerAccountInfo.RemainMoney - rechargedMoney
                         });
                     }
