@@ -1,16 +1,9 @@
 'use strict';
 let util = require('../../../../util/util');
+let SMS = require('../../../../util/sms');
 let express = require('express');
-const SMSClient = require('@alicloud/sms-sdk');
-const globalConfig = require('../../../../config/global.json');
-const secretAccessKey = globalConfig.sms.secretAccessKey;
-const accessKeyId = globalConfig.sms.accessKeyId;
 let router = express.Router();
 const Op = require('sequelize').Op;
-
-let testSmsPhone = "17628185988";
-
-
 router.get('/userpoints', async (req, res) => {
     let logger = res.locals.logger;
     let db = res.locals.db;
@@ -519,16 +512,19 @@ router.post('/userpoints', async (req, res) => {
                 Date: new Date(date),
             }
             if (costMoney != 0) {
-                sendCostMessage(customerInfo.Name, 
+                SMS.sendMixCostMessage(customerInfo.Name, 
                     operateShop.Name, 
+                    costOrigin,
+                    costOrigin-costMoney,
+                    rechargedMoney,
+                    costMoney - rechargedMoney > 0?costMoney - rechargedMoney:0,
                     bounus, 
-                    costMoney,
                     result.RemainMoney, 
                     result.RemainPoints, 
                     customerInfo.Phone);
             }
             if (costOrigin == 0 && rechargedMoney != 0) {
-                sendRechargeMessage(customerInfo.Name, 
+                SMS.sendRechargeMessage(customerInfo.Name, 
                     operateShop.Name, 
                     rechargedMoney, 
                     result.RemainMoney, 
@@ -540,9 +536,8 @@ router.post('/userpoints', async (req, res) => {
                 json.Object.RecommendCustomerInfo = recommendCustomerInfo;
                 json.Object.RecommendPoints = recommendPoints;
                 if (recommendPoints != 0) {
-                    sendRecommendMessage(recommendCustomerInfo.Name, 
+                    SMS.sendRecommendMessage(recommendCustomerInfo.Name, 
                         operateShop.Name, 
-                        costMoney, 
                         recommendPoints, 
                         recommendCustomerAccountInfo.RemainMoney, 
                         recommendCustomerAccountInfo.RemainPoints, 
@@ -557,7 +552,6 @@ router.post('/userpoints', async (req, res) => {
                 if (indirectRecommendPoints != 0) {
                     sendRecommendMessage(indirectRecommendCustomerInfo.Name, 
                         operateShop.Name, 
-                        costMoney, 
                         indirectRecommendPoints, 
                         indirectRecommendCustomerAccountInfo.RemainMoney, 
                         indirectRecommendCustomerAccountInfo.RemainPoints, 
@@ -572,7 +566,6 @@ router.post('/userpoints', async (req, res) => {
                 if (thirdRecommendPoints != 0) {
                     sendRecommendMessage(thirdRecommendCustomerInfo.Name, 
                         operateShop.Name, 
-                        costMoney, 
                         thirdRecommendPoints, 
                         thirdRecommendCustomerAccountInfo.RemainMoney, 
                         thirdRecommendCustomerAccountInfo.RemainPoints, 
@@ -607,64 +600,6 @@ router.use((req, res, next) => {
     next();
 })
 
-async function sendMessage(phone, template, params) {
-    //return 'OK';
-    let smsClient = new SMSClient({
-        accessKeyId,
-        secretAccessKey
-    });
-    return smsClient.sendSMS({
-        PhoneNumbers: phone,
-        SignName: "联动会员",
-        TemplateCode: template,
-        TemplateParam: params
-    }).then(function (res) {
-        let {
-            Code
-        } = res
-        if (Code === 'OK') {
-            //处理返回参数
-            console.log(res)
-        }
-    }, function (err) {
-        console.log(err)
-    })
-}
-async function sendCostMessage(name, shop, bounus, cost, remainMoney, remainPoints, phone) {
-    let param = JSON.stringify({
-        name,
-        shop,
-        bounus,
-        cost,
-        remainMoney,
-        remainPoints
-    });
-    phone = testSmsPhone;
-    return sendMessage(phone, globalConfig.sms.costTemplate, param);
-}
-async function sendRecommendMessage(name, shop, cost, points, remainMoney, remainPoints, phone) {
-    let param = JSON.stringify({
-        name,
-        shop,
-        cost,
-        points,
-        remainMoney,
-        remainPoints
-    });
-    phone = testSmsPhone;
-    return sendMessage(phone, globalConfig.sms.recommendTemplate, param);
-}
-async function sendRechargeMessage(name, shop, recharge, remainMoney, remainPoints, phone) {
-    let param = JSON.stringify({
-        name,
-        shop,
-        recharge,
-        remainMoney,
-        remainPoints
-    });
-    phone = testSmsPhone;
-    return sendMessage(phone, globalConfig.sms.rechargeTemplate, param);
-}
 async function findAccountInfo(db, id, transaction) {
     return await db.CustomerAccountInfo.findOne({
         where: {
