@@ -10,7 +10,7 @@ let testSmsPhone = "13890651725";
 
 let SMS = {
     sendMessage:async function (phone, template, params,content) {
-    //return 'OK';
+    return 'OK';
     phone = testSmsPhone;
     let smsClient = new SMSClient({
         accessKeyId,

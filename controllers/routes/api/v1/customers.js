@@ -3,6 +3,7 @@ let util = require('../../../../util/util');
 let express = require('express');
 let router = express.Router();
 const Op = require('sequelize').Op;
+let SMS = require('../../../../util/sms');
 
 router.get('/customers', async (req, res) => {
     let customerInfo = res.locals.db.CustomerInfo;
@@ -28,9 +29,11 @@ router.get('/customers', async (req, res) => {
     };
     if (recommendPhone != null) {
         recommendCustomer = await customerInfo.findOne({
-            where:{Phone:recommendPhone}
+            where: {
+                Phone: recommendPhone
+            }
         });
-        if (recommendCustomer){
+        if (recommendCustomer) {
             recommendId = recommendCustomer.CustomerId;
         }
     };
@@ -115,9 +118,9 @@ router.get('/customers', async (req, res) => {
                 }
             });
             let recommendCustomer = await row.getRecommendCustomerInfo();
-            if (recommendCustomer){
+            if (recommendCustomer) {
                 row.dataValues["RecommendPhone"] = recommendCustomer.Phone;
-            }else{
+            } else {
                 row.dataValues["RecommendPhone"] = null;
             }
             row.dataValues["CustomerAccountInfo"] = record;
@@ -163,9 +166,18 @@ router.post('/customers', async (req, res) => {
             return;
         }
     });
+    
     let operatedShop;
     let queryShop;
+
     try {
+        if (await res.locals.db.CustomerInfo.findOne({
+            where: {
+                Phone: phone
+            }
+        })){
+             throw "客户联系电话已存在";
+        }
         operatedShop = await res.locals.db.ShopInfo.findOne({
             where: {
                 ShopId: operateShopId
@@ -206,6 +218,9 @@ router.post('/customers', async (req, res) => {
             }
         }
         if (recommendPhone != null) {
+            if (recommendPhone == phone){
+                throw "推荐人不能是自己";
+            }
             let recommendCustomer = await res.locals.db.CustomerInfo.findOne({
                 where: {
                     Phone: recommendPhone
@@ -214,54 +229,54 @@ router.post('/customers', async (req, res) => {
             logger.info(recommendCustomer);
             if (recommendCustomer != null) {
                 recommendCustomerId = recommendCustomer.CustomerId;
-
                 if (!await util.isBelongsToByIdAsync(recommendCustomerId, createCondition.ShopId)) {
                     throw "推荐人电话号码不是本店会员号码";
                 } else {
                     createCondition.RecommendCustomerId = recommendCustomerId;
                 }
+            }else{
+                throw "推荐人电话号码不是本店会员号码";
             }
         }
         logger.info(`createCondition:${createCondition.toString()}`);
-        res.locals.db.sequelize.transaction(transaction => {
-            return customerInfo.create(createCondition, {
+        let newCustomer;
+        let newCustomerAccount;
+        res.locals.db.sequelize.transaction(async transaction => {
+            try {
+                newCustomer = await customerInfo.create(createCondition, {
                     transaction: transaction
-                })
-                .then((row) => {
-                    res.json({
-                        Object: row
-                    }).end();
-                    logger.info(row);
-                    return res.locals.db.CustomerAccountInfo.create({
-                        CustomerId: row.CustomerId,
-                        ShopBounusPoints: 0,
-                        RecommendPoints: 0,
-                        IndirectRecommendPoints: 0,
-                        ThirdRecommendPoints: 0,
-                        CustomedPoints: 0,
-                        RemainPoints: 0,
-                        ChargedMoney: 0,
-                        CustomedMoney: 0,
-                        RemainMoney: 0,
-                    }, {
-                        transaction: transaction
-                    });
-                })
-                .catch(
-                    error => {
-                        logger.error(error);
-                        if (error.name != null) {
-                            if (error.errors[0].type == "unique violation") {
-                                error = "客户联系电话已存在";
-                            }
-                        }
-                        res.json({
-                            Error: {
-                                Message: error
-                            }
-                        }).end();
+                });
+                newCustomerAccount = await res.locals.db.CustomerAccountInfo.create({
+                    CustomerId: newCustomer.CustomerId,
+                    ShopBounusPoints: 0,
+                    RecommendPoints: 0,
+                    IndirectRecommendPoints: 0,
+                    ThirdRecommendPoints: 0,
+                    CustomedPoints: 0,
+                    RemainPoints: 0,
+                    ChargedMoney: 0,
+                    CustomedMoney: 0,
+                    RemainMoney: 0,
+                }, {
+                    transaction: transaction
+                });
+                res.json({
+                    Object: newCustomer
+                }).end();
+                SMS.sendNewMemberMessage(newCustomer.Name, operatedShop.Name, "阿文造型")
+            } catch (error) {
+                if (error.name != null) {
+                    if (error.errors[0].type == "unique violation") {
+                        error = "客户联系电话已存在";
                     }
-                );
+                }
+                logger.error(error);
+                res.json({
+                    Error: {
+                        Message: error
+                    }
+                }).end();
+            }
         });
     } catch (error) {
         logger.error(error);
@@ -356,10 +371,10 @@ router.patch('/customers', async (req, res) => {
     let recommendPhone = isNaN(util.checkPhone(req.body.RecommendPhone)) ? null : req.body.RecommendPhone;
     logger.info(`PATCH /customers`);
     logger.info(`phone:${phone},status:${status},name:${name},address:${address},age:${age}`);
-    if (customerId == null && phone == null) {
+    if (customerId == null) {
         res.json({
             Error: {
-                Message: "Phone和CustomerId不能同时为空"
+                Message: "CustomerId不能为空"
             }
         }).end();
         return;
@@ -370,11 +385,7 @@ router.patch('/customers', async (req, res) => {
         }
     });
     let whereObj = {};
-    if (customerId != null) {
-        whereObj.CustomerId = customerId;
-    } else {
-        whereObj.Phone = phone;
-    }
+    whereObj.CustomerId = customerId;
     switch (operateShop.Type) {
         case 0:
             break;
@@ -391,9 +402,20 @@ router.patch('/customers', async (req, res) => {
             where: whereObj
         });
         if (instance) {
-            if (customerId != null && phone != null) {
-                if (await customerInfo.findOne({where:{Phone:phone}})){
+            if (phone != null) {
+                let customer = await customerInfo.findOne({
+                        where: {
+                            Phone: phone
+                        }
+                    });
+                if (customer && customer.CustomerId != instance.CustomerId) 
+                {
                     throw "电话号码已存在";
+                }
+                if (recommendPhone != null) {
+                    if (recommendPhone == phone || recommendPhone == instance.Phone){
+                        throw "推荐人不能是自己";
+                    }
                 }
                 instance.set("Phone", phone);
             }
@@ -413,12 +435,16 @@ router.patch('/customers', async (req, res) => {
                 } else {
                     throw "推荐人电话号码不是本店会员号码";
                 }
+            }else{
+                instance.set('RecommendCustomerId', null)
             }
-            if (status != null) instance.set('Status', status);
-            if (address != null) instance.set('Address', address);
-            if (name != null) instance.set('Name', name);
+            if (status != null) {
+                instance.set('Status', status);
+            }
+            instance.set('Address', address);
+            instance.set('Name', name);
             if (sex != null) instance.set('Sex', sex);
-            if (age != null) instance.set('Age', age);
+            instance.set('Age', age);
             instance.save().then((row) => {
                 res.json({
                     Object: row
@@ -434,7 +460,11 @@ router.patch('/customers', async (req, res) => {
         }
     } catch (error) {
         logger.error(error);
-        res.json({Error:{Message:error}}).end();
+        res.json({
+            Error: {
+                Message: error
+            }
+        }).end();
     }
 });
 
