@@ -22,10 +22,10 @@ try{
 var sequelize = new Sequelize(mysqlConfig.db, mysqlConfig.username, mysqlConfig.password, {
     host: mysqlConfig.host,
     dialect: mysqlConfig.dialect,
+    timezone: '+08:00',
 });
 }catch(error){
     console.log(error);
-    
 }
 
 fs  .readdirSync(__dirname)
