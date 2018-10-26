@@ -8,43 +8,46 @@ module.exports = (sequelize, DataTypes) => {
         RemainPoints: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue:0
+            defaultValue:0,
         },
         RemainMoney: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.FLOAT,
+            defaultValue:0,
             allowNull: false,
         },
         ShopBounusPoints: {
             type: DataTypes.INTEGER,
+            defaultValue:0,
             allowNull: false,
         },
-        // ChargedPoints: {
-        //     type: DataTypes.INTEGER,
-        //     allowNull: false,
-        // },
         RecommendPoints: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            defaultValue:0,
         },
         IndirectRecommendPoints: {
             type: DataTypes.INTEGER,
+            defaultValue:0,
             allowNull: false,
         },
         ThirdRecommendPoints: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue:0
+            defaultValue:0,
         },
         CustomedPoints: {
             type: DataTypes.INTEGER,
+            defaultValue:0,
             allowNull: false,
         },
         ChargedMoney:{
             type:DataTypes.FLOAT,
+            defaultValue:0,
             allowNull:false,
         },
         CustomedMoney: {
             type: DataTypes.FLOAT,
+            defaultValue:0,
             allowNull: false,
         },
     },{

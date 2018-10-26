@@ -14,12 +14,11 @@ module.exports = (sequelize, DataTypes)=>{
         },
         Phone:{
             type:DataTypes.STRING,
-            allowNull:false,
-            unique: true,
+            allowNull:true,
         },
         Address:{
             type:DataTypes.STRING,
-            allowNull:false,
+            allowNull:true,
         },
         Status:{
             type:DataTypes.INTEGER,
@@ -28,7 +27,12 @@ module.exports = (sequelize, DataTypes)=>{
         Type:{
             type:DataTypes.INTEGER,
             allowNull:false
-        }
+        },
+        Contact:{
+            type:DataTypes.STRING,
+            allowNull:true,
+            unique: false,
+        },
     },{
         updatedAt:'UpdatedAt',
         createdAt:'CreatedAt'
