@@ -298,8 +298,8 @@ router.get('/statistics/dayend', async (req, res) => {
     }
     let durationObj = {
         [Op.and]:[
-            {[Op.gt]:moment(date).format("YYYY-MM-22 00:00:00")},
-            {[Op.lt]:moment(date).add(1, "days").format("YYYY-MM-23 00:00:00")}
+            {[Op.gt]:moment(date).format("YYYY-MM-DD 00:00:00")},
+            {[Op.lt]:moment(date).add(1, "days").format("YYYY-MM-DD 00:00:00")}
         ]
     };
     try {
