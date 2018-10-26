@@ -4,7 +4,6 @@ let express = require('express');
 let router = express.Router();
 let moment = require('moment')
 const Op = require('sequelize').Op;
-
 router.get('/statistics/shop', async (req, res) => {
     let logger = res.locals.logger;
     logger.info('statistics start');
@@ -280,6 +279,107 @@ router.get('/statistics/shop', async (req, res) => {
         res.end();
     }
 });
+
+router.get('/statistics/dayend', async (req, res) => {
+    let logger = res.locals.logger;
+    logger.info('statistics start');
+    const dayOfmills = 24 * 60 * 60 * 1000;
+    let operateShopId = res.locals.shopid;
+    let date = req.query.Date || null;
+    let db = res.locals.db;
+    let queryShopId = util.makeNumericValue(req.query.ShopId, null);
+    let page = util.makeNumericValue(req.query.Page, 1);
+    let pageSize = util.makeNumericValue(req.query.Size, 20);
+    let offset = (page - 1) * pageSize;
+    let sequelize = db.sequelize;
+    date = Date.parse(moment(date).format());
+    if (isNaN(date)) {
+        date = Date.parse(moment().format());
+    }
+    let durationObj = {
+        [Op.and]:[
+            {[Op.gt]:moment(date).format("YYYY-MM-22 00:00:00")},
+            {[Op.lt]:moment(date).add(1, "days").format("YYYY-MM-23 00:00:00")}
+        ]
+    };
+    try {
+        let whereObj = {CreatedAt:durationObj};
+        let includeObj = {};
+        let operateShop = await db.ShopInfo.findById(operateShopId);
+        switch (operateShop.Type) {
+            case 0:
+                if (queryShopId){
+                    whereObj.ShopId = queryShopId;
+                }else{
+                    throw "需要参数：ShopId。"
+                }
+                break;
+
+            case 1:
+                if (queryShopId && await util.isSubordinateAsync(operateShopId,queryShopId)){
+                    whereObj.ShopId = queryShopId;
+                }else if (!queryShopId){
+                    includeObj.ParentShopId = operateShopId;
+                }else{
+                    throw "无权查询该店面数据";
+                }
+                break;
+            default:
+                if (queryShopId && queryShopId != operateShopId) {
+                    throw "无权查询其它店面数据";
+                }
+                whereObj.ShopId = operateShopId;
+                break;
+        }
+        let count = await db.CustomerAccountChange.count({
+            where:whereObj,
+            distinct:true,
+            col:"CustomerId",
+        });
+        logger.info(count);
+        let instances = await db.CustomerAccountChange.findAndCountAll({
+            attributes:[
+                'CustomerId',
+                [sequelize.fn('SUM',sequelize.col('ChargedMoney')),'RechargedMoney'],
+                [sequelize.fn('SUM',sequelize.col('CustomedMoney')),'CustomedMoney'],
+                [sequelize.fn('SUM',sequelize.col('CustomedPoints')),'CustomedPoints'],
+                [sequelize.fn('SUM',sequelize.col('CustomedPoints')),'CustomedPoints'],
+                [sequelize.fn('SUM',sequelize.col('ShopBounusPoints')),'ShopBounusPoints'],
+                [sequelize.fn('SUM',sequelize.col('RecommendPoints')),'RecommendPoints'],
+                [sequelize.fn('SUM',sequelize.col('IndirectRecommendPoints')),'IndirectRecommendPoints'],
+                [sequelize.fn('SUM',sequelize.col('ThirdRecommendPoints')),'ThirdRecommendPoints'],
+            ],
+            where:whereObj,
+            //include:[includeObj],
+            group:'CustomerId',
+            offset:offset,
+            limit:pageSize
+        })
+        logger.info(instances)
+            res.json({
+                Array: instances.rows.map(x => x.toJSON()),
+                Meta:{
+                    "TotalPages":Math.ceil(count / pageSize),
+                    "CurrentRows":instances.rows.length,
+                    "TotalRows" : count,
+                    "CurrentPage": page,
+                }
+            }).end();
+        
+    } catch (error) {
+        logger.error(error);
+        res.json({
+            Error: {
+                Message: error
+            }
+        }).end();
+    }
+
+});
+
+
+
+
 
 // error 
 router.use('/customerhistory', (req, res) => {

@@ -4,6 +4,7 @@ var express = require('express');
 var router = express.Router();
 var jwt = require('jwt-simple');
 var jwtSecret = require('../../config/global.json').jwtSecret;
+let util = require('../../util/util');
 //TODO: Take expire time
 const expireTime = 8 * 3600; //seconds
 
@@ -58,7 +59,6 @@ router.post('/', async function  (req, res, next) {
           }).end();
           return;
         }
-        var loginUser = db.ShopInfo.findOne();
         var token = jwt.encode({
           shopid: shopId
         }, jwtSecret);
@@ -79,6 +79,48 @@ router.post('/', async function  (req, res, next) {
   }
 });
 
+// router.patch('/',async function  (req, res, next){
+//   let logger = res.locals.logger;
+//   logger.info('enter post /login"');
+//   let operateShopId = res.locals.shopid;
+//   let queryShopId = util.makeNumericValue(req.query.ShopId, null);
+//   let password = req.body.Password || '';
+//   let newPassword = req.body.NewPassword || '';
+//   let db = res.locals.db;
+//   if (String(newPassword).length < 5){
+//     res.json({Error:{Message:"密码过短！密码长度须大于5."}}).end();
+//     return;
+//   }
+//   try{
+//   let whereObj = {};
+//   let operatedShop = await util.getShopByIdAsync(operatedShopId);
+//   let queryShop = await util.getShopByIdAsync(queryShopId);
+//   switch(operatedShop.Type){
+//      case 0:
+//      break;
+//      case 1:
+//       let login = db.Login.findOne({
+//         where:{Id:operateShopId}
+//       });
+//       if (queryShop.ParentShopId == operateShopId){
+//          whereObj.Id = queryShopId;
+//       }else{
+//         throw "无权重置该分店密码。";
+//       }
+//      break;
+//      default:
+//         if (queryShopId != operatedShopId){
+//           throw "无权设置其它分店密码。";
+//         }
+//      break;
+//   }
+// }catch(error){
+
+// }
+
+// });
+
+
 router.use('/', (req, res) => {
   res.json({
     Error: {
@@ -86,4 +128,6 @@ router.use('/', (req, res) => {
     }
   }).end();
 })
+
 module.exports = router;
+
