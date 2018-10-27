@@ -333,38 +333,58 @@ router.get('/statistics/dayend', async (req, res) => {
         }
         let count = await db.CustomerAccountChange.count({
             where:whereObj,
-            distinct:true,
+            //distinct:true,
+            group:'CustomerId',
             col:"CustomerId",
         });
         logger.info(count);
         let instances = await db.CustomerAccountChange.findAndCountAll({
-            attributes:[
-                'CustomerId',
-                [sequelize.fn('SUM',sequelize.col('ChargedMoney')),'RechargedMoney'],
-                [sequelize.fn('SUM',sequelize.col('CustomedMoney')),'CustomedMoney'],
-                [sequelize.fn('SUM',sequelize.col('CustomedPoints')),'CustomedPoints'],
-                [sequelize.fn('SUM',sequelize.col('CustomedPoints')),'CustomedPoints'],
-                [sequelize.fn('SUM',sequelize.col('ShopBounusPoints')),'ShopBounusPoints'],
-                [sequelize.fn('SUM',sequelize.col('RecommendPoints')),'RecommendPoints'],
-                [sequelize.fn('SUM',sequelize.col('IndirectRecommendPoints')),'IndirectRecommendPoints'],
-                [sequelize.fn('SUM',sequelize.col('ThirdRecommendPoints')),'ThirdRecommendPoints'],
-            ],
+            // attributes:[
+            //     'CustomerId',
+            //     [sequelize.fn('SUM',sequelize.col('ChargedMoney')),'RechargedMoney'],
+            //     [sequelize.fn('SUM',sequelize.col('CustomedMoney')),'CustomedMoney'],
+            //     [sequelize.fn('SUM',sequelize.col('CustomedPoints')),'CustomedPoints'],
+            //     [sequelize.fn('SUM',sequelize.col('CustomedPoints')),'CustomedPoints'],
+            //     [sequelize.fn('SUM',sequelize.col('ShopBounusPoints')),'ShopBounusPoints'],
+            //     [sequelize.fn('SUM',sequelize.col('RecommendPoints')),'RecommendPoints'],
+            //     [sequelize.fn('SUM',sequelize.col('IndirectRecommendPoints')),'IndirectRecommendPoints'],
+            //     [sequelize.fn('SUM',sequelize.col('ThirdRecommendPoints')),'ThirdRecommendPoints'],
+            // ],
             where:whereObj,
             //include:[includeObj],
-            group:'CustomerId',
+           // group:'CustomerId',
+            order: [sequelize.col('CustomerId')],
             offset:offset,
             limit:pageSize
         })
-        logger.info(instances)
-            res.json({
-                Array: instances.rows.map(x => x.toJSON()),
-                Meta:{
-                    "TotalPages":Math.ceil(count / pageSize),
-                    "CurrentRows":instances.rows.length,
-                    "TotalRows" : count,
-                    "CurrentPage": page,
-                }
-            }).end();
+        let json = {Array:[]};
+      
+        let pos = 0
+        for (let index of count){
+            console.log(index)
+            let records = [];
+            let i = 0
+            let customer = await instances.rows[pos].getCustomerInfo();
+            for (;i<index.count;i++){
+                let record = instances.rows[pos+i].toJSON();
+                //record.CustomerInfo = customer;
+                records.push(record);
+            }
+            pos += i;
+            let t = {};
+            t.CustomerInfo = customer;
+            t.Records = records;
+            json.Array.push(t);
+        }
+        json.Meta = {
+            "TotalPages":Math.ceil(instances.count / pageSize),
+            "CurrentRows":instances.rows.length,
+            "TotalRows" : instances.count,
+            "CurrentPage": page,
+            "CustomerCount":count.length
+        }
+
+            res.json(json).end();
         
     } catch (error) {
         logger.error(error);
@@ -382,7 +402,7 @@ router.get('/statistics/dayend', async (req, res) => {
 
 
 // error 
-router.use('/customerhistory', (req, res) => {
+router.use('/statistics', (req, res) => {
     res.json({
         Error: {
             Message: "无此服务： " + req.method
