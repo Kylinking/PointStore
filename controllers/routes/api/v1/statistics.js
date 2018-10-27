@@ -36,13 +36,17 @@ router.get('/statistics/shop', async (req, res) => {
     logger.info(`startDate:${startDate},endDate:${endDate},queryShopId:${queryShopId},duration:${duration}`);
 
     let queryShop = null;
-    if (queryShopId != null){
+    if (queryShopId != null) {
         queryShop = await db.ShopInfo.findOne({
-            where: {ShopId : queryShopId}
+            where: {
+                ShopId: queryShopId
+            }
         });
     }
     let operateShop = await db.ShopInfo.findOne({
-        where: {ShopId : operateShopId}
+        where: {
+            ShopId: operateShopId
+        }
     });
     let newCustomers = 0;
     let nowCustomers = 0;
@@ -55,9 +59,12 @@ router.get('/statistics/shop', async (req, res) => {
     let customerCountObj = {};
     let includeObj = [];
     let durationObj = {
-        [Op.and]:[
-            {[Op.gt]:moment(startDate).format("YYYY-MM-DD 00:00:00")},
-            {[Op.lt]:moment(endDate).add(1, "days").format("YYYY-MM-DD 00:00:00")}
+        [Op.and]: [{
+                [Op.gt]: moment(startDate).format("YYYY-MM-DD 00:00:00")
+            },
+            {
+                [Op.lt]: moment(endDate).add(1, "days").format("YYYY-MM-DD 00:00:00")
+            }
         ]
     };
 
@@ -135,9 +142,12 @@ router.get('/statistics/shop', async (req, res) => {
     for (let i = 0; i <= currentRows; i++) {
         // dayCondition = moment(startDate).add(i+offset,"days").format("YYYY-MM-DD HH:mm:ss");
         dayCondition = {
-            [Op.and]:[
-                {[Op.gt]:moment(startDate).add(i + offset, "days").format("YYYY-MM-DD 00:00:00")},
-                {[Op.lt]:moment(startDate).add(i + offset + 1, "days").format("YYYY-MM-DD 00:00:00")}
+            [Op.and]: [{
+                    [Op.gt]: moment(startDate).add(i + offset, "days").format("YYYY-MM-DD 00:00:00")
+                },
+                {
+                    [Op.lt]: moment(startDate).add(i + offset + 1, "days").format("YYYY-MM-DD 00:00:00")
+                }
             ]
         }
         whereObj.CreatedAt = dayCondition;
@@ -175,9 +185,9 @@ router.get('/statistics/shop', async (req, res) => {
         logger.info("==================")
         logger.info(whereObj.CreatedAt);
         let con = {
-            [Op.lt]: moment(startDate).add(i + offset+1, "days").format("YYYY-MM-DD 00:00:00")
+            [Op.lt]: moment(startDate).add(i + offset + 1, "days").format("YYYY-MM-DD 00:00:00")
         }
-        whereObj.CreatedAt =  con;
+        whereObj.CreatedAt = con;
         customerCountObj.CreatedAt = con;
         logger.info("==================")
         logger.info(whereObj.CreatedAt);
@@ -297,30 +307,35 @@ router.get('/statistics/dayend', async (req, res) => {
         date = Date.parse(moment().format());
     }
     let durationObj = {
-        [Op.and]:[
-            {[Op.gt]:moment(date).format("YYYY-MM-DD 00:00:00")},
-            {[Op.lt]:moment(date).add(1, "days").format("YYYY-MM-DD 00:00:00")}
+        [Op.and]: [{
+                [Op.gt]: moment(date).format("YYYY-MM-DD 00:00:00")
+            },
+            {
+                [Op.lt]: moment(date).add(1, "days").format("YYYY-MM-DD 00:00:00")
+            }
         ]
     };
     try {
-        let whereObj = {CreatedAt:durationObj};
+        let whereObj = {
+            CreatedAt: durationObj
+        };
         let includeObj = {};
         let operateShop = await db.ShopInfo.findById(operateShopId);
         switch (operateShop.Type) {
             case 0:
-                if (queryShopId){
+                if (queryShopId) {
                     whereObj.ShopId = queryShopId;
-                }else{
+                } else {
                     throw "需要参数：ShopId。"
                 }
                 break;
 
             case 1:
-                if (queryShopId && await util.isSubordinateAsync(operateShopId,queryShopId)){
+                if (queryShopId && await util.isSubordinateAsync(operateShopId, queryShopId)) {
                     whereObj.ShopId = queryShopId;
-                }else if (!queryShopId){
+                } else if (!queryShopId) {
                     includeObj.ParentShopId = operateShopId;
-                }else{
+                } else {
                     throw "无权查询该店面数据";
                 }
                 break;
@@ -331,61 +346,57 @@ router.get('/statistics/dayend', async (req, res) => {
                 whereObj.ShopId = operateShopId;
                 break;
         }
-        let count = await db.CustomerAccountChange.count({
-            where:whereObj,
-            //distinct:true,
-            group:'CustomerId',
-            col:"CustomerId",
+        let count = await db.CustomerAccountChange.findAndCountAll({
+            where: whereObj,
+            attributes: [
+                'CustomerId',
+                [sequelize.fn('COUNT', sequelize.col('CustomerId')), 'CustomerNumber'],
+            ],
+            group: 'CustomerId',
+            offset: offset,
+            limit: pageSize
         });
         logger.info(count);
-        let instances = await db.CustomerAccountChange.findAndCountAll({
-            // attributes:[
-            //     'CustomerId',
-            //     [sequelize.fn('SUM',sequelize.col('ChargedMoney')),'RechargedMoney'],
-            //     [sequelize.fn('SUM',sequelize.col('CustomedMoney')),'CustomedMoney'],
-            //     [sequelize.fn('SUM',sequelize.col('CustomedPoints')),'CustomedPoints'],
-            //     [sequelize.fn('SUM',sequelize.col('CustomedPoints')),'CustomedPoints'],
-            //     [sequelize.fn('SUM',sequelize.col('ShopBounusPoints')),'ShopBounusPoints'],
-            //     [sequelize.fn('SUM',sequelize.col('RecommendPoints')),'RecommendPoints'],
-            //     [sequelize.fn('SUM',sequelize.col('IndirectRecommendPoints')),'IndirectRecommendPoints'],
-            //     [sequelize.fn('SUM',sequelize.col('ThirdRecommendPoints')),'ThirdRecommendPoints'],
-            // ],
-            where:whereObj,
-            //include:[includeObj],
-           // group:'CustomerId',
-            order: [sequelize.col('CustomerId')],
-            offset:offset,
-            limit:pageSize
-        })
-        let json = {Array:[]};
-      
-        let pos = 0
-        for (let index of count){
-            console.log(index)
+        let json = {
+            Array: []
+        };
+        for (let index of count.rows) {
+            logger.info(index)
+            whereObj.CustomerId = index.CustomerId;
+            let instances = await db.CustomerAccountChange.findAndCountAll({
+                // attributes:[
+                //     'CustomerId',
+                //     [sequelize.fn('SUM',sequelize.col('ChargedMoney')),'RechargedMoney'],
+                //     [sequelize.fn('SUM',sequelize.col('CustomedMoney')),'CustomedMoney'],
+                //     [sequelize.fn('SUM',sequelize.col('CustomedPoints')),'CustomedPoints'],
+                //     [sequelize.fn('SUM',sequelize.col('CustomedPoints')),'CustomedPoints'],
+                //     [sequelize.fn('SUM',sequelize.col('ShopBounusPoints')),'ShopBounusPoints'],
+                //     [sequelize.fn('SUM',sequelize.col('RecommendPoints')),'RecommendPoints'],
+                //     [sequelize.fn('SUM',sequelize.col('IndirectRecommendPoints')),'IndirectRecommendPoints'],
+                //     [sequelize.fn('SUM',sequelize.col('ThirdRecommendPoints')),'ThirdRecommendPoints'],
+                // ],
+                where: whereObj,
+                //include:[includeObj],
+                // group:'CustomerId',
+                order: [
+                    [sequelize.col('Id'), 'DESC']
+                ],
+            })
             let records = [];
-            let i = 0
-            let customer = await instances.rows[pos].getCustomerInfo();
-            for (;i<index.count;i++){
-                let record = instances.rows[pos+i].toJSON();
-                //record.CustomerInfo = customer;
-                records.push(record);
-            }
-            pos += i;
+            let customer = await instances.rows[0].getCustomerInfo();
+            records = instances.rows;
             let t = {};
-            t.CustomerInfo = customer;
+            t = customer.toJSON();
             t.Records = records;
             json.Array.push(t);
         }
         json.Meta = {
-            "TotalPages":Math.ceil(instances.count / pageSize),
-            "CurrentRows":instances.rows.length,
-            "TotalRows" : instances.count,
+            "TotalPages": Math.ceil(count.count.length / pageSize),
+            "CurrentRows": count.rows.length,
+            "TotalRows": count.count.length,
             "CurrentPage": page,
-            "CustomerCount":count.length
         }
-
-            res.json(json).end();
-        
+        res.json(json).end();
     } catch (error) {
         logger.error(error);
         res.json({
