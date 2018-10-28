@@ -27,15 +27,15 @@ router.get('/customerhistory', async (req, res) => {
         return;
     }
     logger.info(`startDate:${startDate},endDate:${endDate},phone:${phone}`);
-    endDate = Date.parse(moment(endDate).format("MM DD YYYY"));
-    startDate = Date.parse(moment(startDate).format("MM DD YYYY"));
+    endDate = Date.parse(moment(endDate).format());
+    startDate = Date.parse(moment(startDate).format());
     if (isNaN(endDate) && isNaN(startDate)) {
         endDate = Date.parse(moment().format());
-        startDate = Date.parse(moment().subtract(30, 'days').format("MM DD YYYY"));
+        startDate = Date.parse(moment().subtract(30, 'days').format());
     } else if (isNaN(endDate) && !isNaN(startDate)) {
-        endDate = Date.parse(moment(startDate).add(30, 'days').format("MM DD YYYY"));
+        endDate = Date.parse(moment(startDate).add(30, 'days').format());
     } else if (!isNaN(endDate) && isNaN(startDate)) {
-        startDate = Date.parse(moment(endDate).subtract(30, 'days').format("MM DD YYYY"));
+        startDate = Date.parse(moment(endDate).subtract(30, 'days').format());
     } else {
         if (endDate < startDate) {
             [endDate, startDate] = [startDate, endDate];
@@ -44,8 +44,13 @@ router.get('/customerhistory', async (req, res) => {
     logger.info(`startDate:${startDate},endDate:${endDate}`);
     let whereObj = {
         Date: {
-            [Op.gte]: startDate,
-            [Op.lte]: endDate
+            [Op.and]: [{
+                [Op.gt]: Date.parse(moment(startDate).format("YYYY-MM-DD 00:00:00"))
+            },
+            {
+                [Op.lt]:  Date.parse(moment(endDate).add(1, "days").format("YYYY-MM-DD 00:00:00"))
+            }
+        ]
         }
     };
     let operateShop = await db.ShopInfo.findOne({

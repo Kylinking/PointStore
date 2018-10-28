@@ -478,7 +478,64 @@ router.get('/statistics/dayend', async (req, res) => {
 
 });
 
-
+router.get('/statistics/history', async (req, res) => {
+    let logger = res.locals.logger;
+    logger.info('statistics start');
+    let operateShopId = res.locals.shopid;
+    let date = req.query.Date || null;
+    let db = res.locals.db;
+    let queryShopId = util.makeNumericValue(req.query.ShopId, null);
+    let page = util.makeNumericValue(req.query.Page, 1);
+    let pageSize = util.makeNumericValue(req.query.Size, 20);
+    let offset = (page - 1) * pageSize;
+    let sequelize = db.sequelize;
+    date = Date.parse(moment(date).format());
+    if (isNaN(date)) {
+        date = Date.parse(moment().format());
+    }
+    let todayDuration = {
+        [Op.and]: [{
+                [Op.gt]: moment(date).format("YYYY-MM-DD 00:00:00")
+            },
+            {
+                [Op.lt]: moment(date).add(1, "days").format("YYYY-MM-DD 00:00:00")
+            }
+        ]
+    };
+    try{
+    let instance = await db.CustomerAccountChange.findAndCountAll({
+        where:{
+            CreatedAt:todayDuration,
+            ShopId:operateShopId
+        },
+        order: [
+            [sequelize.col('Id'), 'DESC']
+        ],
+        include:[
+            {
+                model:db.CustomerInfo,
+                where:{}
+            }
+        ],
+        offset: offset,
+        limit: pageSize
+    });
+    let json = {Array:[],Meta:{}};
+    json.Array = instance.rows.map(x=>x.toJSON());
+    for (let i of json.Array){
+        i.Date = Date.parse(i.Date);
+    }
+    let pages = Math.ceil(instance.count / pageSize);
+        json.Meta["TotalPages"] = pages;
+        json.Meta["CurrentRows"] = instance.rows.length;
+        json.Meta["TotalRows"] = instance.count;
+        json.Meta["CurrentPage"] = page;
+    res.json(json).end();
+}catch(error){
+    logger.error(error);
+    res.json({Error:{Message:error}}).end();
+}
+});
 
 
 
