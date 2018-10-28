@@ -522,8 +522,9 @@ router.get('/statistics/history', async (req, res) => {
     });
     let json = {Array:[],Meta:{}};
     json.Array = instance.rows.map(x=>x.toJSON());
+    logger.info(json.Array);
     for (let i of json.Array){
-        i.Date = Date.parse(i.Date);
+        i.Date = new Date(i.Date);
     }
     let pages = Math.ceil(instance.count / pageSize);
         json.Meta["TotalPages"] = pages;
