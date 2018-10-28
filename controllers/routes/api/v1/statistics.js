@@ -379,19 +379,22 @@ router.get('/statistics/dayend', async (req, res) => {
         let json = {
             Array: []
         };
-        let instances = await db.CustomerAccountChange.findAndCountAll({
-            where: whereObj,
-            order: [
-                [sequelize.col('Id'), 'DESC']
-            ],
-        });
         for (let index of count.rows) {
             whereObj.CustomerId = index.CustomerId;
+            let instances = await db.CustomerAccountChange.findAndCountAll({
+                where: whereObj,
+                order: [
+                    [sequelize.col('Id'), 'DESC']
+                ],
+            });
             logger.info(instances);
             logger.info(instances.rows);
             let records = [];
             let customer = await instances.rows[0].getCustomerInfo();
-            records = instances.rows;
+            records = instances.rows.map(x=>{return x.toJSON()});
+            for(let i of records){
+                i.Date = new Date(i.Date);
+            }
             let t = {};
             t = customer.toJSON();
             t.Records = records;
