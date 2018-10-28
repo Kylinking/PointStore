@@ -380,21 +380,7 @@ router.get('/statistics/dayend', async (req, res) => {
             Array: []
         };
         let instances = await db.CustomerAccountChange.findAndCountAll({
-            // attributes:{
-            //     include:[
-            //     [sequelize.fn('SUM',sequelize.col('ChargedMoney')),'RechargedMoney'],
-            //     [sequelize.fn('SUM',sequelize.col('CustomedMoney')),'CustomedMoney'],
-            //     [sequelize.fn('SUM',sequelize.col('CustomedPoints')),'CustomedPoints'],
-            //     [sequelize.fn('SUM',sequelize.col('CustomedPoints')),'CustomedPoints'],
-            //     [sequelize.fn('SUM',sequelize.col('ShopBounusPoints')),'ShopBounusPoints'],
-            //     [sequelize.fn('SUM',sequelize.col('RecommendPoints')),'RecommendPoints'],
-            //     [sequelize.fn('SUM',sequelize.col('IndirectRecommendPoints')),'IndirectRecommendPoints'],
-            //     [sequelize.fn('SUM',sequelize.col('ThirdRecommendPoints')),'ThirdRecommendPoints'],
-            // ]
-            // },
             where: whereObj,
-            //include:[includeObj],
-            // group:'CustomerId',
             order: [
                 [sequelize.col('Id'), 'DESC']
             ],
@@ -430,6 +416,7 @@ router.get('/statistics/dayend', async (req, res) => {
             }
         });
         statShopAccountInfoOfToday.NewCustomer = statCustomerInfoOfToday;
+        statShopAccountInfoOfToday.ConsumedCustomer = count.count.length;
         shopWhere.CreatedAt = monthDuration;
         let statShopAccountInfoOfMonth = (await db.ShopAccountChange.findOne({
             attributes:[
@@ -448,8 +435,16 @@ router.get('/statistics/dayend', async (req, res) => {
             ShopId:adminShopId
         }
     });
+    let numberOfConsumedCustomerOfMonth = await db.CustomerAccountChange.count({
+        where:{
+            CreatedAt:monthDuration,
+            ShopId:shopWhere.ShopId
+        },
+        distinct:true,
+        col:'CustomerId'
+    });
     statShopAccountInfoOfMonth.NewCustomer= statCustomerInfoOfMonth;
-
+    statShopAccountInfoOfMonth.ConsumedCustomer = numberOfConsumedCustomerOfMonth;
         logger.info(statShopAccountInfoOfToday);
         logger.info(statCustomerInfoOfToday);
         logger.info(statShopAccountInfoOfMonth);
