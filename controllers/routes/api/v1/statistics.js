@@ -445,6 +445,12 @@ router.get('/statistics/dayend', async (req, res) => {
     });
     statShopAccountInfoOfMonth.NewCustomer= statCustomerInfoOfMonth;
     statShopAccountInfoOfMonth.ConsumedCustomer = numberOfConsumedCustomerOfMonth;
+    for(let i of Object.getOwnPropertyNames(statShopAccountInfoOfToday)){
+        statShopAccountInfoOfToday[i] = statShopAccountInfoOfToday[i] || 0;
+    }
+    for(let i of Object.getOwnPropertyNames(statShopAccountInfoOfMonth)){
+        statShopAccountInfoOfMonth[i] = statShopAccountInfoOfMonth[i] || 0;
+    }
         logger.info(statShopAccountInfoOfToday);
         logger.info(statCustomerInfoOfToday);
         logger.info(statShopAccountInfoOfMonth);

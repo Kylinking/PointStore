@@ -97,6 +97,7 @@ router.use('/' + version,
     var queryShopId,phone,queryType,page,pageSize,age;
     logger.info(req.method);
     if (req.method == 'GET'){
+        logger.info(req.query);
         queryShopId = req.query.ShopId || null;
         phone = req.query.Phone|| null;
         queryType = req.query.Type|| null;
@@ -104,6 +105,7 @@ router.use('/' + version,
         pageSize = req.query.Size|| null;
         age = req.query.Age|| null;
     }else{
+        logger.info(req.body);
         queryShopId = req.body.ShopId|| null;
         phone = req.body.Phone|| null;
         queryType = req.body.Type|| null;
