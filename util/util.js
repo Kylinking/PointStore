@@ -1,6 +1,21 @@
 var db = require('../models').db;
 
 var util = {
+    findAdminShopId:async function(shopId){
+        if (!shopId) return null;
+        try {
+            let shop = await db.ShopInfo.findById(shopId);
+            if (shop.Type == 0){
+                return null;
+            }else if (shop.Type == 1){
+                return shopId;
+            }else{
+                return shop.ParentShopId;
+            }
+        }catch(error){
+            return null;
+        }
+    },
     getShopByIdAsync:async function (shopId){
         try {
             let shop = await db.ShopInfo.findOne({

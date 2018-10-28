@@ -11,6 +11,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('./log/');
 var LoginRouter = require('./controllers/routes/login');
 var ApiRouter = require('./controllers/routes/api/');
+express.static.mime.define({'application/wasm':['wasm']});
 var app = express();
 app.db = db;
 app.use(bodyParser.json());
