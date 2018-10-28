@@ -550,7 +550,7 @@ router.post('/userpoints', async (req, res) => {
                 json.Object.IndirectRecommendCustomerInfo = indirectRecommendCustomerInfo;
                 json.Object.IndirectRecommendPoints = indirectRecommendPoints;
                 if (indirectRecommendPoints != 0) {
-                    sendRecommendMessage(indirectRecommendCustomerInfo.Name, 
+                    SMS.sendRecommendMessage(indirectRecommendCustomerInfo.Name, 
                         operateShop.Name, 
                         indirectRecommendPoints, 
                         indirectRecommendCustomerAccountInfo.RemainMoney, 
@@ -564,7 +564,7 @@ router.post('/userpoints', async (req, res) => {
                 json.Object.ThirdRecommendCustomerInfo = thirdRecommendCustomerInfo;
                 json.Object.ThirdRecommendPoints = thirdRecommendPoints;
                 if (thirdRecommendPoints != 0) {
-                    sendRecommendMessage(thirdRecommendCustomerInfo.Name, 
+                    SMS.sendRecommendMessage(thirdRecommendCustomerInfo.Name, 
                         operateShop.Name, 
                         thirdRecommendPoints, 
                         thirdRecommendCustomerAccountInfo.RemainMoney, 
