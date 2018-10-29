@@ -593,15 +593,25 @@ router.get('/statistics/history', async (req, res) => {
             }
         });
         let numberOfConsumedCustomerOfToday = await db.CustomerAccountChange.count({
+            // attributes: [
+            //     //    'CustomerId',
+            //     [sequelize.fn('COUNT', sequelize.col('ChargedMoney')), 'RechargedMoney'],
+            //     [sequelize.fn('COUNT', sequelize.col('CustomedMoney')), 'CustomedMoney'],
+            //     [sequelize.fn('COUNT', sequelize.col('CustomedPoints')), 'CustomedPoints'],
+            // ],
             where: {
+                [Op.or]:[
+                    {'ChargedMoney':{[Op.gt]:0}},
+                    {'CustomedMoney':{[Op.gt]:0}},
+                    {'CustomedPoints':{[Op.gt]:0}}
+                ],
                 CreatedAt: todayDuration,
                 ShopId: shopWhere.ShopId
             },
-            // distinct: true,
-            // col: 'CustomerId'
         });
         statShopAccountInfoOfToday.NewCustomer = statCustomerInfoOfToday;
         statShopAccountInfoOfToday.ConsumedCustomer = numberOfConsumedCustomerOfToday;
+        logger.info(numberOfConsumedCustomerOfToday);
         shopWhere.CreatedAt = monthDuration;
         let statShopAccountInfoOfMonth = (await db.ShopAccountChange.findOne({
             attributes: [
@@ -622,12 +632,16 @@ router.get('/statistics/history', async (req, res) => {
         });
         let numberOfConsumedCustomerOfMonth = await db.CustomerAccountChange.count({
             where: {
+                [Op.or]:[
+                    {'ChargedMoney':{[Op.gt]:0}},
+                    {'CustomedMoney':{[Op.gt]:0}},
+                    {'CustomedPoints':{[Op.gt]:0}}
+                ],
                 CreatedAt: monthDuration,
                 ShopId: shopWhere.ShopId
             },
-            // distinct: true,
-            // col: 'CustomerId'
         });
+        logger.info(numberOfConsumedCustomerOfMonth);
         statShopAccountInfoOfMonth.NewCustomer = statCustomerInfoOfMonth;
         statShopAccountInfoOfMonth.ConsumedCustomer = numberOfConsumedCustomerOfMonth;
         for (let i of Object.getOwnPropertyNames(statShopAccountInfoOfToday)) {
