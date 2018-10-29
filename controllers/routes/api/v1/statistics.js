@@ -597,8 +597,8 @@ router.get('/statistics/history', async (req, res) => {
                 CreatedAt: todayDuration,
                 ShopId: shopWhere.ShopId
             },
-            distinct: true,
-            col: 'CustomerId'
+            // distinct: true,
+            // col: 'CustomerId'
         });
         statShopAccountInfoOfToday.NewCustomer = statCustomerInfoOfToday;
         statShopAccountInfoOfToday.ConsumedCustomer = numberOfConsumedCustomerOfToday;
@@ -625,8 +625,8 @@ router.get('/statistics/history', async (req, res) => {
                 CreatedAt: monthDuration,
                 ShopId: shopWhere.ShopId
             },
-            distinct: true,
-            col: 'CustomerId'
+            // distinct: true,
+            // col: 'CustomerId'
         });
         statShopAccountInfoOfMonth.NewCustomer = statCustomerInfoOfMonth;
         statShopAccountInfoOfMonth.ConsumedCustomer = numberOfConsumedCustomerOfMonth;
@@ -641,8 +641,8 @@ router.get('/statistics/history', async (req, res) => {
         json.Meta["CurrentRows"] = instance.rows.length;
         json.Meta["TotalRows"] = instance.count;
         json.Meta["CurrentPage"] = page;
-        json.Meta["dayStatistic"] = statShopAccountInfoOfToday;
-        json.Meta["monthStatistic"] = statShopAccountInfoOfMonth;
+        json.Meta["TodayStatistic"] = statShopAccountInfoOfToday;
+        json.Meta["MonthStatistic"] = statShopAccountInfoOfMonth;
         res.json(json).end();
     } catch (error) {
         logger.error(error);
