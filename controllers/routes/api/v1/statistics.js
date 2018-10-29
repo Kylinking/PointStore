@@ -60,11 +60,11 @@ router.get('/statistics/shop', async (req, res) => {
     let includeObj = [];
     let durationObj = {
         [Op.and]: [{
-                [Op.gt]: moment(startDate).format("YYYY-MM-DD 00:00:00")
-            },
-            {
-                [Op.lt]: moment(endDate).add(1, "days").format("YYYY-MM-DD 00:00:00")
-            }
+            [Op.gt]: moment(startDate).format("YYYY-MM-DD 00:00:00")
+        },
+        {
+            [Op.lt]: moment(endDate).add(1, "days").format("YYYY-MM-DD 00:00:00")
+        }
         ]
     };
 
@@ -143,11 +143,11 @@ router.get('/statistics/shop', async (req, res) => {
         // dayCondition = moment(startDate).add(i+offset,"days").format("YYYY-MM-DD HH:mm:ss");
         dayCondition = {
             [Op.and]: [{
-                    [Op.gt]: moment(startDate).add(i + offset, "days").format("YYYY-MM-DD 00:00:00")
-                },
-                {
-                    [Op.lt]: moment(startDate).add(i + offset + 1, "days").format("YYYY-MM-DD 00:00:00")
-                }
+                [Op.gt]: moment(startDate).add(i + offset, "days").format("YYYY-MM-DD 00:00:00")
+            },
+            {
+                [Op.lt]: moment(startDate).add(i + offset + 1, "days").format("YYYY-MM-DD 00:00:00")
+            }
             ]
         }
         whereObj.CreatedAt = dayCondition;
@@ -308,20 +308,20 @@ router.get('/statistics/dayend', async (req, res) => {
     }
     let todayDuration = {
         [Op.and]: [{
-                [Op.gt]: moment(date).format("YYYY-MM-DD 00:00:00")
-            },
-            {
-                [Op.lt]: moment(date).add(1, "days").format("YYYY-MM-DD 00:00:00")
-            }
+            [Op.gt]: moment(date).format("YYYY-MM-DD 00:00:00")
+        },
+        {
+            [Op.lt]: moment(date).add(1, "days").format("YYYY-MM-DD 00:00:00")
+        }
         ]
     };
     let monthDuration = {
         [Op.and]: [{
-                [Op.gt]: moment().format("YYYY-MM-01 00:00:00")
-            },
-            {
-                [Op.lt]: moment().format("YYYY-MM-DD 23:59:59")
-            }
+            [Op.gt]: moment().format("YYYY-MM-01 00:00:00")
+        },
+        {
+            [Op.lt]: moment().format("YYYY-MM-DD 23:59:59")
+        }
         ]
     };
     try {
@@ -391,8 +391,8 @@ router.get('/statistics/dayend', async (req, res) => {
             logger.info(instances.rows);
             let records = [];
             let customer = await instances.rows[0].getCustomerInfo();
-            records = instances.rows.map(x=>{return x.toJSON()});
-            for(let i of records){
+            records = instances.rows.map(x => { return x.toJSON() });
+            for (let i of records) {
                 i.Date = new Date(i.Date);
             }
             let t = {};
@@ -402,58 +402,58 @@ router.get('/statistics/dayend', async (req, res) => {
         }
 
         let statShopAccountInfoOfToday = (await db.ShopAccountChange.findOne({
-                attributes:[
+            attributes: [
                 //    'CustomerId',
-                [sequelize.fn('SUM',sequelize.col('ChargedMoney')),'RechargedMoney'],
-                [sequelize.fn('SUM',sequelize.col('CustomedMoney')),'CustomedMoney'],
-                [sequelize.fn('SUM',sequelize.col('CustomedPoints')),'CustomedPoints'],
-                [sequelize.fn('SUM',sequelize.col('ShopBounusPoints')),'ShopBounusPoints'],
-                [sequelize.fn('SUM',sequelize.col('RecommendPoints')),'RecommendPoints'],
+                [sequelize.fn('SUM', sequelize.col('ChargedMoney')), 'RechargedMoney'],
+                [sequelize.fn('SUM', sequelize.col('CustomedMoney')), 'CustomedMoney'],
+                [sequelize.fn('SUM', sequelize.col('CustomedPoints')), 'CustomedPoints'],
+                [sequelize.fn('SUM', sequelize.col('ShopBounusPoints')), 'ShopBounusPoints'],
+                [sequelize.fn('SUM', sequelize.col('RecommendPoints')), 'RecommendPoints'],
             ],
             where: shopWhere,
         })).toJSON();
         let statCustomerInfoOfToday = await db.CustomerInfo.count({
-            where:{
-                CreatedAt:todayDuration,
-                ShopId:adminShopId
+            where: {
+                CreatedAt: todayDuration,
+                ShopId: adminShopId
             }
         });
         statShopAccountInfoOfToday.NewCustomer = statCustomerInfoOfToday;
         statShopAccountInfoOfToday.ConsumedCustomer = count.count.length;
         shopWhere.CreatedAt = monthDuration;
         let statShopAccountInfoOfMonth = (await db.ShopAccountChange.findOne({
-            attributes:[
-            //    'CustomerId',
-            [sequelize.fn('SUM',sequelize.col('ChargedMoney')),'RechargedMoney'],
-            [sequelize.fn('SUM',sequelize.col('CustomedMoney')),'CustomedMoney'],
-            [sequelize.fn('SUM',sequelize.col('CustomedPoints')),'CustomedPoints'],
-            [sequelize.fn('SUM',sequelize.col('ShopBounusPoints')),'ShopBounusPoints'],
-            [sequelize.fn('SUM',sequelize.col('RecommendPoints')),'RecommendPoints'],
-        ],
-        where: shopWhere,
-    })).toJSON();
-    let statCustomerInfoOfMonth = await db.CustomerInfo.count({
-        where:{
-            CreatedAt:monthDuration,
-            ShopId:adminShopId
+            attributes: [
+                //    'CustomerId',
+                [sequelize.fn('SUM', sequelize.col('ChargedMoney')), 'RechargedMoney'],
+                [sequelize.fn('SUM', sequelize.col('CustomedMoney')), 'CustomedMoney'],
+                [sequelize.fn('SUM', sequelize.col('CustomedPoints')), 'CustomedPoints'],
+                [sequelize.fn('SUM', sequelize.col('ShopBounusPoints')), 'ShopBounusPoints'],
+                [sequelize.fn('SUM', sequelize.col('RecommendPoints')), 'RecommendPoints'],
+            ],
+            where: shopWhere,
+        })).toJSON();
+        let statCustomerInfoOfMonth = await db.CustomerInfo.count({
+            where: {
+                CreatedAt: monthDuration,
+                ShopId: adminShopId
+            }
+        });
+        let numberOfConsumedCustomerOfMonth = await db.CustomerAccountChange.count({
+            where: {
+                CreatedAt: monthDuration,
+                ShopId: shopWhere.ShopId
+            },
+            distinct: true,
+            col: 'CustomerId'
+        });
+        statShopAccountInfoOfMonth.NewCustomer = statCustomerInfoOfMonth;
+        statShopAccountInfoOfMonth.ConsumedCustomer = numberOfConsumedCustomerOfMonth;
+        for (let i of Object.getOwnPropertyNames(statShopAccountInfoOfToday)) {
+            statShopAccountInfoOfToday[i] = statShopAccountInfoOfToday[i] || 0;
         }
-    });
-    let numberOfConsumedCustomerOfMonth = await db.CustomerAccountChange.count({
-        where:{
-            CreatedAt:monthDuration,
-            ShopId:shopWhere.ShopId
-        },
-        distinct:true,
-        col:'CustomerId'
-    });
-    statShopAccountInfoOfMonth.NewCustomer= statCustomerInfoOfMonth;
-    statShopAccountInfoOfMonth.ConsumedCustomer = numberOfConsumedCustomerOfMonth;
-    for(let i of Object.getOwnPropertyNames(statShopAccountInfoOfToday)){
-        statShopAccountInfoOfToday[i] = statShopAccountInfoOfToday[i] || 0;
-    }
-    for(let i of Object.getOwnPropertyNames(statShopAccountInfoOfMonth)){
-        statShopAccountInfoOfMonth[i] = statShopAccountInfoOfMonth[i] || 0;
-    }
+        for (let i of Object.getOwnPropertyNames(statShopAccountInfoOfMonth)) {
+            statShopAccountInfoOfMonth[i] = statShopAccountInfoOfMonth[i] || 0;
+        }
         logger.info(statShopAccountInfoOfToday);
         logger.info(statCustomerInfoOfToday);
         logger.info(statShopAccountInfoOfMonth);
@@ -463,8 +463,8 @@ router.get('/statistics/dayend', async (req, res) => {
             "CurrentRows": count.rows.length,
             "TotalRows": count.count.length,
             "CurrentPage": page,
-            "TodayStatistic":statShopAccountInfoOfToday,
-            "MonthStatistic":statShopAccountInfoOfMonth
+            "TodayStatistic": statShopAccountInfoOfToday,
+            "MonthStatistic": statShopAccountInfoOfMonth
         }
         res.json(json).end();
     } catch (error) {
@@ -495,47 +495,159 @@ router.get('/statistics/history', async (req, res) => {
     }
     let todayDuration = {
         [Op.and]: [{
-                [Op.gt]: moment(date).format("YYYY-MM-DD 00:00:00")
-            },
-            {
-                [Op.lt]: moment(date).add(1, "days").format("YYYY-MM-DD 00:00:00")
-            }
+            [Op.gt]: moment(date).format("YYYY-MM-DD 00:00:00")
+        },
+        {
+            [Op.lt]: moment(date).add(1, "days").format("YYYY-MM-DD 00:00:00")
+        }
         ]
     };
-    try{
-    let instance = await db.CustomerAccountChange.findAndCountAll({
-        where:{
-            CreatedAt:todayDuration,
-            ShopId:operateShopId
+    let monthDuration = {
+        [Op.and]: [{
+            [Op.gt]: moment().format("YYYY-MM-01 00:00:00")
         },
-        order: [
-            [sequelize.col('Id'), 'DESC']
-        ],
-        include:[
-            {
-                model:db.CustomerInfo,
-                where:{}
+        {
+            [Op.lt]: moment().format("YYYY-MM-DD 23:59:59")
+        }
+        ]
+    };
+    try {
+        let whereObj = {
+            CreatedAt: todayDuration
+        };
+        let shopWhere = {
+            CreatedAt: todayDuration
+        }
+        let adminShopId = await util.findAdminShopId(operateShopId);
+        let includeObj = {};
+        let operateShop = await db.ShopInfo.findById(operateShopId);
+        switch (operateShop.Type) {
+            case 0:
+                if (queryShopId) {
+                    whereObj.ShopId = queryShopId;
+                    shopWhere.ShopId = queryShopId;
+                    adminShopId = await util.findAdminShopId(queryShopId);
+                } else {
+                    throw "需要参数：ShopId。"
+                }
+                break;
+
+            case 1:
+                if (queryShopId && await util.isSubordinateAsync(operateShopId, queryShopId)) {
+                    whereObj.ShopId = queryShopId;
+                    shopWhere.ShopId = queryShopId;
+                } else if (!queryShopId) {
+                    throw "需要参数：ShopId。"
+                    includeObj.ParentShopId = operateShopId;
+                } else {
+                    throw "无权查询该店面数据";
+                }
+                break;
+            default:
+                if (queryShopId && queryShopId != operateShopId) {
+                    throw "无权查询其它店面数据";
+                }
+                whereObj.ShopId = operateShopId;
+                shopWhere.ShopId = operateShopId;
+                break;
+        }
+        let instance = await db.CustomerAccountChange.findAndCountAll({
+            where: {
+                CreatedAt: todayDuration,
+                ShopId: operateShopId
+            },
+            order: [
+                [sequelize.col('Id'), 'DESC']
+            ],
+            include: [
+                {
+                    model: db.CustomerInfo,
+                    where: {}
+                }
+            ],
+            offset: offset,
+            limit: pageSize
+        });
+        let json = { Array: [], Meta: {} };
+        json.Array = instance.rows.map(x => x.toJSON());
+        logger.info(json.Array);
+        for (let i of json.Array) {
+            i.Date = new Date(i.Date);
+        }
+
+        let statShopAccountInfoOfToday = (await db.ShopAccountChange.findOne({
+            attributes: [
+                //    'CustomerId',
+                [sequelize.fn('SUM', sequelize.col('ChargedMoney')), 'RechargedMoney'],
+                [sequelize.fn('SUM', sequelize.col('CustomedMoney')), 'CustomedMoney'],
+                [sequelize.fn('SUM', sequelize.col('CustomedPoints')), 'CustomedPoints'],
+                [sequelize.fn('SUM', sequelize.col('ShopBounusPoints')), 'ShopBounusPoints'],
+                [sequelize.fn('SUM', sequelize.col('RecommendPoints')), 'RecommendPoints'],
+            ],
+            where: shopWhere,
+        })).toJSON();
+        let statCustomerInfoOfToday = await db.CustomerInfo.count({
+            where: {
+                CreatedAt: todayDuration,
+                ShopId: adminShopId
             }
-        ],
-        offset: offset,
-        limit: pageSize
-    });
-    let json = {Array:[],Meta:{}};
-    json.Array = instance.rows.map(x=>x.toJSON());
-    logger.info(json.Array);
-    for (let i of json.Array){
-        i.Date = new Date(i.Date);
-    }
-    let pages = Math.ceil(instance.count / pageSize);
+        });
+        let numberOfConsumedCustomerOfToday = await db.CustomerAccountChange.count({
+            where: {
+                CreatedAt: todayDuration,
+                ShopId: shopWhere.ShopId
+            },
+            distinct: true,
+            col: 'CustomerId'
+        });
+        statShopAccountInfoOfToday.NewCustomer = statCustomerInfoOfToday;
+        statShopAccountInfoOfToday.ConsumedCustomer = numberOfConsumedCustomerOfToday;
+        shopWhere.CreatedAt = monthDuration;
+        let statShopAccountInfoOfMonth = (await db.ShopAccountChange.findOne({
+            attributes: [
+                //    'CustomerId',
+                [sequelize.fn('SUM', sequelize.col('ChargedMoney')), 'RechargedMoney'],
+                [sequelize.fn('SUM', sequelize.col('CustomedMoney')), 'CustomedMoney'],
+                [sequelize.fn('SUM', sequelize.col('CustomedPoints')), 'CustomedPoints'],
+                [sequelize.fn('SUM', sequelize.col('ShopBounusPoints')), 'ShopBounusPoints'],
+                [sequelize.fn('SUM', sequelize.col('RecommendPoints')), 'RecommendPoints'],
+            ],
+            where: shopWhere,
+        })).toJSON();
+        let statCustomerInfoOfMonth = await db.CustomerInfo.count({
+            where: {
+                CreatedAt: monthDuration,
+                ShopId: adminShopId
+            }
+        });
+        let numberOfConsumedCustomerOfMonth = await db.CustomerAccountChange.count({
+            where: {
+                CreatedAt: monthDuration,
+                ShopId: shopWhere.ShopId
+            },
+            distinct: true,
+            col: 'CustomerId'
+        });
+        statShopAccountInfoOfMonth.NewCustomer = statCustomerInfoOfMonth;
+        statShopAccountInfoOfMonth.ConsumedCustomer = numberOfConsumedCustomerOfMonth;
+        for (let i of Object.getOwnPropertyNames(statShopAccountInfoOfToday)) {
+            statShopAccountInfoOfToday[i] = util.makeNumericValue(statShopAccountInfoOfToday[i],0);
+        }
+        for (let i of Object.getOwnPropertyNames(statShopAccountInfoOfMonth)) {
+            statShopAccountInfoOfMonth[i] = util.makeNumericValue(statShopAccountInfoOfMonth[i],0);
+        }
+        let pages = Math.ceil(instance.count / pageSize);
         json.Meta["TotalPages"] = pages;
         json.Meta["CurrentRows"] = instance.rows.length;
         json.Meta["TotalRows"] = instance.count;
         json.Meta["CurrentPage"] = page;
-    res.json(json).end();
-}catch(error){
-    logger.error(error);
-    res.json({Error:{Message:error}}).end();
-}
+        json.Meta["dayStatistic"] = statShopAccountInfoOfToday;
+        json.Meta["monthStatistic"] = statShopAccountInfoOfMonth;
+        res.json(json).end();
+    } catch (error) {
+        logger.error(error);
+        res.json({ Error: { Message: error } }).end();
+    }
 });
 
 
