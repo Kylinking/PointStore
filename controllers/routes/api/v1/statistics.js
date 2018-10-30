@@ -55,7 +55,7 @@ router.get('/statistics/shop', async (req, res) => {
     let accumulateRecommendPoints = 0;
     let accumulateReChargedMoney = 0;
     let accumulateCustomedMoney = 0;
-    let whereObj = {};
+    let whereObj = {Reversal:0};
     let customerCountObj = {};
     let includeObj = [];
     let durationObj = {
@@ -326,10 +326,11 @@ router.get('/statistics/dayend', async (req, res) => {
     };
     try {
         let whereObj = {
-            CreatedAt: todayDuration
+            CreatedAt: todayDuration,
         };
         let shopWhere = {
-            CreatedAt: todayDuration
+            CreatedAt: todayDuration,
+            Reversal:0
         }
         let adminShopId = await util.findAdminShopId(operateShopId);
         let includeObj = {};
