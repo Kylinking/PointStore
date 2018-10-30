@@ -513,10 +513,12 @@ router.get('/statistics/history', async (req, res) => {
     };
     try {
         let whereObj = {
-            CreatedAt: todayDuration
+            CreatedAt: todayDuration,
+            Reversal:0
         };
         let shopWhere = {
-            CreatedAt: todayDuration
+            CreatedAt: todayDuration,
+            Reversal:0
         }
         let adminShopId = await util.findAdminShopId(operateShopId);
         let includeObj = {};
@@ -606,7 +608,8 @@ router.get('/statistics/history', async (req, res) => {
                     {'CustomedPoints':{[Op.gt]:0}}
                 ],
                 CreatedAt: todayDuration,
-                ShopId: shopWhere.ShopId
+                ShopId: shopWhere.ShopId,
+                Reversal:0
             },
         });
         statShopAccountInfoOfToday.NewCustomer = statCustomerInfoOfToday;
@@ -638,7 +641,8 @@ router.get('/statistics/history', async (req, res) => {
                     {'CustomedPoints':{[Op.gt]:0}}
                 ],
                 CreatedAt: monthDuration,
-                ShopId: shopWhere.ShopId
+                ShopId: shopWhere.ShopId,
+                Reversal:0
             },
         });
         logger.info(numberOfConsumedCustomerOfMonth);

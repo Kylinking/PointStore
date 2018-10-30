@@ -400,8 +400,8 @@ router.post('/userpoints', async (req, res) => {
                         ShopId: operateShopId,
                         CustomedMoney: costMoney,
                         ChargedMoney: rechargedMoney,
-                        RemainMoney:customerAccountInfo.RemainMoney,
-                        RemainPoints:customerAccountInfo.RemainPoints,
+                        RemainMoney: customerAccountInfo.RemainMoney,
+                        RemainPoints: customerAccountInfo.RemainPoints,
                         TransactionSeq: transactionInstance.TransactionSeq
                     }, {
                         transaction: transaction
@@ -415,8 +415,8 @@ router.post('/userpoints', async (req, res) => {
                             RecommendPoints: recommendPoints,
                             Date: date,
                             ShopId: operateShopId,
-                            RemainMoney:recommendCustomerAccountInfo.RemainMoney,
-                            RemainPoints:recommendCustomerAccountInfo.RemainPoints,
+                            RemainMoney: recommendCustomerAccountInfo.RemainMoney,
+                            RemainPoints: recommendCustomerAccountInfo.RemainPoints,
                             TransactionSeq: transactionInstance.TransactionSeq
                         }, {
                             transaction: transaction
@@ -435,8 +435,8 @@ router.post('/userpoints', async (req, res) => {
                             IndirectRecommendPoints: indirectRecommendPoints,
                             ShopId: operateShopId,
                             Date: date,
-                            RemainMoney:indirectRecommendCustomerAccountInfo.RemainMoney,
-                            RemainPoints:indirectRecommendCustomerAccountInfo.RemainPoints,
+                            RemainMoney: indirectRecommendCustomerAccountInfo.RemainMoney,
+                            RemainPoints: indirectRecommendCustomerAccountInfo.RemainPoints,
                             TransactionSeq: transactionInstance.TransactionSeq
                         }, {
                             transaction: transaction
@@ -455,8 +455,8 @@ router.post('/userpoints', async (req, res) => {
                             ThirdRecommendPoints: thirdRecommendPoints,
                             ShopId: operateShopId,
                             Date: date,
-                            RemainMoney:thirdRecommendCustomerAccountInfo.RemainMoney,
-                            RemainPoints:thirdRecommendCustomerAccountInfo.RemainPoints,
+                            RemainMoney: thirdRecommendCustomerAccountInfo.RemainMoney,
+                            RemainPoints: thirdRecommendCustomerAccountInfo.RemainPoints,
                             TransactionSeq: transactionInstance.TransactionSeq
                         }, {
                             transaction: transaction
@@ -512,23 +512,23 @@ router.post('/userpoints', async (req, res) => {
                 Date: new Date(date),
             }
             if (costMoney != 0) {
-                SMS.sendMixCostMessage(customerInfo.Name, 
-                    operateShop.Name, 
+                SMS.sendMixCostMessage(customerInfo.Name,
+                    operateShop.Name,
                     costOrigin,
-                    costOrigin-costMoney,
+                    costOrigin - costMoney,
                     rechargedMoney,
-                    costMoney - rechargedMoney > 0?costMoney - rechargedMoney:0,
-                    bounus, 
-                    result.RemainMoney, 
-                    result.RemainPoints, 
+                    costMoney - rechargedMoney > 0 ? costMoney - rechargedMoney : 0,
+                    bounus,
+                    result.RemainMoney,
+                    result.RemainPoints,
                     customerInfo.Phone);
             }
             if (costOrigin == 0 && rechargedMoney != 0) {
-                SMS.sendRechargeMessage(customerInfo.Name, 
-                    operateShop.Name, 
-                    rechargedMoney, 
-                    result.RemainMoney, 
-                    result.RemainPoints, 
+                SMS.sendRechargeMessage(customerInfo.Name,
+                    operateShop.Name,
+                    rechargedMoney,
+                    result.RemainMoney,
+                    result.RemainPoints,
                     customerInfo.Phone);
             }
             json.Object.CustomerAccountInfo = result.dataValues;
@@ -536,11 +536,11 @@ router.post('/userpoints', async (req, res) => {
                 json.Object.RecommendCustomerInfo = recommendCustomerInfo;
                 json.Object.RecommendPoints = recommendPoints;
                 if (recommendPoints != 0) {
-                    SMS.sendRecommendMessage(recommendCustomerInfo.Name, 
-                        operateShop.Name, 
-                        recommendPoints, 
-                        recommendCustomerAccountInfo.RemainMoney, 
-                        recommendCustomerAccountInfo.RemainPoints, 
+                    SMS.sendRecommendMessage(recommendCustomerInfo.Name,
+                        operateShop.Name,
+                        recommendPoints,
+                        recommendCustomerAccountInfo.RemainMoney,
+                        recommendCustomerAccountInfo.RemainPoints,
                         recommendCustomerInfo.Phone);
                 }
             } else {
@@ -550,11 +550,11 @@ router.post('/userpoints', async (req, res) => {
                 json.Object.IndirectRecommendCustomerInfo = indirectRecommendCustomerInfo;
                 json.Object.IndirectRecommendPoints = indirectRecommendPoints;
                 if (indirectRecommendPoints != 0) {
-                    SMS.sendRecommendMessage(indirectRecommendCustomerInfo.Name, 
-                        operateShop.Name, 
-                        indirectRecommendPoints, 
-                        indirectRecommendCustomerAccountInfo.RemainMoney, 
-                        indirectRecommendCustomerAccountInfo.RemainPoints, 
+                    SMS.sendRecommendMessage(indirectRecommendCustomerInfo.Name,
+                        operateShop.Name,
+                        indirectRecommendPoints,
+                        indirectRecommendCustomerAccountInfo.RemainMoney,
+                        indirectRecommendCustomerAccountInfo.RemainPoints,
                         indirectRecommendCustomerInfo.Phone);
                 }
             } else {
@@ -564,11 +564,11 @@ router.post('/userpoints', async (req, res) => {
                 json.Object.ThirdRecommendCustomerInfo = thirdRecommendCustomerInfo;
                 json.Object.ThirdRecommendPoints = thirdRecommendPoints;
                 if (thirdRecommendPoints != 0) {
-                    SMS.sendRecommendMessage(thirdRecommendCustomerInfo.Name, 
-                        operateShop.Name, 
-                        thirdRecommendPoints, 
-                        thirdRecommendCustomerAccountInfo.RemainMoney, 
-                        thirdRecommendCustomerAccountInfo.RemainPoints, 
+                    SMS.sendRecommendMessage(thirdRecommendCustomerInfo.Name,
+                        operateShop.Name,
+                        thirdRecommendPoints,
+                        thirdRecommendCustomerAccountInfo.RemainMoney,
+                        thirdRecommendCustomerAccountInfo.RemainPoints,
                         thirdRecommendCustomerInfo.Phone);
                 }
             } else {
@@ -586,6 +586,292 @@ router.post('/userpoints', async (req, res) => {
             }).end();
         });
 });
+
+router.delete('/userpoints', async (req, res) => {
+    let logger = res.locals.logger;
+    let phone = !isNaN(util.checkPhone(req.body.Phone)) ? util.checkPhone(req.body.Phone) : 0;
+    let db = res.locals.db;
+    let sequelize = db.sequelize;
+    let operateShopId = res.locals.shopid;
+    let transactionSeq = util.makeNumericValue(req.body.Seq, null);
+    let password = req.body.Password || null;
+    try {
+        if (transactionSeq === null) {
+            throw "需要原交易序号";
+        }
+        if (password === null) {
+            throw "需要店面密码";
+        }
+        if (phone === null) {
+            throw "需要客户手机号";
+        }
+        let login = await db.Login.findById(operateShopId);
+        if (login.Password !== password) {
+            throw "店面密码不正确";
+        }
+        let transcationRecord = await db.TransactionDetail.findById(transactionSeq);
+        if (!transcationRecord) {
+            throw "原交易不存在";
+        }
+        if (transcationRecord.Reversal != 0) {
+            throw "冲正交易不允许二次冲正";
+        }
+        let customerInfo = await db.CustomerInfo.findOne({
+            where: {
+                Phone: phone
+            }
+        });
+        if (customerInfo.CustomerId !== transcationRecord.CustomerId) {
+            throw "客户手机号与交易客户不一致";
+        }
+        let date = new Date();
+        let t = sequelize.transaction(transaction => {
+            return db.TransactionDetail.create({
+                CustomerId: transcationRecord.CustomerId,
+                RecommendCustomerId: transcationRecord.RecommendCustomerId,
+                IndirectRecommendCustomerId: transcationRecord.IndirectRecommendCustomerId,
+                ThirdRecommendCustomerId: transcationRecord.ThirdRecommendCustomerId,
+                PointToMoneyRate: transcationRecord.PointToMoneyRate,
+                RecommendPoints: transcationRecord.RecommendPoints,
+                IndirectRecommendPoints: transcationRecord.IndirectRecommendPoints,
+                ThirdRecommendPoints: transcationRecord.ThirdRecommendPoints,
+                ShopBounusPoints: transcationRecord.ShopBounusPoints,
+                CustomedPoints: transcationRecord.CustomedPoints,
+                ChargedMoney: transcationRecord.ChargedMoney,
+                CustomedMoney: transcationRecord.CustomedMoney,
+                Date: Date.parse(date),
+                Reversal: 1,
+                ShopId:operateShopId,
+                ReversalTransactionSeq: transactionSeq
+            }, {
+                transaction
+            }).then(async (reversalTransc)=>{
+            transcationRecord.set("Reversal",1);
+            transcationRecord.set('ReversalTransactionSeq', reversalTransc.TransactionSeq);
+            await transcationRecord.save({
+                transaction: transaction
+            });
+            transcationRecord = transcationRecord.toJSON();
+            let reversal = await db.ReversalRecord.create({
+                OrignTransactionSeq: transactionSeq,
+                CustomerId: customerInfo.CustomerId,
+                ReversalTransactionSeq:reversalTransc.TransactionSeq
+            }, {
+                transaction: transaction
+            });
+            let ShopAccountInfo = await db.ShopAccountInfo.decrement({
+                CustomedPoints: transcationRecord.CustomedPoints,
+                ChargedMoney: transcationRecord.ChargedMoney,
+                CustomedMoney: transcationRecord.CustomedMoney,
+                ShopBounusPoints: transcationRecord.ShopBounusPoints,
+                RecommendPoints: (transcationRecord.RecommendPoints +
+                    transcationRecord.IndirectRecommendPoints +
+                    transcationRecord.ThirdRecommendPoints),
+            },{
+                where: {
+                    ShopId: {
+                        [Op.or]: [
+                            customerInfo.ShopId,
+                            operateShopId
+                        ]
+                    }
+                }
+            }, {
+                transaction: transaction
+            });
+            let shopAcctChange = await db.ShopAccountChange.findOne({
+                where: {
+                    TransactionSeq: transactionSeq,
+                }
+            }, {
+                transaction: transaction
+            });
+            let revarsalShopAcctChange = await db.ShopAccountChange.create({
+                CustomedPoints: -transcationRecord.CustomedPoints,
+                ChargedMoney: -transcationRecord.ChargedMoney,
+                CustomedMoney: -transcationRecord.CustomedMoney,
+                ShopBounusPoints: -transcationRecord.ShopBounusPoints,
+                RecommendPoints: -(transcationRecord.RecommendPoints +
+                    transcationRecord.IndirectRecommendPoints +
+                    transcationRecord.ThirdRecommendPoints),
+                Date: Date.parse(date),
+                ShopId: operateShopId,
+                TransactionSeq: transcationRecord.TransactionSeq,
+                Reversal: 1,
+                ReversalId: shopAcctChange.Id
+            }, {
+                transaction: transaction
+            });
+            shopAcctChange.set("Reversal", 1);
+            shopAcctChange.set("ReversalId", revarsalShopAcctChange.Id);
+            await shopAcctChange.save({transaction:transaction});
+            logger.info(shopAcctChange.toJSON());
+
+            let customerAccountInfo = await db.CustomerAccountInfo.findById(transcationRecord.CustomerId, {
+                transaction: transaction
+            });
+            logger.info(customerAccountInfo.toJSON());
+            await customerAccountInfo.decrement({
+                RemainMoney: transcationRecord.ChargedMoney - transcationRecord.CustomedMoney,
+                RemainPoints: transcationRecord.ShopBounusPoints - transcationRecord.CustomedPoints,
+                ShopBounusPoints: transcationRecord.ShopBounusPoints,
+                CustomedPoints: transcationRecord.CustomedPoints,
+                ChargedMoney: transcationRecord.ChargedMoney,
+                CustomedMoney: transcationRecord.CustomedMoney
+            }, {
+                transaction: transaction
+            });
+            logger.info(customerAccountInfo);
+            let customerAcctChange = await db.CustomerAccountChange.findOne({
+                where: {
+                    CustomerId: transcationRecord.CustomerId,
+                    TransactionSeq: transactionSeq
+                }
+            });
+            let reversalCustomerAccountChange = await db.CustomerAccountChange.create({
+                CustomerId: transcationRecord.CustomerId,
+                CustomedPoints: -transcationRecord.CustomedPoints,
+                ShopBounusPoints: -transcationRecord.ShopBounusPoints,
+                Date: Date.parse(date),
+                ShopId: operateShopId,
+                CustomedMoney: -transcationRecord.CustomedMoney,
+                ChargedMoney: -transcationRecord.ChargedMoney,
+                RemainMoney: customerAccountInfo.RemainMoney 
+                - transcationRecord.ChargedMoney 
+                + transcationRecord.CustomedMoney,
+                RemainPoints: customerAccountInfo.RemainPoints 
+                - transcationRecord.ShopBounusPoints
+                + transcationRecord.CustomedPoints,
+                TransactionSeq: transcationRecord.TransactionSeq,
+                Reversal: 1,
+                ReversalId: customerAcctChange.Id
+            }, {
+                transaction: transaction
+            });
+            customerAcctChange.set('Reversal', 1);
+            customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
+            await customerAcctChange.save({transaction:transaction});
+
+            if (transcationRecord.RecommendCustomerId !== null) {
+                let customerAcctChange = await db.CustomerAccountChange.findOne({
+                    where: {
+                        CustomerId: transcationRecord.RecommendCustomerId,
+                        TransactionSeq: transactionSeq
+                    }
+                });
+                customerAccountInfo = await db.CustomerAccountInfo.findById(transcationRecord.RecommendCustomerId, {
+                    transaction: transaction
+                });
+                await customerAccountInfo.decrement({
+                    RemainPoints: transcationRecord.RecommendPoints,
+                    RecommendPoints: transcationRecord.RecommendPoints,
+                }, {
+                    transaction: transaction
+                });
+                logger.info("recommend ")
+                reversalCustomerAccountChange = await db.CustomerAccountChange.create({
+                    CustomerId: transcationRecord.RecommendCustomerId,
+                    RecommendPoints: -transcationRecord.RecommendPoints,
+                    RemainPoints: customerAccountInfo.RemainPoints -transcationRecord.RecommendPoints,
+                    RemainMoney: customerAccountInfo.RemainMoney,
+                    TransactionSeq: transcationRecord.TransactionSeq,
+                    Date: Date.parse(date),
+                    ShopId: operateShopId,
+                    Reversal: 1,
+                    ReversalId: customerAcctChange.Id
+                }, {
+                    transaction: transaction
+                });
+                customerAcctChange.set('Reversal', 1);
+                customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
+                await customerAcctChange.save({transaction:transaction});
+            }
+
+            if (transcationRecord.IndirectRecommendCustomerId !== null) {
+                customerAcctChange = await db.CustomerAccountChange.findOne({
+                    where: {
+                        CustomerId: transcationRecord.IndirectRecommendCustomerId,
+                        TransactionSeq: transactionSeq
+                    }
+                });
+                customerAccountInfo = await db.CustomerAccountInfo.findById(transcationRecord.IndirectRecommendCustomerId, {
+                    transaction: transaction
+                });
+                await customerAccountInfo.decrement({
+                    RemainPoints: transcationRecord.IndirectRecommendPoints,
+                    IndirectRecommendPoints: transcationRecord.IndirectRecommendPoints,
+                }, {
+                    transaction: transaction
+                });
+                await customerAccountInfo.reload();
+                reversalCustomerAccountChange = await db.CustomerAccountChange.create({
+                    CustomerId: transcationRecord.IndirectRecommendCustomerId,
+                    IndirectRecommendPoints: -transcationRecord.IndirectRecommendPoints,
+                    RemainPoints: customerAccountInfo.RemainPoints-transcationRecord.IndirectRecommendPoints,
+                    RemainMoney: customerAccountInfo.RemainMoney,
+                    TransactionSeq: transcationRecord.TransactionSeq,
+                    Date: Date.parse(date),
+                    ShopId: operateShopId,
+                    Reversal: 1,
+                    ReversalId: customerAcctChange.Id
+                }, {
+                    transaction: transaction
+                });
+                customerAcctChange.set('Reversal', 1);
+                customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
+                await customerAcctChange.save({transaction:transaction});
+            }
+
+            if (transcationRecord.ThirdRecommendCustomerId !== null) {
+                customerAcctChange = await db.CustomerAccountChange.findOne({
+                    where: {
+                        CustomerId: transcationRecord.ThirdRecommendCustomerId,
+                        TransactionSeq: transactionSeq
+                    }
+                });
+                customerAccountInfo = await db.CustomerAccountInfo.findById(transcationRecord.ThirdRecommendCustomerId, {
+                    transaction: transaction
+                });
+                await customerAccountInfo.decrement({
+                    RemainPoints: transcationRecord.ThirdRecommendPoints,
+                    ThirdRecommendPoints: transcationRecord.ThirdRecommendPoints,
+                }, {
+                    transaction: transaction
+                });
+                await customerAccountInfo.reload();
+                reversalCustomerAccountChange = await db.CustomerAccountChange.create({
+                    CustomerId: transcationRecord.ThirdRecommendCustomerId,
+                    ThirdRecommendPoints: -transcationRecord.ThirdRecommendPoints,
+                    RemainPoints: customerAccountInfo.RemainPoints-transcationRecord.ThirdRecommendPoints,
+                    RemainMoney: customerAccountInfo.RemainMoney,
+                    TransactionSeq: transcationRecord.TransactionSeq,
+                    Date: Date.parse(date),
+                    ShopId: operateShopId,
+                    Reversal: 1,
+                    ReversalId: customerAcctChange.Id
+                }, {
+                    transaction: transaction
+                });
+                customerAcctChange.set('Reversal', 1);
+                customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
+                await customerAcctChange.save({transaction:transaction});
+            }
+
+            res.json({Object:{
+                TransactionDetail:reversalTransc.toJSON()
+            }}).end();
+        });
+    }); 
+}catch (error) {
+        logger.error(error);
+        res.json({
+            Error: {
+                Message: error
+            }
+        }).end();
+    }
+});
+
 
 // error 
 router.use('/userpoints', (req, res) => {

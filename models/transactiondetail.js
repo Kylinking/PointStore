@@ -45,7 +45,12 @@ module.exports = (sequelize, DataTypes) => {
     Date: {
       type: DataTypes.BIGINT,
       allowNull: false,
-    }
+    },
+    Reversal:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      defaultValue:0
+    },
   }, {
     updatedAt: 'UpdatedAt',
     createdAt: 'CreatedAt'
@@ -92,6 +97,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true
       }
     });
+
+      models.TransactionDetail.belongsTo(models.TransactionDetail, {
+        onDelete: "CASCADE",
+        foreignKey: {
+          name: 'ReversalTransactionSeq',
+          allowNull: true
+        }
+      });
   };
 
   return TransactionDetail;

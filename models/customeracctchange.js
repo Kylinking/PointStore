@@ -58,6 +58,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue:0
   },
+  Reversal:{
+    type:DataTypes.INTEGER,
+    allowNull:false,
+    defaultValue:0
+  },
   }, {
     updatedAt: 'UpdatedAt',
     createdAt: 'CreatedAt'
@@ -84,6 +89,14 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: {
         name: 'TransactionSeq',
         allowNull: false
+      }
+    });
+
+    models.CustomerAccountChange.belongsTo(models.CustomerAccountChange, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: 'ReversalId',
+        allowNull: true
       }
     });
   };
