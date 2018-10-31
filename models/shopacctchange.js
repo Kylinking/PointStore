@@ -6,17 +6,17 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     CustomedPoints: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: false,
       defaultValue:0
     },
     ChargedMoney: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: false,
             defaultValue:0
     },
     CustomedMoney: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: false,
       defaultValue:0
     },
@@ -25,12 +25,12 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     ShopBounusPoints: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: false,
             defaultValue:0
     },
     RecommendPoints: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: false,
       defaultValue:0
     },

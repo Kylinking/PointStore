@@ -162,7 +162,6 @@ router.post('/userpoints', async (req, res) => {
             ShopId: operateShopId
         }
     });
-
     logger.info(operateShop.Type);
     if (operateShop.Type == 1) {
         res.json({
@@ -271,11 +270,12 @@ router.post('/userpoints', async (req, res) => {
                         }
                         pointToMoney = costPoints * adminBounusRate.PointToMoneyRate;
                     }
+                    
                     logger.info(`bounusRate: RecommendRate:${bounusRate.RecommendRate},Indirect:${bounusRate.IndirectRecommendRate},Third:${bounusRate.ThirdRecommendRate},ShopBounus:${bounusRate.ShopBounusPointRate}`);
-                    recommendPoints = Math.floor(costMoney * bounusRate.RecommendRate);
-                    indirectRecommendPoints = Math.floor(costMoney * bounusRate.IndirectRecommendRate);
-                    thirdRecommendPoints = Math.floor(costMoney * bounusRate.ThirdRecommendRate);
-                    bounus = Math.floor(costMoney * bounusRate.ShopBounusPointRate);
+                    recommendPoints = Number((costMoney * bounusRate.RecommendRate).toFixed(2));
+                    indirectRecommendPoints = Number((costMoney * bounusRate.IndirectRecommendRate).toFixed(2));
+                    thirdRecommendPoints = Number((costMoney * bounusRate.ThirdRecommendRate).toFixed(2));
+                    bounus = Number((costMoney * bounusRate.ShopBounusPointRate).toFixed(2));
                     if (customerAccountInfo.RemainMoney + rechargedMoney < costMoney) {
                         // res.json({
                         //     Error: {
@@ -593,7 +593,7 @@ router.delete('/userpoints', async (req, res) => {
     let db = res.locals.db;
     let sequelize = db.sequelize;
     let operateShopId = res.locals.shopid;
-    let transactionSeq = util.makeNumericValue(req.body.Seq, null);
+    let transactionSeq = util.makeNumericValue(req.body.TransactionSeq, null);
     let password = req.body.Password || null;
     try {
         if (transactionSeq === null) {
