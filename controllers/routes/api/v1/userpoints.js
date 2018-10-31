@@ -752,7 +752,7 @@ router.delete('/userpoints', async (req, res) => {
             customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
             await customerAcctChange.save({transaction:transaction});
 
-            if (transcationRecord.RecommendCustomerId !== null) {
+            if (transcationRecord.RecommendCustomerId !== null && transcationRecord.RecommendPoints != 0) {
                 let customerAcctChange = await db.CustomerAccountChange.findOne({
                     where: {
                         CustomerId: transcationRecord.RecommendCustomerId,
@@ -787,7 +787,7 @@ router.delete('/userpoints', async (req, res) => {
                 await customerAcctChange.save({transaction:transaction});
             }
 
-            if (transcationRecord.IndirectRecommendCustomerId !== null) {
+            if (transcationRecord.IndirectRecommendCustomerId !== null && transcationRecord.IndirectRecommendPoints != 0) {
                 customerAcctChange = await db.CustomerAccountChange.findOne({
                     where: {
                         CustomerId: transcationRecord.IndirectRecommendCustomerId,
@@ -822,7 +822,7 @@ router.delete('/userpoints', async (req, res) => {
                 await customerAcctChange.save({transaction:transaction});
             }
 
-            if (transcationRecord.ThirdRecommendCustomerId !== null) {
+            if (transcationRecord.ThirdRecommendCustomerId !== null && transcationRecord.ThirdRecommendPoints != 0) {
                 customerAcctChange = await db.CustomerAccountChange.findOne({
                     where: {
                         CustomerId: transcationRecord.ThirdRecommendCustomerId,
