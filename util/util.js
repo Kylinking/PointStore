@@ -158,7 +158,7 @@ var util = {
         const props = [
             'RemainMoney', 'ChargedMoney', 'RemainPoints', 'CustomedMoney',
             'CustomedPoints', 'RecommendPoints', 'IndirectRecommendPoints',
-            'ThirdRecommendPoints', 'ShopBounusPoints',
+            'ThirdRecommendPoints', 'ShopBounusPoints','RechargedMoney'
         ];
         for (let i of Object.getOwnPropertyNames(obj)) {
             if (props.includes(i)) {
