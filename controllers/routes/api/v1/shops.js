@@ -78,7 +78,7 @@ router.get('/shops', async (req, res, next) => {
                 })
                 .then(results => {
                     results.rows.forEach(result => {
-                        json.Array.push(result);
+                        json.Array.push(result.toJSON());
                     });
                     let pages = Math.ceil(results.count / pageSize);
                     json.Meta["TotalPages"] = pages;
@@ -114,9 +114,9 @@ router.get('/shops', async (req, res, next) => {
                         }
                     }).end();
                 } else {
-                    logger.info(info.dataValues);
+                    logger.info(info.toJSON());
                     res.json({
-                        Object: info.dataValues
+                        Object: info.toJSON()
                     }).end();
                 }
             });
@@ -148,7 +148,7 @@ router.get('/shops', async (req, res, next) => {
                     }).end();
                 } else {
                     res.json({
-                        Object: info.dataValues
+                        Object: info.toJSON()
                     }).end();
                 }
             });
@@ -290,7 +290,6 @@ router.post('/shops', async (req, res, next) => {
             let newAcctInfo = await res.locals.db.ShopAccountInfo.create({
                 CustomedPoints: 0,
                 RecommendPoints: 0,
-                //ChargedPoints: 0,
                 ShopBounusPoints: 0,
                 ShopId: newShop.ShopId,
                 CustomedMoney:0,

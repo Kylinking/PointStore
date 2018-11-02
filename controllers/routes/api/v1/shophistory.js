@@ -96,8 +96,9 @@ router.get('/shophistory', async (req, res) => {
     if (instance) {
         let data = [];
         instance.rows.forEach(ele => {
-            ele.dataValues.Date = new Date(ele.Date);
-            data.push(ele);
+            ele = ele.toJSON();
+            ele.Date = new Date(ele.Date);
+            data.push(util.ConvertObj2Result(ele));
         })
         let pages = Math.ceil(instance.count / pageSize);
         res.json({

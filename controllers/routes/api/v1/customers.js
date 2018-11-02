@@ -123,7 +123,7 @@ router.get('/customers', async (req, res) => {
             } else {
                 row.dataValues["RecommendPhone"] = null;
             }
-            row.dataValues["CustomerAccountInfo"] = record;
+            row.dataValues["CustomerAccountInfo"] = util.ConvertObj2Result(record.toJSON());
             json.Array.push(row);
         }
         json.Meta["TotalPages"] = pages;

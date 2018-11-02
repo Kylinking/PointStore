@@ -1,46 +1,46 @@
 var db = require('../models').db;
 
 var util = {
-    findAdminShopId:async function(shopId){
+    findAdminShopId: async function (shopId) {
         if (!shopId) return null;
         try {
             let shop = await db.ShopInfo.findById(shopId);
-            if (shop.Type == 0){
+            if (shop.Type == 0) {
                 return null;
-            }else if (shop.Type == 1){
+            } else if (shop.Type == 1) {
                 return shopId;
-            }else{
+            } else {
                 return shop.ParentShopId;
             }
-        }catch(error){
+        } catch (error) {
             return null;
         }
     },
-    getShopByIdAsync:async function (shopId){
+    getShopByIdAsync: async function (shopId) {
         try {
             let shop = await db.ShopInfo.findOne({
-                where:{
-                    ShopId:shopId
+                where: {
+                    ShopId: shopId
                 }
             });
             return shop;
-        }catch(error){
+        } catch (error) {
             return null;
         }
     },
-    getBounusRateByIdAsync:async function (shopId){
+    getBounusRateByIdAsync: async function (shopId) {
         try {
             let rate = await db.BounusPointRate.findOne({
-                where:{
-                    ShopId:shopId
+                where: {
+                    ShopId: shopId
                 }
             });
             return rate;
-        }catch(error){
+        } catch (error) {
             return null;
         }
     },
-     isAdminShopAsync: async function (shopId) {
+    isAdminShopAsync: async function (shopId) {
         if (isNaN(shopId)) return false;
         var shopInfo = db.ShopInfo;
         var instance = await shopInfo.findOne({
@@ -75,29 +75,29 @@ var util = {
         }
         return string;
     },
-    isSubordinateAsync:async function(parentShopId,childShopId){
-        if (!parentShopId || !childShopId){
+    isSubordinateAsync: async function (parentShopId, childShopId) {
+        if (!parentShopId || !childShopId) {
             return false;
         }
         if (isNaN(parentShopId) || isNaN(childShopId)) return false;
         if (parentShopId == childShopId) return true;
         var instance = await db.ShopInfo.findOne({
-            where:{
-                ShopId:childShopId
+            where: {
+                ShopId: childShopId
             }
         });
         if (!instance) return false;
-        if (instance.ParentShopId == parentShopId){
+        if (instance.ParentShopId == parentShopId) {
             return true;
         }
         return false;
     },
-    isBelongsToByPhoneAsync:async function(customerPhone,shopId){
+    isBelongsToByPhoneAsync: async function (customerPhone, shopId) {
         if (!customerPhone || !shopId) return false;
         //if (await this.isSupermanAsync(shopId)) return false;
         var instance = await db.CustomerInfo.findOne({
-            where:{
-                Phone:customerPhone
+            where: {
+                Phone: customerPhone
             }
         });
         if (!instance) return false;
@@ -105,48 +105,67 @@ var util = {
         //if (await this.isSubordinateAsync(shopId,instance.ShopId)) return true;
         return false;
     },
-    isBelongsToByIdAsync:async function(customerId,shopId){
+    isBelongsToByIdAsync: async function (customerId, shopId) {
         if (!customerId || !shopId) return false;
         //if (await this.isSupermanAsync(shopId)) return false;
         var instance = await db.CustomerInfo.findOne({
-            where:{
-                CustomerId:customerId
+            where: {
+                CustomerId: customerId
             }
         });
         if (!instance) return false;
         if (instance.ShopId == shopId) return true;
-       // if (await this.isSubordinateAsync(shopId,instance.ShopId)) return true;
+        // if (await this.isSubordinateAsync(shopId,instance.ShopId)) return true;
         return false;
     },
-    getRoleAsync: async function (shopId){
-        if (!shopId)return undefined;
+    getRoleAsync: async function (shopId) {
+        if (!shopId) return undefined;
         var instance = await db.ShopInfo.findOne({
-            where:{
-                ShopId:shopId
+            where: {
+                ShopId: shopId
             }
         });
-        if (!instance)return undefined;
-        switch(instance.Type){
-            case 0: return "superman";
-            case 1: return "admin";
-            default: return "normal";
+        if (!instance) return undefined;
+        switch (instance.Type) {
+            case 0:
+                return "superman";
+            case 1:
+                return "admin";
+            default:
+                return "normal";
         }
     },
-    checkInt : function(value) {
+    checkInt: function (value) {
         if (/^(\-|\+)?([0-9]+\.)?([0-9]+|Infinity)$/.test(value))
-          return Number(value);
+            return Number(value);
         return NaN;
     },
-    checkPhone:function(value){
+    checkPhone: function (value) {
         if (/^[0-9]{3,4}-?[0-9]{0,7}$/.test(value))
-          return value;
+            return value;
         return NaN;
     },
-    makeNumericValue:function(originValue,defaultValue){
-       let temp = this.checkInt(originValue);
-       if (isNaN(temp)) return defaultValue;
-       return temp;
+    makeNumericValue: function (originValue, defaultValue) {
+        let temp = this.checkInt(originValue);
+        if (isNaN(temp)) return defaultValue;
+        return temp;
+    },
+    Convert2Result: function (number) {
+        let hundredTime = 100;
+        return Math.round(util.makeNumericValue(number, 0)) / hundredTime;
+    },
+    ConvertObj2Result: function (obj) {
+        const props = [
+            'RemainMoney', 'ChargedMoney', 'RemainPoints', 'CustomedMoney',
+            'CustomedPoints', 'RecommendPoints', 'IndirectRecommendPoints',
+            'ThirdRecommendPoints', 'ShopBounusPoints',
+        ];
+        for (let i of Object.getOwnPropertyNames(obj)) {
+            if (props.includes(i)) {
+                obj[i] = this.Convert2Result(obj[i]);
+            }
+        }
+        return obj;
     }
 }
-
 module.exports = util;

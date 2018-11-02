@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     //   allowNull: true,
     // },
     CustomedPoints: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue:0
     },
@@ -19,42 +19,42 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     ShopBounusPoints: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue:0
     },
     RecommendPoints: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue:0
     },
     IndirectRecommendPoints: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue:0
     },
     ThirdRecommendPoints: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue:0
     },
     ChargedMoney: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue:0
     },
     CustomedMoney: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue:0
     },
     RemainPoints: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue:0
   },
   RemainMoney: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue:0
   },

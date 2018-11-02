@@ -82,12 +82,10 @@ router.get('/customerhistory', async (req, res) => {
         }).end()
         return;
     }
-    
     whereObj.CustomerId = customer.CustomerId;
     if (queryShopId != null){
         whereObj.ShopId = queryShopId;
     }
-    //whereObj.ShopId = customer.ShopId;
     logger.info(whereObj);
     let include = [{
         model: db.ShopInfo,
@@ -108,7 +106,8 @@ router.get('/customerhistory', async (req, res) => {
         let data = [];
         instance.rows.forEach(ele => {
             ele.Date = new Date(ele.Date);
-            data.push(ele);
+            data.push(util.ConvertObj2Result(ele.toJSON()));
+            
         })
         let pages = Math.ceil(instance.count / pageSize);
         res.json({

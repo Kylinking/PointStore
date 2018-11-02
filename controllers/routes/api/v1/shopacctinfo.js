@@ -91,6 +91,7 @@ router.get('/shoppoints', async (req, res) => {
             let data = [];
             let rootRate = await util.getBounusRateByIdAsync(1);
             for (let ele of instance.rows) {
+                ele = ele.toJSON();
                 let rate = await util.getBounusRateByIdAsync(ele.ShopId);
                 let tmpShop = await util.getShopByIdAsync(ele.ShopId);
                 if (rate != null) {
@@ -109,8 +110,8 @@ router.get('/shoppoints', async (req, res) => {
                         let t = await util.getBounusRateByIdAsync(tmpShop.ParentShopId);
                         rate.PointToMoneyRate = t.PointToMoneyRate;
                     }
-                    ele.dataValues.BounusPointRate = rate;
-                    data.push(ele);
+                    ele.BounusPointRate = rate;
+                    data.push(util.ConvertObj2Result(ele));
                 }
             }
             let pages = Math.ceil(instance.count / pageSize);

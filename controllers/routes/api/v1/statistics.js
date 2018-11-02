@@ -399,7 +399,7 @@ router.get('/statistics/dayend', async (req, res) => {
             let t = {};
             t = customer.toJSON();
             t.Records = records;
-            json.Array.push(t);
+            json.Array.push(util.ConvertObj2Result(t));
         }
 
         let statShopAccountInfoOfToday = (await db.ShopAccountChange.findOne({
@@ -464,8 +464,8 @@ router.get('/statistics/dayend', async (req, res) => {
             "CurrentRows": count.rows.length,
             "TotalRows": count.count.length,
             "CurrentPage": page,
-            "TodayStatistic": statShopAccountInfoOfToday,
-            "MonthStatistic": statShopAccountInfoOfMonth
+            "TodayStatistic": util.ConvertObj2Result( statShopAccountInfoOfToday),
+            "MonthStatistic": util.ConvertObj2Result(statShopAccountInfoOfMonth),
         }
         res.json(json).end();
     } catch (error) {
@@ -572,7 +572,7 @@ router.get('/statistics/history', async (req, res) => {
             limit: pageSize
         });
         let json = { Array: [], Meta: {} };
-        json.Array = instance.rows.map(x => x.toJSON());
+        json.Array = instance.rows.map(x => util.ConvertObj2Result(x.toJSON()));
         logger.info(json.Array);
         for (let i of json.Array) {
             i.Date = new Date(i.Date);
@@ -660,8 +660,8 @@ router.get('/statistics/history', async (req, res) => {
         json.Meta["CurrentRows"] = instance.rows.length;
         json.Meta["TotalRows"] = instance.count;
         json.Meta["CurrentPage"] = page;
-        json.Meta["TodayStatistic"] = statShopAccountInfoOfToday;
-        json.Meta["MonthStatistic"] = statShopAccountInfoOfMonth;
+        json.Meta["TodayStatistic"] = util.ConvertObj2Result(statShopAccountInfoOfToday);
+        json.Meta["MonthStatistic"] = util.ConvertObj2Result(statShopAccountInfoOfMonth);
         res.json(json).end();
     } catch (error) {
         logger.error(error);

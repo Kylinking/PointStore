@@ -4,6 +4,7 @@ let SMS = require('../../../../util/sms');
 let express = require('express');
 let router = express.Router();
 const Op = require('sequelize').Op;
+const hundredTime = 100;
 router.get('/userpoints', async (req, res) => {
     let logger = res.locals.logger;
     let db = res.locals.db;
@@ -95,7 +96,7 @@ router.get('/userpoints', async (req, res) => {
                 Meta: {}
             };
             instance.rows.forEach((row) => {
-                json.Array.push(row);
+                json.Array.push(util.ConvertObj2Result(row.toJSON()));
             });
             json.Meta["TotalPages"] = pages;
             json.Meta["CurrentRows"] = instance.rows.length;
@@ -122,9 +123,9 @@ router.post('/userpoints', async (req, res) => {
     let sequelize = db.sequelize;
     let operateShopId = res.locals.shopid;
     let costPoints = util.makeNumericValue(req.body.CostPoint, 0);
-    let costOrigin = util.makeNumericValue(req.body.CostMoney, 0);
+    let costOrigin = Math.round(util.makeNumericValue(req.body.CostMoney, 0)*hundredTime);
     let costMoney = costOrigin;
-    let rechargedMoney = util.makeNumericValue(req.body.RechargedMoney, 0);
+    let rechargedMoney = Math.round(util.makeNumericValue(req.body.RechargedMoney, 0)*hundredTime);
     let bounus = 0
     let recommendPoints = 0
     let indirectRecommendPoints = 0
@@ -272,10 +273,10 @@ router.post('/userpoints', async (req, res) => {
                     }
                     
                     logger.info(`bounusRate: RecommendRate:${bounusRate.RecommendRate},Indirect:${bounusRate.IndirectRecommendRate},Third:${bounusRate.ThirdRecommendRate},ShopBounus:${bounusRate.ShopBounusPointRate}`);
-                    recommendPoints = Number((costMoney * bounusRate.RecommendRate).toFixed(2));
-                    indirectRecommendPoints = Number((costMoney * bounusRate.IndirectRecommendRate).toFixed(2));
-                    thirdRecommendPoints = Number((costMoney * bounusRate.ThirdRecommendRate).toFixed(2));
-                    bounus = Number((costMoney * bounusRate.ShopBounusPointRate).toFixed(2));
+                    recommendPoints = Math.round(costMoney * bounusRate.RecommendRate);
+                    indirectRecommendPoints = Math.round(costMoney * bounusRate.IndirectRecommendRate);
+                    thirdRecommendPoints = Math.round(costMoney * bounusRate.ThirdRecommendRate);
+                    bounus = Math.round(costMoney * bounusRate.ShopBounusPointRate);
                     if (customerAccountInfo.RemainMoney + rechargedMoney < costMoney) {
                         // res.json({
                         //     Error: {
@@ -500,47 +501,47 @@ router.post('/userpoints', async (req, res) => {
             let json = {
                 Object: {}
             };
-            json.Object.TransactionDetail = {
+            json.Object.TransactionDetail = util.ConvertObj2Result({
                 ShopId: operateShopId,
-                ChargedMoney: rechargedMoney,
-                CustomedMoney: costMoney,
-                CustomedPoints: costPoints,
-                RecommendPoints: recommendPoints,
-                IndirectRecommendPoints: indirectRecommendPoints,
-                ThirdRecommendPoints: thirdRecommendPoints,
-                ShopBounusPoints: bounus,
+                ChargedMoney: (rechargedMoney),
+                CustomedMoney: (costMoney),
+                CustomedPoints: (costPoints),
+                RecommendPoints: (recommendPoints),
+                IndirectRecommendPoints: (indirectRecommendPoints),
+                ThirdRecommendPoints: (thirdRecommendPoints),
+                ShopBounusPoints: (bounus),
                 Date: new Date(date),
-            }
+            });
             if (costMoney != 0) {
                 SMS.sendMixCostMessage(customerInfo.Name,
                     operateShop.Name,
-                    costOrigin,
-                    costOrigin - costMoney,
-                    rechargedMoney,
-                    costMoney - rechargedMoney > 0 ? costMoney - rechargedMoney : 0,
-                    bounus,
-                    result.RemainMoney,
-                    result.RemainPoints,
+                    util.Convert2Result(costOrigin),
+                    util.Convert2Result(costOrigin - costMoney),
+                    util.Convert2Result(rechargedMoney),
+                    util.Convert2Result(costMoney - rechargedMoney > 0 ? costMoney - rechargedMoney : 0),
+                    util.Convert2Result(bounus),
+                    util.Convert2Result(result.RemainMoney),
+                    util.Convert2Result(result.RemainPoints),
                     customerInfo.Phone);
             }
             if (costOrigin == 0 && rechargedMoney != 0) {
                 SMS.sendRechargeMessage(customerInfo.Name,
                     operateShop.Name,
-                    rechargedMoney,
-                    result.RemainMoney,
-                    result.RemainPoints,
+                    util.Convert2Result(rechargedMoney),
+                    util.Convert2Result(result.RemainMoney),
+                    util.Convert2Result(result.RemainPoints),
                     customerInfo.Phone);
             }
-            json.Object.CustomerAccountInfo = result.dataValues;
+            json.Object.CustomerAccountInfo = util.ConvertObj2Result(result.toJSON());
             if (recommendCustomerInfo) {
                 json.Object.RecommendCustomerInfo = recommendCustomerInfo;
-                json.Object.RecommendPoints = recommendPoints;
+                json.Object.RecommendPoints = util.Convert2Result(recommendPoints);
                 if (recommendPoints != 0) {
                     SMS.sendRecommendMessage(recommendCustomerInfo.Name,
                         operateShop.Name,
-                        recommendPoints,
-                        recommendCustomerAccountInfo.RemainMoney,
-                        recommendCustomerAccountInfo.RemainPoints,
+                        util.Convert2Result(recommendPoints),
+                        util.Convert2Result(recommendCustomerAccountInfo.RemainMoney),
+                        util.Convert2Result(recommendCustomerAccountInfo.RemainPoints),
                         recommendCustomerInfo.Phone);
                 }
             } else {
@@ -548,13 +549,13 @@ router.post('/userpoints', async (req, res) => {
             }
             if (indirectRecommendCustomerInfo) {
                 json.Object.IndirectRecommendCustomerInfo = indirectRecommendCustomerInfo;
-                json.Object.IndirectRecommendPoints = indirectRecommendPoints;
+                json.Object.IndirectRecommendPoints = util.Convert2Result(indirectRecommendPoints);
                 if (indirectRecommendPoints != 0) {
                     SMS.sendRecommendMessage(indirectRecommendCustomerInfo.Name,
                         operateShop.Name,
-                        indirectRecommendPoints,
-                        indirectRecommendCustomerAccountInfo.RemainMoney,
-                        indirectRecommendCustomerAccountInfo.RemainPoints,
+                        util.Convert2Result(indirectRecommendPoints),
+                        util.Convert2Result(indirectRecommendCustomerAccountInfo.RemainMoney),
+                        util.Convert2Result(indirectRecommendCustomerAccountInfo.RemainPoints),
                         indirectRecommendCustomerInfo.Phone);
                 }
             } else {
@@ -562,13 +563,13 @@ router.post('/userpoints', async (req, res) => {
             }
             if (thirdRecommendCustomerInfo) {
                 json.Object.ThirdRecommendCustomerInfo = thirdRecommendCustomerInfo;
-                json.Object.ThirdRecommendPoints = thirdRecommendPoints;
+                json.Object.ThirdRecommendPoints = util.Convert2Result(thirdRecommendPoints);
                 if (thirdRecommendPoints != 0) {
                     SMS.sendRecommendMessage(thirdRecommendCustomerInfo.Name,
                         operateShop.Name,
-                        thirdRecommendPoints,
-                        thirdRecommendCustomerAccountInfo.RemainMoney,
-                        thirdRecommendCustomerAccountInfo.RemainPoints,
+                        util.Convert2Result(thirdRecommendPoints),
+                        util.Convert2Result(thirdRecommendCustomerAccountInfo.RemainMoney),
+                        util.Convert2Result(thirdRecommendCustomerAccountInfo.RemainPoints),
                         thirdRecommendCustomerInfo.Phone);
                 }
             } else {
@@ -593,7 +594,7 @@ router.delete('/userpoints', async (req, res) => {
     let db = res.locals.db;
     let sequelize = db.sequelize;
     let operateShopId = res.locals.shopid;
-    let transactionSeq = util.makeNumericValue(req.body.TransactionSeq, null);
+    let transactionSeq = util.makeNumericValue(req.body.Seq, null);
     let password = req.body.Password || null;
     try {
         if (transactionSeq === null) {
@@ -858,7 +859,7 @@ router.delete('/userpoints', async (req, res) => {
             }
 
             res.json({Object:{
-                TransactionDetail:reversalTransc.toJSON()
+                TransactionDetail: util.ConvertObj2Result( reversalTransc.toJSON())
             }}).end();
         });
     }); 
