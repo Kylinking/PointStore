@@ -594,7 +594,7 @@ router.delete('/userpoints', async (req, res) => {
     let db = res.locals.db;
     let sequelize = db.sequelize;
     let operateShopId = res.locals.shopid;
-    let transactionSeq = util.makeNumericValue(req.body.Seq, null);
+    let transactionSeq = util.makeNumericValue(req.body.TransactionSeq, null);
     let password = req.body.Password || null;
     try {
         if (transactionSeq === null) {
