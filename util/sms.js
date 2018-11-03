@@ -105,6 +105,28 @@ sendNewMemberMessage: async function (name, shop,shopName,phone) {
     let content =`尊敬的${name}用户，恭喜你成为${shop}店的联动会员，你在该店所有的消费都会获得积分，同时你也可以通过推荐朋友的消费来获得积分，积分可以在 ${shopName} 店抵扣消费。`;
     return this.sendMessage(phone, globalConfig.sms.newMemberTemplate, param,content);
 },
+sendReversalCostMessage: async function (name, shop,transactionSeq,remainMoney,remainPoints,phone) {
+    let param = JSON.stringify({
+        name,
+        shop,
+        transactionSeq,
+        remainMoney,
+        remainPoints,
+    });
+    let content =`尊敬的${name}用户，您在${shop}店发生的消费已撤销，查询编号为${transactionSeq},现您的账户余额为${remainMoney}元，可用积分为${remainPoints}分。`;
+    return this.sendMessage(phone, globalConfig.sms.reversalCostTemplate, param,content);
+},
+sendReversalPointMessage: async function (name, shop,transactionSeq,remainMoney,remainPoints,phone) {
+    let param = JSON.stringify({
+        name,
+        shop,
+        transactionSeq,
+        remainMoney,
+        remainPoints,
+    });
+    let content =`尊敬的${name}用户，我们抱歉的通知您，因您的好友在${shop}店发生的消费已撤销，您的奖励积分已退回，查询编号为${transactionSeq}。现您的账户余额为${remainMoney}元，可用积分为${remainPoints}分。`;
+    return this.sendMessage(phone, globalConfig.sms.reversalPointTemplate, param,content);
+},
 }
 
 module.exports = SMS;
