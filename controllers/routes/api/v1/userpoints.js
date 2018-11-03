@@ -260,7 +260,7 @@ router.post('/userpoints', async (req, res) => {
 
                     customerAccountInfo = await findAccountInfo(db, customerInfo.CustomerId, transaction);
 
-                    if (costPoints != 0) {
+                    if (costPoints != 0 && customerAccountInfo.RemainPoints>0) {
                         pointToMoney = customerAccountInfo.RemainPoints * adminBounusRate.PointToMoneyRate;
                         if (costMoney <= pointToMoney) {
                             costPoints = costMoney / adminBounusRate.PointToMoneyRate;
@@ -278,15 +278,10 @@ router.post('/userpoints', async (req, res) => {
                     thirdRecommendPoints = Math.round(costMoney * bounusRate.ThirdRecommendRate);
                     bounus = Math.round(costMoney * bounusRate.ShopBounusPointRate);
                     if (customerAccountInfo.RemainMoney + rechargedMoney < costMoney) {
-                        // res.json({
-                        //     Error: {
-                        //         Message: "本次消费余额不足"
-                        //     }
-                        // }).end();
-                        throw ({
-                            Message: `本次消费余额不足`,
-                            Mount: costMoney - customerAccountInfo.RemainMoney - rechargedMoney
-                        });
+                        // throw ({
+                        //     Message: `本次消费余额不足`,
+                        //     Mount: costMoney - customerAccountInfo.RemainMoney - rechargedMoney
+                        // });
                     }
                     let transactionOptions = {
                         ChargedMoney: rechargedMoney,
@@ -703,7 +698,7 @@ router.delete('/userpoints', async (req, res) => {
             }, {
                 transaction: transaction
             });
-            shopAcctChange.set("Reversal", 1);
+            shopAcctChange.set("Reversal", 2);
             shopAcctChange.set("ReversalId", revarsalShopAcctChange.Id);
             await shopAcctChange.save({transaction:transaction});
             logger.info(shopAcctChange.toJSON());
@@ -749,7 +744,7 @@ router.delete('/userpoints', async (req, res) => {
             }, {
                 transaction: transaction
             });
-            customerAcctChange.set('Reversal', 1);
+            customerAcctChange.set('Reversal', 2);
             customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
             await customerAcctChange.save({transaction:transaction});
 
@@ -783,7 +778,7 @@ router.delete('/userpoints', async (req, res) => {
                 }, {
                     transaction: transaction
                 });
-                customerAcctChange.set('Reversal', 1);
+                customerAcctChange.set('Reversal', 2);
                 customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
                 await customerAcctChange.save({transaction:transaction});
             }
@@ -818,7 +813,7 @@ router.delete('/userpoints', async (req, res) => {
                 }, {
                     transaction: transaction
                 });
-                customerAcctChange.set('Reversal', 1);
+                customerAcctChange.set('Reversal', 2);
                 customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
                 await customerAcctChange.save({transaction:transaction});
             }
