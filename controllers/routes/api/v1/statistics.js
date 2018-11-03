@@ -596,12 +596,6 @@ router.get('/statistics/history', async (req, res) => {
             }
         });
         let numberOfConsumedCustomerOfToday = await db.CustomerAccountChange.count({
-            // attributes: [
-            //     //    'CustomerId',
-            //     [sequelize.fn('COUNT', sequelize.col('ChargedMoney')), 'RechargedMoney'],
-            //     [sequelize.fn('COUNT', sequelize.col('CustomedMoney')), 'CustomedMoney'],
-            //     [sequelize.fn('COUNT', sequelize.col('CustomedPoints')), 'CustomedPoints'],
-            // ],
             where: {
                 [Op.or]:[
                     {'ChargedMoney':{[Op.gt]:0}},

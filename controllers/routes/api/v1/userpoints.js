@@ -758,29 +758,44 @@ router.delete('/userpoints', async (req, res) => {
                 customerAccountInfo = await db.CustomerAccountInfo.findById(transcationRecord.RecommendCustomerId, {
                     transaction: transaction
                 });
-                await customerAccountInfo.decrement({
-                    RemainPoints: transcationRecord.RecommendPoints,
-                    RecommendPoints: transcationRecord.RecommendPoints,
-                }, {
-                    transaction: transaction
+                if (customerAccountInfo.RemainPoints < transcationRecord.RecommendPoints){
+                    logger.warn(`${operateShopId}冲正积分余额不足:${(transcationRecord.RecommendPoints-customerAccountInfo.RemainPoints/100)}`);
+                    transcationRecord.RecommendPoints = customerAccountInfo.RemainPoints;
+                 }
+                 await ReversalPoint({
+                    db,
+                    date,
+                    operateShopId,
+                    transaction,
+                    customerAccountInfo,
+                    customerAcctChange,
+                    transactionSeq,
+                    RecommendPoints:transcationRecord.RecommendPoints,
+                    CustomerId:transcationRecord.RecommendCustomerId,
                 });
-                logger.info("recommend ")
-                reversalCustomerAccountChange = await db.CustomerAccountChange.create({
-                    CustomerId: transcationRecord.RecommendCustomerId,
-                    RecommendPoints: -transcationRecord.RecommendPoints,
-                    RemainPoints: customerAccountInfo.RemainPoints -transcationRecord.RecommendPoints,
-                    RemainMoney: customerAccountInfo.RemainMoney,
-                    TransactionSeq: transcationRecord.TransactionSeq,
-                    Date: Date.parse(date),
-                    ShopId: operateShopId,
-                    Reversal: 1,
-                    ReversalId: customerAcctChange.Id
-                }, {
-                    transaction: transaction
-                });
-                customerAcctChange.set('Reversal', 2);
-                customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
-                await customerAcctChange.save({transaction:transaction});
+                // await customerAccountInfo.decrement({
+                //     RemainPoints: transcationRecord.RecommendPoints,
+                //     RecommendPoints: transcationRecord.RecommendPoints,
+                // }, {
+                //     transaction: transaction
+                // });
+                // logger.info("recommend ")
+                // reversalCustomerAccountChange = await db.CustomerAccountChange.create({
+                //     CustomerId: transcationRecord.RecommendCustomerId,
+                //     RecommendPoints: -transcationRecord.RecommendPoints,
+                //     RemainPoints: customerAccountInfo.RemainPoints -transcationRecord.RecommendPoints,
+                //     RemainMoney: customerAccountInfo.RemainMoney,
+                //     TransactionSeq: transcationRecord.TransactionSeq,
+                //     Date: Date.parse(date),
+                //     ShopId: operateShopId,
+                //     Reversal: 1,
+                //     ReversalId: customerAcctChange.Id
+                // }, {
+                //     transaction: transaction
+                // });
+                // customerAcctChange.set('Reversal', 2);
+                // customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
+                // await customerAcctChange.save({transaction:transaction});
             }
 
             if (transcationRecord.IndirectRecommendCustomerId !== null && transcationRecord.IndirectRecommendPoints != 0) {
@@ -793,29 +808,55 @@ router.delete('/userpoints', async (req, res) => {
                 customerAccountInfo = await db.CustomerAccountInfo.findById(transcationRecord.IndirectRecommendCustomerId, {
                     transaction: transaction
                 });
-                await customerAccountInfo.decrement({
-                    RemainPoints: transcationRecord.IndirectRecommendPoints,
-                    IndirectRecommendPoints: transcationRecord.IndirectRecommendPoints,
-                }, {
-                    transaction: transaction
+                if (customerAccountInfo.RemainPoints < transcationRecord.IndirectRecommendPoints){
+                    logger.warn(`${operateShopId}冲正积分余额不足:${(transcationRecord.IndirectRecommendPoints-customerAccountInfo.RemainPoints)/100}`);
+                    transcationRecord.IndirectRecommendPoints = customerAccountInfo.RemainPoints;
+                }
+
+                await ReversalPoint({
+                    db,
+                    date,
+                    operateShopId,
+                    transaction,
+                    customerAccountInfo,
+                    customerAcctChange,
+                    transactionSeq,
+                    IndirectRecommendPoints:transcationRecord.IndirectRecommendPoints,
+                    CustomerId:transcationRecord.IndirectRecommendCustomerId,
                 });
-                await customerAccountInfo.reload();
-                reversalCustomerAccountChange = await db.CustomerAccountChange.create({
-                    CustomerId: transcationRecord.IndirectRecommendCustomerId,
-                    IndirectRecommendPoints: -transcationRecord.IndirectRecommendPoints,
-                    RemainPoints: customerAccountInfo.RemainPoints-transcationRecord.IndirectRecommendPoints,
-                    RemainMoney: customerAccountInfo.RemainMoney,
-                    TransactionSeq: transcationRecord.TransactionSeq,
-                    Date: Date.parse(date),
-                    ShopId: operateShopId,
-                    Reversal: 1,
-                    ReversalId: customerAcctChange.Id
-                }, {
-                    transaction: transaction
-                });
-                customerAcctChange.set('Reversal', 2);
-                customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
-                await customerAcctChange.save({transaction:transaction});
+
+
+
+
+
+
+
+
+
+
+                // await customerAccountInfo.decrement({
+                //     RemainPoints: transcationRecord.IndirectRecommendPoints,
+                //     IndirectRecommendPoints: transcationRecord.IndirectRecommendPoints,
+                // }, {
+                //     transaction: transaction
+                // });
+                // await customerAccountInfo.reload();
+                // reversalCustomerAccountChange = await db.CustomerAccountChange.create({
+                //     CustomerId: transcationRecord.IndirectRecommendCustomerId,
+                //     IndirectRecommendPoints: -transcationRecord.IndirectRecommendPoints,
+                //     RemainPoints: customerAccountInfo.RemainPoints-transcationRecord.IndirectRecommendPoints,
+                //     RemainMoney: customerAccountInfo.RemainMoney,
+                //     TransactionSeq: transcationRecord.TransactionSeq,
+                //     Date: Date.parse(date),
+                //     ShopId: operateShopId,
+                //     Reversal: 1,
+                //     ReversalId: customerAcctChange.Id
+                // }, {
+                //     transaction: transaction
+                // });
+                // customerAcctChange.set('Reversal', 2);
+                // customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
+                // await customerAcctChange.save({transaction:transaction});
             }
 
             if (transcationRecord.ThirdRecommendCustomerId !== null && transcationRecord.ThirdRecommendPoints != 0) {
@@ -828,29 +869,44 @@ router.delete('/userpoints', async (req, res) => {
                 customerAccountInfo = await db.CustomerAccountInfo.findById(transcationRecord.ThirdRecommendCustomerId, {
                     transaction: transaction
                 });
-                await customerAccountInfo.decrement({
-                    RemainPoints: transcationRecord.ThirdRecommendPoints,
-                    ThirdRecommendPoints: transcationRecord.ThirdRecommendPoints,
-                }, {
-                    transaction: transaction
+                if (customerAccountInfo.RemainPoints < transcationRecord.ThirdRecommendPoints){
+                    logger.warn(`${operateShopId}冲正积分余额不足:${(transcationRecord.ThirdRecommendPoints-customerAccountInfo.RemainPoints)/100}`);
+                    transcationRecord.ThirdRecommendPoints = customerAccountInfo.RemainPoints;
+                }
+                await ReversalPoint({
+                    db,
+                    date,
+                    operateShopId,
+                    transaction,
+                    customerAccountInfo,
+                    customerAcctChange,
+                    transactionSeq,
+                    ThirdRecommendPoints:transcationRecord.ThirdRecommendPoints,
+                    CustomerId:transcationRecord.ThirdRecommendCustomerId,
                 });
-                await customerAccountInfo.reload();
-                reversalCustomerAccountChange = await db.CustomerAccountChange.create({
-                    CustomerId: transcationRecord.ThirdRecommendCustomerId,
-                    ThirdRecommendPoints: -transcationRecord.ThirdRecommendPoints,
-                    RemainPoints: customerAccountInfo.RemainPoints-transcationRecord.ThirdRecommendPoints,
-                    RemainMoney: customerAccountInfo.RemainMoney,
-                    TransactionSeq: transcationRecord.TransactionSeq,
-                    Date: Date.parse(date),
-                    ShopId: operateShopId,
-                    Reversal: 1,
-                    ReversalId: customerAcctChange.Id
-                }, {
-                    transaction: transaction
-                });
-                customerAcctChange.set('Reversal', 1);
-                customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
-                await customerAcctChange.save({transaction:transaction});
+                // await customerAccountInfo.decrement({
+                //     RemainPoints: transcationRecord.ThirdRecommendPoints,
+                //     ThirdRecommendPoints: transcationRecord.ThirdRecommendPoints,
+                // }, {
+                //     transaction: transaction
+                // });
+                // await customerAccountInfo.reload();
+                // reversalCustomerAccountChange = await db.CustomerAccountChange.create({
+                //     CustomerId: transcationRecord.ThirdRecommendCustomerId,
+                //     ThirdRecommendPoints: -transcationRecord.ThirdRecommendPoints,
+                //     RemainPoints: customerAccountInfo.RemainPoints-transcationRecord.ThirdRecommendPoints,
+                //     RemainMoney: customerAccountInfo.RemainMoney,
+                //     TransactionSeq: transcationRecord.TransactionSeq,
+                //     Date: Date.parse(date),
+                //     ShopId: operateShopId,
+                //     Reversal: 1,
+                //     ReversalId: customerAcctChange.Id
+                // }, {
+                //     transaction: transaction
+                // });
+                // customerAcctChange.set('Reversal', 1);
+                // customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
+                // await customerAcctChange.save({transaction:transaction});
             }
 
             res.json({Object:{
@@ -901,4 +957,53 @@ async function getRecommendCustomer(customer) {
     }
     return recommendCustomer;
 }
+
+async function ReversalPoint(obj)
+{
+    let {db,customerAccountInfo,customerAcctChange,
+        transaction,operateShopId,date,
+        transactionSeq,CustomerId,RecommendPoints,
+        IndirectRecommendPoints,ThirdRecommendPoints
+    } = {...obj};
+    RecommendPoints = makePoints(RecommendPoints,customerAccountInfo.RemainPoints) || 0; 
+    IndirectRecommendPoints = makePoints(IndirectRecommendPoints,customerAccountInfo.RemainPoints) || 0;
+    ThirdRecommendPoints = makePoints(ThirdRecommendPoints,customerAccountInfo.RemainPoints) || 0;
+    let RemainPoints = customerAccountInfo.RemainPoints - (RecommendPoints+IndirectRecommendPoints+ThirdRecommendPoints);
+    
+    let value = {
+        RemainPoints:(RecommendPoints+IndirectRecommendPoints+ThirdRecommendPoints),
+        RecommendPoints,
+        IndirectRecommendPoints,
+        ThirdRecommendPoints,
+    }
+    await customerAccountInfo.decrement({
+        ...value
+    },{transaction});
+
+    let reversalCustomerAccountChange = await db.CustomerAccountChange.create({
+        CustomerId: CustomerId,
+        IndirectRecommendPoints: -IndirectRecommendPoints,
+        RecommendPoints: -RecommendPoints,
+        ThirdRecommendPoints: -ThirdRecommendPoints,
+        RemainPoints: RemainPoints,
+        RemainMoney: customerAccountInfo.RemainMoney,
+        TransactionSeq: transactionSeq,
+        Date: Date.parse(date),
+        ShopId: operateShopId,
+        Reversal: 1,
+        ReversalId: customerAcctChange.Id
+    }, {
+        transaction: transaction
+    });
+    customerAcctChange.set('Reversal', 2);
+    customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
+    await customerAcctChange.save({transaction:transaction});
+
+    function makePoints(pointsA,pointsB){
+        if (pointsA == null) return 0;
+        return pointsA > pointsB ? pointsB:pointsA;
+    }
+
+}
+
 module.exports = router;
