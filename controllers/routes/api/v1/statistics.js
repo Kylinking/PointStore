@@ -519,7 +519,7 @@ router.get('/statistics/history', async (req, res) => {
         };
         let shopWhere = {
             CreatedAt: todayDuration,
-            Reversal:0
+            //Reversal:0
         }
         let adminShopId = await util.findAdminShopId(operateShopId);
         let includeObj = {};

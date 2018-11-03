@@ -655,53 +655,7 @@ router.delete('/userpoints', async (req, res) => {
             }, {
                 transaction: transaction
             });
-            let ShopAccountInfo = await db.ShopAccountInfo.decrement({
-                CustomedPoints: transcationRecord.CustomedPoints,
-                ChargedMoney: transcationRecord.ChargedMoney,
-                CustomedMoney: transcationRecord.CustomedMoney,
-                ShopBounusPoints: transcationRecord.ShopBounusPoints,
-                RecommendPoints: (transcationRecord.RecommendPoints +
-                    transcationRecord.IndirectRecommendPoints +
-                    transcationRecord.ThirdRecommendPoints),
-            },{
-                where: {
-                    ShopId: {
-                        [Op.or]: [
-                            customerInfo.ShopId,
-                            operateShopId
-                        ]
-                    }
-                }
-            }, {
-                transaction: transaction
-            });
-            let shopAcctChange = await db.ShopAccountChange.findOne({
-                where: {
-                    TransactionSeq: transactionSeq,
-                }
-            }, {
-                transaction: transaction
-            });
-            let revarsalShopAcctChange = await db.ShopAccountChange.create({
-                CustomedPoints: -transcationRecord.CustomedPoints,
-                ChargedMoney: -transcationRecord.ChargedMoney,
-                CustomedMoney: -transcationRecord.CustomedMoney,
-                ShopBounusPoints: -transcationRecord.ShopBounusPoints,
-                RecommendPoints: -(transcationRecord.RecommendPoints +
-                    transcationRecord.IndirectRecommendPoints +
-                    transcationRecord.ThirdRecommendPoints),
-                Date: Date.parse(date),
-                ShopId: operateShopId,
-                TransactionSeq: transcationRecord.TransactionSeq,
-                Reversal: 1,
-                ReversalId: shopAcctChange.Id
-            }, {
-                transaction: transaction
-            });
-            shopAcctChange.set("Reversal", 2);
-            shopAcctChange.set("ReversalId", revarsalShopAcctChange.Id);
-            await shopAcctChange.save({transaction:transaction});
-            logger.info(shopAcctChange.toJSON());
+            
 
             let customerAccountInfo = await db.CustomerAccountInfo.findById(transcationRecord.CustomerId, {
                 transaction: transaction
@@ -824,16 +778,6 @@ router.delete('/userpoints', async (req, res) => {
                     IndirectRecommendPoints:transcationRecord.IndirectRecommendPoints,
                     CustomerId:transcationRecord.IndirectRecommendCustomerId,
                 });
-
-
-
-
-
-
-
-
-
-
                 // await customerAccountInfo.decrement({
                 //     RemainPoints: transcationRecord.IndirectRecommendPoints,
                 //     IndirectRecommendPoints: transcationRecord.IndirectRecommendPoints,
@@ -907,8 +851,55 @@ router.delete('/userpoints', async (req, res) => {
                 // customerAcctChange.set('Reversal', 1);
                 // customerAcctChange.set('ReversalId', reversalCustomerAccountChange.Id);
                 // await customerAcctChange.save({transaction:transaction});
+                
             }
-
+            let ShopAccountInfo = await db.ShopAccountInfo.decrement({
+                CustomedPoints: transcationRecord.CustomedPoints,
+                ChargedMoney: transcationRecord.ChargedMoney,
+                CustomedMoney: transcationRecord.CustomedMoney,
+                ShopBounusPoints: transcationRecord.ShopBounusPoints,
+                RecommendPoints: (transcationRecord.RecommendPoints +
+                    transcationRecord.IndirectRecommendPoints +
+                    transcationRecord.ThirdRecommendPoints),
+            },{
+                where: {
+                    ShopId: {
+                        [Op.or]: [
+                            customerInfo.ShopId,
+                            operateShopId
+                        ]
+                    }
+                }
+            }, {
+                transaction: transaction
+            });
+            let shopAcctChange = await db.ShopAccountChange.findOne({
+                where: {
+                    TransactionSeq: transactionSeq,
+                }
+            }, {
+                transaction: transaction
+            });
+            let revarsalShopAcctChange = await db.ShopAccountChange.create({
+                CustomedPoints: -transcationRecord.CustomedPoints,
+                ChargedMoney: -transcationRecord.ChargedMoney,
+                CustomedMoney: -transcationRecord.CustomedMoney,
+                ShopBounusPoints: -transcationRecord.ShopBounusPoints,
+                RecommendPoints: -(transcationRecord.RecommendPoints +
+                    transcationRecord.IndirectRecommendPoints +
+                    transcationRecord.ThirdRecommendPoints),
+                Date: Date.parse(date),
+                ShopId: operateShopId,
+                TransactionSeq: transcationRecord.TransactionSeq,
+                Reversal: 1,
+                ReversalId: shopAcctChange.Id
+            }, {
+                transaction: transaction
+            });
+            shopAcctChange.set("Reversal", 2);
+            shopAcctChange.set("ReversalId", revarsalShopAcctChange.Id);
+            await shopAcctChange.save({transaction:transaction});
+            logger.info(shopAcctChange.toJSON());
             res.json({Object:{
                 TransactionDetail: util.ConvertObj2Result( reversalTransc.toJSON())
             }}).end();
