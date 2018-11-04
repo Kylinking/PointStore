@@ -11,16 +11,21 @@ var cookieParser = require('cookie-parser');
 var logger = require('./log/');
 var LoginRouter = require('./controllers/routes/login');
 var ApiRouter = require('./controllers/routes/api/');
-var helmet = require('helmet');
 express.static.mime.define({'application/wasm':['wasm']});
 var app = express();
-app.use(helmet());
 app.db = db;
 app.use(bodyParser.json());
 app.use(cookieParser());
+
+
 app.use('/doc',express.static(__dirname+'/doc/'));
 app.use('/',express.static(__dirname+'/frontend/'));
-
+// app.get('/',(req,res)=>{
+//     res.sendFile(path.resolve(__dirname+'/frontend/index.html'));
+// });
+// app.get('/doc',(req,res)=>{
+//   res.sendFile(path.resolve(__dirname+'/doc/index.html'));
+// });
 //log everything in the info level 
 app.all('*', function (req, res, next) {
   try {
@@ -40,9 +45,9 @@ app.all('*', function (req, res, next) {
     logger.info(req.path);
     logger.info(req.headers);
     logger.info(req.body);
-    logger.info(req.query);
     logger.info(req.params);
     logger.info("=====================================================");
+    //LogObject(logger,req);
   } catch (error) {
     logger.error(error);
     res.json({Error:{Message:error}}).end();
@@ -57,19 +62,26 @@ app.all('*', function (req, res, next) {
     next();
   }
 })
-
 app.use('/login', LoginRouter);
-app.use('/api', ApiRouter);
 
+app.use('/api', ApiRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
    throw `找不到路径:${req.path}`;
 });
-
 // error handler
 app.use(function (err, req, res, next) {
   logger.error(err);
   res.json({Error:{Message:err}}).end();
 });
+
+
+function LogObject(logger,obj)
+{
+    for (let i of Object.getOwnPropertyNames(obj)){
+        logger.info(`${i}:${obj.i}`);
+    }
+}
+
 
 module.exports = app;
