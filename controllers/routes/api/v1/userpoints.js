@@ -657,10 +657,14 @@ router.delete('/userpoints', async (req, res) => {
             });
             
 
-            let customerAccountInfo = await db.CustomerAccountInfo.findById(transcationRecord.CustomerId, {
+            let customerAccountInfo = await db.CustomerAccountInfo.findOne({
+                where:{
+                    CustomerId:transcationRecord.CustomerId,
+                }
+            }, {
                 transaction: transaction
             });
-            logger.info(customerAccountInfo.toJSON());
+            logger.info(customerAccountInfo);
             if (customerAccountInfo.RemainPoints < transcationRecord.ShopBounusPoints- transcationRecord.CustomedPoints){
                 logger.warn(`${operateShopId}冲正积分余额不足:${(transcationRecord.ShopBounusPoints-customerAccountInfo.RemainPoints)/100}`);
                 transcationRecord.ShopBounusPoints = customerAccountInfo.RemainPoints + transcationRecord.CustomedPoints;
@@ -713,9 +717,16 @@ router.delete('/userpoints', async (req, res) => {
                         TransactionSeq: transactionSeq
                     }
                 });
-                customerAccountInfo = await db.CustomerAccountInfo.findById(transcationRecord.RecommendCustomerId, {
+                customerAccountInfo = await db.CustomerAccountInfo.findOne({
+                    where:{
+                        CustomerId:transcationRecord.RecommendCustomerId,
+                    }
+                }, {
                     transaction: transaction
                 });
+                // customerAccountInfo = await db.CustomerAccountInfo.findById(transcationRecord.RecommendCustomerId, {
+                //     transaction: transaction
+                // });
                 if (customerAccountInfo.RemainPoints < transcationRecord.RecommendPoints){
                     logger.warn(`${operateShopId}冲正积分余额不足:${(transcationRecord.RecommendPoints-customerAccountInfo.RemainPoints/100)}`);
                     transcationRecord.RecommendPoints = customerAccountInfo.RemainPoints;
@@ -740,9 +751,16 @@ router.delete('/userpoints', async (req, res) => {
                         TransactionSeq: transactionSeq
                     }
                 });
-                customerAccountInfo = await db.CustomerAccountInfo.findById(transcationRecord.IndirectRecommendCustomerId, {
+                customerAccountInfo = await db.CustomerAccountInfo.findOne({
+                    where:{
+                        CustomerId:transcationRecord.IndirectRecommendCustomerId,
+                    }
+                }, {
                     transaction: transaction
                 });
+                // customerAccountInfo = await db.CustomerAccountInfo.findById(transcationRecord.IndirectRecommendCustomerId, {
+                //     transaction: transaction
+                // });
                 if (customerAccountInfo.RemainPoints < transcationRecord.IndirectRecommendPoints){
                     logger.warn(`${operateShopId}冲正积分余额不足:${(transcationRecord.IndirectRecommendPoints-customerAccountInfo.RemainPoints)/100}`);
                     transcationRecord.IndirectRecommendPoints = customerAccountInfo.RemainPoints;
@@ -759,6 +777,40 @@ router.delete('/userpoints', async (req, res) => {
                     IndirectRecommendPoints:transcationRecord.IndirectRecommendPoints,
                     CustomerId:transcationRecord.IndirectRecommendCustomerId,
                 });   
+            }
+
+            if (transcationRecord.ThirdRecommendCustomerId !== null && transcationRecord.ThirdRecommendPoints != 0) {
+                customerAcctChange = await db.CustomerAccountChange.findOne({
+                    where: {
+                        CustomerId: transcationRecord.ThirdRecommendCustomerId,
+                        TransactionSeq: transactionSeq
+                    }
+                });
+                customerAccountInfo = await db.CustomerAccountInfo.findOne({
+                    where:{
+                        CustomerId:transcationRecord.ThirdRecommendCustomerId,
+                    }
+                }, {
+                    transaction: transaction
+                });
+                // customerAccountInfo = await db.CustomerAccountInfo.findById(transcationRecord.ThirdRecommendCustomerId, {
+                //     transaction: transaction
+                // });
+                if (customerAccountInfo.RemainPoints < transcationRecord.ThirdRecommendPoints){
+                    logger.warn(`${operateShopId}冲正积分余额不足:${(transcationRecord.ThirdRecommendPoints-customerAccountInfo.RemainPoints)/100}`);
+                    transcationRecord.ThirdRecommendPoints = customerAccountInfo.RemainPoints;
+                }
+                await ReversalPoint({
+                    db,
+                    date,
+                    operateShopId,
+                    transaction,
+                    customerAccountInfo,
+                    customerAcctChange,
+                    transactionSeq,
+                    ThirdRecommendPoints:transcationRecord.ThirdRecommendPoints,
+                    CustomerId:transcationRecord.ThirdRecommendCustomerId,
+                });
             }
             let ShopAccountInfo = await db.ShopAccountInfo.decrement({
                 CustomedPoints: transcationRecord.CustomedPoints,
