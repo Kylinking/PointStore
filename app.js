@@ -40,14 +40,14 @@ app.all('*', function (req, res, next) {
     res.locals.redis = redis;
     logger.info("=====================================================");
     logger.info(`Transaction begins at:${new Date().toLocaleString()}`)
+    logger.info(req.ip);
+    logger.info(req.method);
+    logger.info(req.path);
+    logger.info(req.headers);
+    logger.info(req.body);
+    logger.info(req.params);
     logger.info("=====================================================");
-    // logger.info(req.ip);
-    // logger.info(req.path);
-    // logger.info(req.headers);
-    // logger.info(req.body);
-    // logger.info(req.params);
-    LogObject(logger,req);
-
+    //LogObject(logger,req);
   } catch (error) {
     logger.error(error);
     res.json({Error:{Message:error}}).end();
