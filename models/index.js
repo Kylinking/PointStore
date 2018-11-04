@@ -3,6 +3,7 @@
 const Sequelize = require('sequelize');
 const mysqlConfig = require('../config/global.json').database.mysql;
 const redisConfig = require('../config/global.json').database.redis;
+const logger = require('../log');
 var redis = require("redis"),
     client = redis.createClient({
         host: redisConfig.host
@@ -23,6 +24,11 @@ var sequelize = new Sequelize(mysqlConfig.db, mysqlConfig.username, mysqlConfig.
     host: mysqlConfig.host,
     dialect: mysqlConfig.dialect,
     timezone: '+08:00',
+    logging: function(sql) {
+        // logger为log4js的Logger实例
+                logger.info(sql);
+    }
+        
 });
 }catch(error){
     console.log(error);
