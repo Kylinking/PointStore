@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes)=>{
             autoIncrement: true,
         },
         Name:{
-            type:DataTypes.STRING,
+            type:DataTypes.STRING.BINARY,
             allowNull:true,
         },
         Phone:{
