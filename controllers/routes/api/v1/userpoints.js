@@ -131,7 +131,7 @@ router.post('/userpoints', async (req, res) => {
     let indirectRecommendPoints = 0
     let pointToMoney = 0;
     let thirdRecommendPoints = 0;
-    logger.info(`phone: ${phone}, operateShopId: ${operateShopId}, 
+    logger.info(`phone: ${phone}, operateShopId: ${operateShopId}, costPoints:${costPoints},
          costMoney: ${costMoney},rechargedMoney:${rechargedMoney}`);
     if (phone == null) {
         res.json({
@@ -190,7 +190,6 @@ router.post('/userpoints', async (req, res) => {
     let indirectRecommendCustomerAccountInfo = null;
     let thirdRecommendCustomerAccountInfo = null;
     let date = Date.parse(Date());
-    logger.info(date);
     let adminBounusRate = await db.BounusPointRate.findOne({
         where: {
             ShopId: operateShop.ParentShopId
@@ -272,7 +271,7 @@ router.post('/userpoints', async (req, res) => {
                         pointToMoney = costPoints * adminBounusRate.PointToMoneyRate;
                     }
                     
-                    logger.info(`bounusRate: RecommendRate:${bounusRate.RecommendRate},Indirect:${bounusRate.IndirectRecommendRate},Third:${bounusRate.ThirdRecommendRate},ShopBounus:${bounusRate.ShopBounusPointRate}`);
+                    logger.info(`bounusRate: RecommendRate:${bounusRate.RecommendRate},Indirect:${bounusRate.IndirectRecommendRate},Third:${bounusRate.ThirdRecommendRate},ShopBounus:${bounusRate.ShopBounusPointRate},PointToMoneyRate:${bounusRate.PointToMoneyRate}`);
                     recommendPoints = Math.round(costMoney * bounusRate.RecommendRate);
                     indirectRecommendPoints = Math.round(costMoney * bounusRate.IndirectRecommendRate);
                     thirdRecommendPoints = Math.round(costMoney * bounusRate.ThirdRecommendRate);
@@ -477,7 +476,6 @@ router.post('/userpoints', async (req, res) => {
                         transaction: transaction
                     });
                     logger.info("ShopAccountChange create");
-                    logger.info(shopAcctChange.toJSON());
                     return db.CustomerAccountInfo.findOne({
                         where: {
                             CustomerId: customerInfo.CustomerId

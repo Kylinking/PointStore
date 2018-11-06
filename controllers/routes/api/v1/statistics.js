@@ -388,8 +388,6 @@ router.get('/statistics/dayend', async (req, res) => {
                     [sequelize.col('Id'), 'DESC']
                 ],
             });
-            logger.info(instances);
-            logger.info(instances.rows);
             let records = [];
             let customer = await instances.rows[0].getCustomerInfo();
             records = instances.rows.map(x => { return x.toJSON() });
@@ -481,7 +479,7 @@ router.get('/statistics/dayend', async (req, res) => {
 
 router.get('/statistics/history', async (req, res) => {
     let logger = res.locals.logger;
-    logger.info('statistics start');
+    logger.info('statistics history start');
     let operateShopId = res.locals.shopid;
     let date = req.query.Date || null;
     let db = res.locals.db;
@@ -572,12 +570,10 @@ router.get('/statistics/history', async (req, res) => {
             limit: pageSize
         });
         let json = { Array: [], Meta: {} };
-        json.Array = instance.rows.map(x => util.ConvertObj2Result(x.toJSON()));
-        logger.info(json.Array);
-        for (let i of json.Array) {
-            i.Date = new Date(i.Date);
-        }
-
+        json.Array = instance.rows.map(x => {
+            x.Date = new Date(x.Date);
+            return util.ConvertObj2Result(x.toJSON())
+        });
         let statShopAccountInfoOfToday = (await db.ShopAccountChange.findOne({
             attributes: [
                 //    'CustomerId',
@@ -609,11 +605,9 @@ router.get('/statistics/history', async (req, res) => {
         });
         statShopAccountInfoOfToday.NewCustomer = statCustomerInfoOfToday;
         statShopAccountInfoOfToday.ConsumedCustomer = numberOfConsumedCustomerOfToday;
-        logger.info(numberOfConsumedCustomerOfToday);
         shopWhere.CreatedAt = monthDuration;
         let statShopAccountInfoOfMonth = (await db.ShopAccountChange.findOne({
             attributes: [
-                //    'CustomerId',
                 [sequelize.fn('SUM', sequelize.col('ChargedMoney')), 'RechargedMoney'],
                 [sequelize.fn('SUM', sequelize.col('CustomedMoney')), 'CustomedMoney'],
                 [sequelize.fn('SUM', sequelize.col('CustomedPoints')), 'CustomedPoints'],
@@ -662,8 +656,6 @@ router.get('/statistics/history', async (req, res) => {
         res.json({ Error: { Message: error } }).end();
     }
 });
-
-
 
 // error 
 router.use('/statistics', (req, res) => {

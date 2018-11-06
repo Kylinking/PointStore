@@ -155,7 +155,8 @@ router.post('/customers', async (req, res) => {
     let shopId = util.makeNumericValue(req.body.ShopId, null);
     let recommendCustomerId = null;
     let recommendPhone = isNaN(util.checkPhone(req.body.RecommendPhone)) ? null : req.body.RecommendPhone;
-    logger.info(`phone:${phone},status:${status},name:${name},sex:${sex},age:${age},recommend:${recommendPhone}`);
+    logger.info('POST /customers')
+    logger.info(`phone:${phone},status:${status},name:${name},sex:${sex},age:${age},recommendPhone:${recommendPhone},address:${address}`);
     [phone, sex, name].forEach(elem => {
         if (elem == null) {
             res.json({
@@ -166,10 +167,8 @@ router.post('/customers', async (req, res) => {
             return;
         }
     });
-    
     let operatedShop;
     let queryShop;
-
     try {
         if (await res.locals.db.CustomerInfo.findOne({
             where: {
@@ -260,6 +259,7 @@ router.post('/customers', async (req, res) => {
                 }, {
                     transaction: transaction
                 });
+                logger.info('POST /customers success');
                 res.json({
                     Object: newCustomer
                 }).end();
@@ -294,6 +294,7 @@ router.delete('/customers', async (req, res) => {
     let db = res.locals.db;
     let operateShopId = res.locals.shopid;
     let phone = isNaN(util.checkPhone(req.body.Phone)) ? null : req.body.Phone;
+    logger.info('DELETE /customers');
     if (phone == null) {
         res.json({
             Error: {
@@ -335,7 +336,8 @@ router.delete('/customers', async (req, res) => {
         }
         instance.set('Status', 0);
         instance.save().then((row) => {
-            res.json({
+        logger.info('DELETE /customers success');
+        res.json({
                 Object: row
             }).end();
         }).catch((error) => {
@@ -370,7 +372,7 @@ router.patch('/customers', async (req, res) => {
     //let recommendCustomerId = util.makeNumericValue(req.body.RecommendCustomerId, null);
     let recommendPhone = isNaN(util.checkPhone(req.body.RecommendPhone)) ? null : req.body.RecommendPhone;
     logger.info(`PATCH /customers`);
-    logger.info(`phone:${phone},status:${status},name:${name},address:${address},age:${age}`);
+    logger.info(`phone:${phone},status:${status},name:${name},address:${address},age:${age},customerId:${customerId}`);
     if (customerId == null) {
         res.json({
             Error: {
@@ -396,12 +398,13 @@ router.patch('/customers', async (req, res) => {
             whereObj.ShopId = operateShop.ParentShopId;
             break;
     }
-    logger.info(whereObj);
     try {
         let instance = await customerInfo.findOne({
             where: whereObj
         });
         if (instance) {
+            logger.info('before:')
+            logger.info(instance);
             if (phone != null) {
                 let customer = await customerInfo.findOne({
                         where: {
@@ -419,7 +422,6 @@ router.patch('/customers', async (req, res) => {
                 }
                 instance.set("Phone", phone);
             }
-            //if (recommendCustomerId != null) instance.set('RecommendCustomerId', recommendCustomerId);
             if (recommendPhone != null) {
                 let recommendCustomer = await customerInfo.findOne({
                     where: {
@@ -446,7 +448,10 @@ router.patch('/customers', async (req, res) => {
             if (sex != null) instance.set('Sex', sex);
             instance.set('Age', age);
             instance.save().then((row) => {
-                res.json({
+            logger.info(`PATCH /customers success`);
+            logger.info('after:')
+            logger.info(row);
+            res.json({
                     Object: row
                 }).end();
             }).catch((err) => {
@@ -469,6 +474,7 @@ router.patch('/customers', async (req, res) => {
 });
 
 router.use('/customers', (req, res) => {
+    logger.info(`${req.path}无服务`);
     res.json({
         Error: {
             Message: "无服务： " + req.method
