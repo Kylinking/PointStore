@@ -589,6 +589,8 @@ router.delete('/userpoints', async (req, res) => {
     let operateShopId = res.locals.shopid;
     let transactionSeq = util.makeNumericValue(req.body.TransactionSeq, null);
     let password = req.body.Password || null;
+    let SmsContents = [];
+    let recommendCustomerInfo;
     try {
         if (transactionSeq === null) {
             throw "需要原交易序号";
@@ -618,6 +620,7 @@ router.delete('/userpoints', async (req, res) => {
         if (customerInfo.CustomerId !== transcationRecord.CustomerId) {
             throw "客户手机号与交易客户不一致";
         }
+        let operateShop = await db.ShopInfo.findById(operateShopId);
         let date = new Date();
         let t = sequelize.transaction(transaction => {
             return db.TransactionDetail.create({
@@ -684,6 +687,18 @@ router.delete('/userpoints', async (req, res) => {
                     TransactionSeq: transactionSeq
                 }
             });
+            
+            SmsContents.push({
+                sms_func:SMS.sendReversalCostMessage.bind(SMS),
+                params:{
+                    shop:operateShop.Name,
+                    name:customerInfo.Name,
+                    phone:customerInfo.Phone,
+                    transactionSeq:transactionSeq,
+                    remainMoney: util.Convert2Result(customerAccountInfo.RemainMoney - (transcationRecord.ChargedMoney  - transcationRecord.CustomedMoney)),
+                    remainPoints: util.Convert2Result(customerAccountInfo.RemainPoints-(transcationRecord.ShopBounusPoints - transcationRecord.CustomedPoints)),
+                }
+             })
             let reversalCustomerAccountChange = await db.CustomerAccountChange.create({
                 CustomerId: transcationRecord.CustomerId,
                 CustomedPoints: -transcationRecord.CustomedPoints,
@@ -722,9 +737,6 @@ router.delete('/userpoints', async (req, res) => {
                 }, {
                     transaction: transaction
                 });
-                // customerAccountInfo = await db.CustomerAccountInfo.findById(transcationRecord.RecommendCustomerId, {
-                //     transaction: transaction
-                // });
                 if (customerAccountInfo.RemainPoints < transcationRecord.RecommendPoints){
                     logger.warn(`${operateShopId}冲正积分余额不足:${(transcationRecord.RecommendPoints-customerAccountInfo.RemainPoints/100)}`);
                     transcationRecord.RecommendPoints = customerAccountInfo.RemainPoints;
@@ -740,6 +752,18 @@ router.delete('/userpoints', async (req, res) => {
                     RecommendPoints:transcationRecord.RecommendPoints,
                     CustomerId:transcationRecord.RecommendCustomerId,
                 });
+                recommendCustomerInfo = await db.CustomerInfo.findById(transcationRecord.RecommendCustomerId);
+                SmsContents.push({
+                    sms_func:SMS.sendReversalPointMessage.bind(SMS),
+                    params:{
+                        shop:operateShop.Name,
+                        name:recommendCustomerInfo.Name,
+                        phone:recommendCustomerInfo.Phone,
+                        transactionSeq:transactionSeq,
+                        remainMoney: util.Convert2Result(customerAccountInfo.RemainMoney), 
+                        remainPoints: util.Convert2Result(customerAccountInfo.RemainPoints-transcationRecord.RecommendPoints),
+                    }
+                 });
             }
 
             if (transcationRecord.IndirectRecommendCustomerId !== null && transcationRecord.IndirectRecommendPoints != 0) {
@@ -774,7 +798,19 @@ router.delete('/userpoints', async (req, res) => {
                     transactionSeq,
                     IndirectRecommendPoints:transcationRecord.IndirectRecommendPoints,
                     CustomerId:transcationRecord.IndirectRecommendCustomerId,
-                });   
+                });  
+                recommendCustomerInfo = await db.CustomerInfo.findById(transcationRecord.IndirectRecommendCustomerId);
+                SmsContents.push({
+                    sms_func:SMS.sendReversalPointMessage.bind(SMS),
+                    params:{
+                        shop:operateShop.Name,
+                        name:recommendCustomerInfo.Name,
+                        phone:recommendCustomerInfo.Phone,
+                        transactionSeq:transactionSeq,
+                        remainMoney: util.Convert2Result(customerAccountInfo.RemainMoney), 
+                        remainPoints: util.Convert2Result(customerAccountInfo.RemainPoints-transcationRecord.IndirectRecommendPoints),
+                    }
+                 }); 
             }
 
             if (transcationRecord.ThirdRecommendCustomerId !== null && transcationRecord.ThirdRecommendPoints != 0) {
@@ -809,6 +845,18 @@ router.delete('/userpoints', async (req, res) => {
                     ThirdRecommendPoints:transcationRecord.ThirdRecommendPoints,
                     CustomerId:transcationRecord.ThirdRecommendCustomerId,
                 });
+                recommendCustomerInfo = await db.CustomerInfo.findById(transcationRecord.ThirdRecommendCustomerId);
+                SmsContents.push({
+                    sms_func:SMS.sendReversalPointMessage.bind(SMS),
+                    params:{
+                        shop:operateShop.Name,
+                        name:recommendCustomerInfo.Name,
+                        phone:recommendCustomerInfo.Phone,
+                        transactionSeq:transactionSeq,
+                        remainMoney: util.Convert2Result(customerAccountInfo.RemainMoney), 
+                        remainPoints: util.Convert2Result(customerAccountInfo.RemainPoints-transcationRecord.ThirdRecommendPoints),
+                    }
+                 }); 
             }
             let ShopAccountInfo = await db.ShopAccountInfo.decrement({
                 CustomedPoints: transcationRecord.CustomedPoints,
@@ -860,6 +908,10 @@ router.delete('/userpoints', async (req, res) => {
             res.json({Object:{
                 TransactionDetail: util.ConvertObj2Result( reversalTransc.toJSON())
             }}).end();
+            for (let sms of SmsContents){
+                let {name, shop,transactionSeq,remainMoney,remainPoints,phone} = {...sms.params};
+                sms.sms_func(name, shop,transactionSeq,remainMoney,remainPoints,phone);
+            }
         });
     }); 
 }catch (error) {
@@ -870,6 +922,7 @@ router.delete('/userpoints', async (req, res) => {
             }
         }).end();
     }
+
 });
 
 
