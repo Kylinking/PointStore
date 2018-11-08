@@ -62,6 +62,7 @@ typings/
 .DS_Store
 
 util/test.js
-data/
+util/*.json
+util/import.js
 
 frontend/
