@@ -28,6 +28,13 @@ module.exports = (sequelize, DataTypes) => {
                   allowNull: false
                 }
               });
+            models.ReversalRecord.belongsTo(models.CustomerInfo, {
+                onDelete: "CASCADE",
+                foreignKey: {
+                  name: 'CustomerId',
+                  allowNull: false
+                }
+              });
         }
 
     return ReversalRecord;
