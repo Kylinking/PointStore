@@ -11,6 +11,6 @@ log4js.configure({
         file:{appenders:['file'],level:'trace'},
     }
   });
-var logger = log4js.getLogger();
+var logger = log4js.getLogger('file');
 logger.level = 'trace';
 module.exports = logger;
