@@ -5,10 +5,6 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 autoIncrement: true,
             },
-            CustomerId:{
-                type: DataTypes.INTEGER,
-                allowNull: false
-            }
         }, {
             updatedAt: 'UpdatedAt',
             createdAt: 'CreatedAt'
@@ -25,6 +21,13 @@ module.exports = (sequelize, DataTypes) => {
                 onDelete: "CASCADE",
                 foreignKey: {
                   name: 'OrignTransactionSeq',
+                  allowNull: false
+                }
+              });
+            models.TransactionDetail.belongsTo(models.CustomerInfo, {
+                onDelete: "CASCADE",
+                foreignKey: {
+                  name: 'CustomerId',
                   allowNull: false
                 }
               });
