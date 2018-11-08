@@ -73,7 +73,6 @@ router.use('/' + version,
             } = require('util');
             const getAsync = promisify(redisClient.get).bind(redisClient);
             var reply = await getAsync(decoded.shopid);
-            console.log("replay: " + reply);
             if (reply == null) {
                 next(new Error("登录失效"));
             } else {
