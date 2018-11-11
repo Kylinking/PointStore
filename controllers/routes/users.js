@@ -6,14 +6,14 @@ let jwtSecret = require('../../config/global.json').jwtSecret;
 let util = require('../../util/util');
 let https = require('https');
 let SMS = require('../../util/sms');
-
+let globalConfig = require('../../config/global.json');
 router.get('/login', async function (req, res, next) {
     let code = req.query.Code;
     let db = res.locals.db;
     let token = req.query.Token;
-    console.log(code);
-    let appid = 'wx9338d5ff34d4b5d6';
-    let appSecret = 'ab5720e83395477d402408d63d4365ab';
+    console.log(token);
+    let appid = globalConfig.appid;
+    let appSecret = globalConfig.appSecret;
     let url = `https://api.weixin.qq.com/sns/jscode2session?appid=${appid}&secret=${appSecret}&js_code=${code}&grant_type=authorization_code`
     if (code) {
         https.get(url, (result) => {
