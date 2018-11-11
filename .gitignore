@@ -64,5 +64,5 @@ typings/
 util/test.js
 util/*.json
 util/import.js
-
+data/
 frontend/
