@@ -33,16 +33,24 @@ router.post('/login', async function (req, res, next) {
                         }
                     });
                     customerInfo.CustomerAccountInfo = util.ConvertObj2Result(customerAccountInfo.toJSON());
+                    token = jwt.encode({
+                        WechatId: decoded.WechatId,
+                        Phone: customerInfo.Phone
+                    }, jwtSecret);
                     res.json({
-                        Data: customerInfo
+                        Code: 200,
+                        Data: {
+                            CustomerInfo: customerInfo,
+                            Token: token
+                        }
                     }).end();
                 } else {
-                    let token = jwt.encode({
+                    token = jwt.encode({
                         WechatId: jsonObj.openid
                     }, jwtSecret);
                     res.json({
+                        Code: 204,
                         Data: {
-                            Code: 204,
                             Token: token
                         }
                     }).end();
@@ -69,7 +77,9 @@ router.post('/login', async function (req, res, next) {
                 customerInfo.CustomerAccountInfo = util.ConvertObj2Result(customerAccountInfo.toJSON());
                 res.json({
                     Code: 200,
-                    Data: customerInfo
+                    Data: {
+                        CustomerInfo: customerInfo,
+                    }
                 }).end();
             } else {
                 res.json({
@@ -107,20 +117,24 @@ router.post('/register', async function (req, res, next) {
     let redisClient = res.locals.redisClient;
     let logger = res.locals.logger;
     let db = res.locals.db;
-    if (phone === null){
+    if (phone === null) {
         res.json({
-            Code:400,
-            Error:{Message:"绑定用户需要手机号"}
+            Code: 400,
+            Error: {
+                Message: "绑定用户需要手机号"
+            }
         }).end();
         return;
     }
     try {
         let decoded = jwt.decode(token, jwtSecret);
         console.log(decoded);
-        if (decoded.Phone != phone){
+        if (decoded.Phone != phone) {
             res.json({
-                Code:400,
-                Error:{Message:"手机号与验证码不符"}
+                Code: 400,
+                Error: {
+                    Message: "手机号与验证码不符"
+                }
             }).end();
             redisClient.del(decoded.WechatId);
             return;
@@ -166,15 +180,22 @@ router.post('/register', async function (req, res, next) {
                     if (customerInfo) {
                         await db.WechatUser.create({
                             WechatId: decoded.WechatId,
-                            CustomerId:customerInfo.CustomerId
+                            CustomerId: customerInfo.CustomerId
                         });
                         let customerAccountInfo = db.CustomerAccountInfo.findOne({
-                            where:{CustomerId:customerInfo.CustomerId}
+                            where: {
+                                CustomerId: customerInfo.CustomerId
+                            }
                         });
                         customerInfo = customerInfo.toJSON();
                         customerInfo.CustomerAccountInfo = customerAccountInfo;
-                        res.json({Code:200,Data:{customerInfo}}).end();
-                    }else{
+                        res.json({
+                            Code: 200,
+                            Data: {
+                                CustomerInfo:customerInfo
+                            }
+                        }).end();
+                    } else {
                         res.json({
                             Code: 400,
                             Error: {
@@ -183,7 +204,7 @@ router.post('/register', async function (req, res, next) {
                         }).end();
                         return;
                     }
-                }else{
+                } else {
                     res.json({
                         Code: 400,
                         Error: {
@@ -194,7 +215,7 @@ router.post('/register', async function (req, res, next) {
             }
         } catch (error) {
             res.json({
-                Code:500,
+                Code: 500,
                 Error: {
                     Message: "系统错误，请联系系统管理员。Redis Error：" + error.message
                 }
@@ -213,15 +234,17 @@ router.post('/register', async function (req, res, next) {
     }
 });
 
-router.post('/verify',async function (req, res, next) {
+router.post('/verify', async function (req, res, next) {
     let token = req.body.Token;
     let phone = isNaN(util.checkPhone(req.body.Phone)) ? null : req.body.Phone;
     let redisClient = res.locals.redisClient;
-    let logger = res.locals.logger; 
-    if (phone === null){
+    let logger = res.locals.logger;
+    if (phone === null) {
         res.json({
-            Code:400,
-            Error:{Message:"请输入手机号"}
+            Code: 400,
+            Error: {
+                Message: "请输入手机号"
+            }
         }).end();
         return;
     }
@@ -231,8 +254,13 @@ router.post('/verify',async function (req, res, next) {
     } = require('util');
     const getAsync = promisify(redisClient.get).bind(redisClient);
     let reply = await getAsync(req.ip.toString());
-    if (reply){
-        res.json({Code:429,Error:{Message:"请求太频繁！"}}).end();
+    if (reply) {
+        res.json({
+            Code: 429,
+            Error: {
+                Message: "请求太频繁！"
+            }
+        }).end();
         return;
     }
     try {
@@ -241,17 +269,22 @@ router.post('/verify',async function (req, res, next) {
         console.log(decoded);
         let verifyCode = GetVerifyCode();
         console.log(verifyCode);
-        SMS.sendRegisterMessage(verifyCode,phone);
-        redisClient.set(decoded.WechatId,verifyCode);
-        redisClient.set(req.ip.toString(),new Date());
-        redisClient.expire(decoded.WechatId,5*60);
-        redisClient.expire(req.ip.toString(),30);
+        SMS.sendRegisterMessage(verifyCode, phone);
+        redisClient.set(decoded.WechatId, verifyCode);
+        redisClient.set(req.ip.toString(), new Date());
+        redisClient.expire(decoded.WechatId, 5 * 60);
+        redisClient.expire(req.ip.toString(), 30);
         token = jwt.encode({
-            WechatId:decoded.WechatId,
-            Phone:phone
-        },jwtSecret);
-        res.json({Code:200,Data:{Token:token}}).end();
-    }catch(error){
+            WechatId: decoded.WechatId,
+            Phone: phone
+        }, jwtSecret);
+        res.json({
+            Code: 200,
+            Data: {
+                Token: token
+            }
+        }).end();
+    } catch (error) {
         console.log(error);
         res.json({
             Code: 400,
@@ -263,11 +296,10 @@ router.post('/verify',async function (req, res, next) {
     }
 })
 
-function GetVerifyCode()
-{
+function GetVerifyCode() {
     let code = [];
-    for (let i=0;i<6;i++){
-        code.push((Math.ceil(Math.random()*10)%10));
+    for (let i = 0; i < 6; i++) {
+        code.push((Math.ceil(Math.random() * 10) % 10));
     }
     return code.join('');
 }
