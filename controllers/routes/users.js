@@ -7,11 +7,10 @@ let util = require('../../util/util');
 let https = require('https');
 let SMS = require('../../util/sms');
 let globalConfig = require('../../config/global.json');
-router.get('/login', async function (req, res, next) {
-    let code = req.query.Code;
+router.post('/login', async function (req, res, next) {
+    let code = req.body.Code;
     let db = res.locals.db;
-    let token = req.query.Token;
-    console.log(token);
+    let token = req.body.Token;
     let appid = globalConfig.appid;
     let appSecret = globalConfig.appSecret;
     let url = `https://api.weixin.qq.com/sns/jscode2session?appid=${appid}&secret=${appSecret}&js_code=${code}&grant_type=authorization_code`
@@ -101,10 +100,10 @@ router.get('/login', async function (req, res, next) {
     }
 });
 
-router.get('/register', async function (req, res, next) {
-    let token = req.query.Token;
-    let phone = isNaN(util.checkPhone(req.query.Phone)) ? null : req.query.Phone;
-    let verifyCode = req.query.VerifyCode;
+router.post('/register', async function (req, res, next) {
+    let token = req.body.Token;
+    let phone = isNaN(util.checkPhone(req.body.Phone)) ? null : req.body.Phone;
+    let verifyCode = req.body.VerifyCode;
     let redisClient = res.locals.redisClient;
     let logger = res.locals.logger;
     let db = res.locals.db;
@@ -214,9 +213,9 @@ router.get('/register', async function (req, res, next) {
     }
 });
 
-router.get('/verify',async function (req, res, next) {
-    let token = req.query.Token;
-    let phone = isNaN(util.checkPhone(req.query.Phone)) ? null : req.query.Phone;
+router.post('/verify',async function (req, res, next) {
+    let token = req.body.Token;
+    let phone = isNaN(util.checkPhone(req.body.Phone)) ? null : req.body.Phone;
     let redisClient = res.locals.redisClient;
     let logger = res.locals.logger; 
     if (phone === null){
