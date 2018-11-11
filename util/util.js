@@ -166,6 +166,9 @@ var util = {
             }
         }
         return obj;
+    },
+    BuildDatabase:async function(){
+        await db.sequelize.sync();
     }
 }
 module.exports = util;

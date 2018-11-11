@@ -130,6 +130,15 @@ sendReversalPointMessage: async function (name, shop,transactionSeq,remainMoney,
     let content =`尊敬的${name}用户，我们抱歉的通知您，因您的好友在${shop}发生的消费已撤销，您的奖励积分已退回，查询编号为${transactionSeq}。现您的账户余额为${remainMoney}元，可用积分为${remainPoints}分。`;
     return this.sendMessage(phone, globalConfig.sms.reversalPointTemplate, param,content);
 },
+
+sendRegisterMessage: async function (code,phone) {
+    let param = JSON.stringify({
+        code
+    });
+let content = `尊敬的用户，您正在申请小程序绑定联动会员，验证码为：${code}，5分钟内有效！`
+return this.sendMessage(phone, globalConfig.sms.registerTemplate, param,content);
+},
+
 }
 
 module.exports = SMS;

@@ -9,6 +9,7 @@ var redis = require('redis');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var logger = require('./log/');
+var UserRouter = require('./controllers/routes/users');
 var LoginRouter = require('./controllers/routes/login');
 var ApiRouter = require('./controllers/routes/api/');
 express.static.mime.define({'application/wasm':['wasm']});
@@ -63,6 +64,7 @@ app.all('*', function (req, res, next) {
   }
 })
 app.use('/login', LoginRouter);
+app.use('/users', UserRouter);
 
 app.use('/api', ApiRouter);
 // catch 404 and forward to error handler
