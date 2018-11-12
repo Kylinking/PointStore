@@ -173,14 +173,14 @@ router.post('/userpoints', async (req, res) => {
         return;
     }
 
-    if (!await util.isBelongsToByPhoneAsync(phone, operateShop.ParentShopId)) {
-        res.json({
-            Error: {
-                Message: '无权操作其它总店客户账户'
-            }
-        }).end();
-        return;
-    }
+    // if (!await util.isBelongsToByPhoneAsync(phone, operateShop.ParentShopId)) {
+    //     res.json({
+    //         Error: {
+    //             Message: '无权操作其它总店客户账户'
+    //         }
+    //     }).end();
+    //     return;
+    // }
     let customerInfo = null;
     let customerAccountInfo = null;
     let recommendCustomerInfo = null;
@@ -197,15 +197,17 @@ router.post('/userpoints', async (req, res) => {
     });
     let adminShopInfo = null;
     //用户账户表、用户账户变动表、店铺账户表、店铺账户变动表、明细表
-    sequelize.transaction(transaction => {
+    sequelize.transaction(async transaction => {
             return db.CustomerInfo.findOne({
                     where: {
                         Phone: phone,
+                        ShopId:await util.findAdminShopId(operateShopId)
                     },
                 }, {
                     transaction: transaction
                 })
                 .then(async (row) => {
+                    console.log(row.toJSON());
                     if (row.ShopId != operateShop.ParentShopId) {
                         throw '无权操作其它总店客户账户';
                     }
@@ -614,7 +616,8 @@ router.delete('/userpoints', async (req, res) => {
         }
         let customerInfo = await db.CustomerInfo.findOne({
             where: {
-                Phone: phone
+                Phone: phone,
+                ShopId:await util.findAdminShopId(operateShopId)
             }
         });
         if (customerInfo.CustomerId !== transcationRecord.CustomerId) {

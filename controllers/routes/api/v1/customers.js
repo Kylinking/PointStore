@@ -170,13 +170,14 @@ router.post('/customers', async (req, res) => {
     let operatedShop;
     let queryShop;
     try {
-        if (await res.locals.db.CustomerInfo.findOne({
-            where: {
-                Phone: phone
-            }
-        })){
-             throw "客户联系电话已存在";
-        }
+        // if (await res.locals.db.CustomerInfo.findOne({
+        //     where: {
+        //         Phone: phone,
+        //         ShopId:
+        //     }
+        // })){
+        //      throw "客户联系电话已存在";
+        // }
         operatedShop = await res.locals.db.ShopInfo.findOne({
             where: {
                 ShopId: operateShopId

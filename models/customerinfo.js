@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes)=>{
         Phone:{
             type:DataTypes.STRING,
             allowNull:false,
-            unique: true,
+            unique: "phone_shopid",
         },
         Address:{
             type:DataTypes.STRING,
@@ -43,7 +43,8 @@ module.exports = (sequelize, DataTypes)=>{
           onDelete: "CASCADE",
           foreignKey: {
             name: 'ShopId',
-            allowNull: false
+            allowNull: false,
+            unique: "phone_shopid"
           }
         });
 
