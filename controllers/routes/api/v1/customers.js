@@ -406,7 +406,8 @@ router.patch('/customers', async (req, res) => {
             if (phone != null) {
                 let customer = await customerInfo.findOne({
                         where: {
-                            Phone: phone
+                            Phone: phone,
+                            ShopId:whereObj.ShopId
                         }
                     });
                 if (customer && customer.CustomerId != instance.CustomerId) 
