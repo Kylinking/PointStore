@@ -223,7 +223,8 @@ router.post('/customers', async (req, res) => {
             }
             let recommendCustomer = await res.locals.db.CustomerInfo.findOne({
                 where: {
-                    Phone: recommendPhone
+                    Phone: recommendPhone,
+                    ShopId:createCondition.ShopId
                 }
             });
             logger.info(recommendCustomer);
