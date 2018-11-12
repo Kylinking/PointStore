@@ -19,6 +19,10 @@ router.post('/login', async function (req, res, next) {
             result.on('data', async (buffer) => {
                 let jsonObj = JSON.parse(buffer.toString());
                 console.log(jsonObj);
+                if (jsonObj.errcode){
+                    res.json({Code:400,Error:{Message:`Code参数错误,errorcode:${jsonObj.errcode},message:${jsonObj.errmsg}`}}).end();
+                    return;
+                }
                 let record = await db.WechatUser.findOne({
                     where: {
                         WechatId: jsonObj.openid
