@@ -423,15 +423,14 @@ router.patch('/customers', async (req, res) => {
             if (recommendPhone != null) {
                 let recommendCustomer = await customerInfo.findOne({
                     where: {
-                        Phone: recommendPhone
+                        Phone: recommendPhone,
+                        ShopId:whereObj.ShopId
                     }
                 });
                 if (recommendCustomer != null) {
-                    if (!await util.isBelongsToByIdAsync(recommendCustomer.CustomerId, instance.ShopId)) {
-                        throw "推荐人电话号码不是本店会员号码";
-                    } else {
-                        instance.set('RecommendCustomerId', recommendCustomer.CustomerId);
-                    }
+                    
+                    instance.set('RecommendCustomerId', recommendCustomer.CustomerId);
+                    
                 } else {
                     throw "推荐人电话号码不是本店会员号码";
                 }
