@@ -1,10 +1,6 @@
 'use strict';
-let db = require('../models').db;
-let log = require("../log/");
 
-let crypto = {
-    
-};
+let crypto = require('crypto');
 
 
 module.exports = crypto;

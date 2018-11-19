@@ -65,35 +65,35 @@ module.exports = (sequelize, DataTypes) => {
       }
     });
 
-    models.TransactionDetail.belongsTo(models.CustomerInfo, {
+    models.TransactionDetail.belongsTo(models.CustomerInShop, {
       onDelete: "CASCADE",
       foreignKey: {
-        name: 'CustomerId',
+        name: 'CustomerInShopId',
         allowNull: false
       }
     });
 
-    models.TransactionDetail.belongsTo(models.CustomerInfo, {
+    models.TransactionDetail.belongsTo(models.CustomerInShop, {
       onDelete: "CASCADE",
       as: 'RecommendCustomer',
       foreignKey: {
-        name: 'RecommendCustomerId',
+        name: 'RecommendCustomerInShopId',
         allowNull: true
       }
     });
-    models.TransactionDetail.belongsTo(models.CustomerInfo, {
+    models.TransactionDetail.belongsTo(models.CustomerInShop, {
       onDelete: "CASCADE",
       as: 'IndirectRecommendCustomer',
       foreignKey: {
-        name: 'IndirectRecommendCustomerId',
+        name: 'IndirectRecommendCustomerInShopId',
         allowNull: true
       }
     });
-    models.TransactionDetail.belongsTo(models.CustomerInfo, {
+    models.TransactionDetail.belongsTo(models.CustomerInShop, {
       onDelete: "CASCADE",
       as: 'ThirdRecommendCustomer',
       foreignKey: {
-        name: 'ThirdRecommendCustomerId',
+        name: 'ThirdRecommendCustomerInShopId',
         allowNull: true
       }
     });
