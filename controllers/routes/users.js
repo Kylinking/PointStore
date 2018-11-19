@@ -39,7 +39,7 @@ router.post('/login', async function (req, res, next) {
                     });
                     customerInfo.CustomerAccountInfo = util.ConvertObj2Result(customerAccountInfo.toJSON());
                     token = jwt.encode({
-                        WechatId: decoded.WechatId,
+                        WechatId: jsonObj.openid,
                         Phone: customerInfo.Phone
                     }, jwtSecret);
                     res.json({
