@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         WechatId: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true,
+            unique: 'wechat_customerid',
         },
     }, {
         updatedAt: 'UpdatedAt',
@@ -20,7 +20,8 @@ module.exports = (sequelize, DataTypes) => {
             onDelete: "CASCADE",
             foreignKey: {
                 name: 'CustomerId',
-                allowNull: null
+                allowNull: null,
+                unique:'wechat_customerid'
             }
         });
     }

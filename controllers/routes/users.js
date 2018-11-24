@@ -20,8 +20,13 @@ router.post('/login', async function (req, res, next) {
             result.on('data', async (buffer) => {
                 let jsonObj = JSON.parse(buffer.toString());
                 logger.info(jsonObj);
-                if (jsonObj.errcode){
-                    res.json({Code:400,Error:{Message:`Code参数错误,errorcode:${jsonObj.errcode},message:${jsonObj.errmsg}`}}).end();
+                if (jsonObj.errcode) {
+                    res.json({
+                        Code: 400,
+                        Error: {
+                            Message: `Code参数错误,errorcode:${jsonObj.errcode},message:${jsonObj.errmsg}`
+                        }
+                    }).end();
                     return;
                 }
                 let record = await db.WechatUser.findOne({
@@ -177,29 +182,31 @@ router.post('/register', async function (req, res, next) {
             } else {
                 if (reply == verifyCode) {
                     redisClient.del(decoded.WechatId);
-                    let customerInfo = await db.CustomerInfo.findOne({
+                    let instance = await db.CustomerInfo.findAndCountAll({
                         where: {
                             Phone: phone
                         }
                     });
-                    if (customerInfo) {
-                        await db.WechatUser.create({
-                            WechatId: decoded.WechatId,
-                            CustomerId: customerInfo.CustomerId
-                        });
-                        let customerAccountInfo = db.CustomerAccountInfo.findOne({
-                            where: {
+                    let json = {
+                        Array: []
+                    };
+                    if (instance.count > 0) {
+                        for (let customerInfo of instance.rows) {
+                            await db.WechatUser.create({
+                                WechatId: decoded.WechatId,
                                 CustomerId: customerInfo.CustomerId
-                            }
-                        });
-                        customerInfo = customerInfo.toJSON();
-                        customerInfo.CustomerAccountInfo = customerAccountInfo;
-                        res.json({
-                            Code: 200,
-                            Data: {
-                                CustomerInfo:customerInfo
-                            }
-                        }).end();
+                            });
+                            let customerAccountInfo = db.CustomerAccountInfo.findOne({
+                                where: {
+                                    CustomerId: customerInfo.CustomerId
+                                }
+                            });
+                            customerInfo = customerInfo.toJSON();
+                            customerInfo.CustomerAccountInfo = customerAccountInfo;
+                            json.Array.push(customerInfo);
+                        }
+                        json.Code = 200;
+                        res.json(json).end();
                     } else {
                         res.json({
                             Code: 400,
@@ -300,6 +307,116 @@ router.post('/verify', async function (req, res, next) {
         return;
     }
 })
+
+router.post('/history', async function (req, res, next) {
+    let db = res.locals.db;
+    let token = req.body.Token;
+    let page = util.makeNumericValue(req.body.Page, 1);
+    let pageSize = util.makeNumericValue(req.body.Size, 20);
+    let offset = (page - 1) * pageSize;
+    let startDate = req.query.Start || null;
+    let endDate = req.query.end || null;
+
+    endDate = Date.parse(moment(endDate).format());
+    startDate = Date.parse(moment(startDate).format());
+    if (isNaN(endDate) && isNaN(startDate)) {
+        endDate = Date.parse(moment().format());
+        startDate = Date.parse(moment().subtract(30, 'days').format());
+    } else if (isNaN(endDate) && !isNaN(startDate)) {
+        endDate = Date.parse(moment(startDate).add(30, 'days').format());
+    } else if (!isNaN(endDate) && isNaN(startDate)) {
+        startDate = Date.parse(moment(endDate).subtract(30, 'days').format());
+    } else {
+        if (endDate < startDate) {
+            [endDate, startDate] = [startDate, endDate];
+        }
+    }
+    logger.info(`startDate:${startDate},endDate:${endDate}`);
+
+    let whereObj = {
+        Date: {
+            [Op.and]: [{
+                    [Op.gt]: Date.parse(moment(startDate).format("YYYY-MM-DD 00:00:00"))
+                },
+                {
+                    [Op.lt]: Date.parse(moment(endDate).add(1, "days").format("YYYY-MM-DD 00:00:00"))
+                }
+            ]
+        }
+    };
+    if (token) {
+        try {
+            let decoded = jwt.decode(token, jwtSecret);
+            logger.info(decoded);
+            let instances = await db.WechatUser.findAndCountAll({
+                where: {
+                    WechatId: decoded.WechatId
+                }
+            });
+            let result = {Array:[]};
+            if (instances) {
+                for (let record of instance.rows) {
+                    whereObj.CustomerId = record.CustomerId;
+                    let details = await db.CustomerAccountChange.findAndCountAll({
+                        where: whereObj,
+                        limit: pageSize,
+                        offset: offset,
+                        order: [
+                            ['id', 'DESC']
+                        ]
+                    });
+                    let data = [];
+                    details.rows.forEach(ele => {
+                        ele.Date = new Date(ele.Date);
+                        data.push(util.ConvertObj2Result(ele.toJSON()));
+
+                    })
+                    let pages = Math.ceil(details.count / pageSize);
+                    let customerInfo = (await record.getCustomerInfo());
+                    result.Array.push({
+                        Array: data,
+                        ShopInfo:await customerInfo.getShopInfo(),
+                        Meta: {
+                            PageSize: pageSize,
+                            TotalPages: pages,
+                            CurrentRows: details.rows.length,
+                            TotalRows: details.count,
+                            CurrentPage: page
+                        }
+                    }).end();
+                }
+                res.json({
+                    Code: 200,
+                    Data: result
+                }).end();
+            } else {
+                res.json({
+                    Code: 400,
+                    Error: {
+                        Message: "无绑定信息"
+                    }
+                }).end();
+            }
+        } catch (error) {
+            logger.info(error);
+            res.json({
+                Code: 400,
+                Error: {
+                    Message: "Token 无效"
+                }
+            }).end();
+            return;
+        }
+    } else {
+        res.json({
+            Code: 400,
+            Error: {
+                Message: "需要传送Token"
+            }
+        }).end();
+        return;
+    }
+});
 
 function GetVerifyCode() {
     let code = [];
