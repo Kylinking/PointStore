@@ -383,16 +383,19 @@ router.post('/history', async function (req, res, next) {
                     });
                     if (details.count == 0) continue; 
                     let data = [];
-                    details.rows.forEach(ele => {
+                    details.rows.forEach(async ele => {
                         ele.Date = new Date(ele.Date);
+                        ele.dataValues.ShopName = (await ele.getShopInfo()).Name;
                         data.push(util.ConvertObj2Result(ele.toJSON()));
-
                     })
                     let pages = Math.ceil(details.count / pageSize);
                     let customerInfo = (await record.getCustomerInfo());
+                    let shopInfo = (await customerInfo.getShopInfo()).toJSON();
+                    customerInfo = customerInfo.toJSON();
+                    customerInfo.ShopInfo = shopInfo;
                     result.Array.push({
                         Array: data,
-                        ShopInfo: await customerInfo.getShopInfo(),
+                        CustomerInfo: customerInfo,
                         Meta: {
                             PageSize: pageSize,
                             TotalPages: pages,
@@ -402,10 +405,8 @@ router.post('/history', async function (req, res, next) {
                         }
                     });
                 }
-                res.json({
-                    Code: 200,
-                    Data: result
-                }).end();
+                result.Code = 200;
+                res.json(result).end();
             } else {
                 res.json({
                     Code: 400,
