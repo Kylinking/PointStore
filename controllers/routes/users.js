@@ -329,7 +329,7 @@ router.post('/history', async function (req, res, next) {
     let pageSize = util.makeNumericValue(req.body.Size, 20);
     let offset = (page - 1) * pageSize;
     let startDate = req.body.Start || null;
-    let endDate = req.body.end || null;
+    let endDate = req.body.End || null;
     let shopId = req.body.ShopId || null;
     endDate = Date.parse(moment(endDate).format());
     startDate = Date.parse(moment(startDate).format());
