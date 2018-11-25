@@ -8,6 +8,8 @@ let https = require('https');
 let SMS = require('../../util/sms');
 let globalConfig = require('../../config/global.json');
 let logger = require('../../log');
+let moment = require('moment');
+const Op = require('sequelize').Op;
 router.post('/login', async function (req, res, next) {
     let code = req.body.Code;
     let db = res.locals.db;
@@ -29,31 +31,34 @@ router.post('/login', async function (req, res, next) {
                     }).end();
                     return;
                 }
-                let record = await db.WechatUser.findOne({
+                let instances = await db.WechatUser.findAndCountAll({
                     where: {
                         WechatId: jsonObj.openid
                     }
                 })
-                if (record) {
-                    let customerInfo = (await record.getCustomerInfo()).toJSON();
-                    logger.info(customerInfo);
-                    let customerAccountInfo = await db.CustomerAccountInfo.findOne({
-                        where: {
-                            CustomerId: customerInfo.CustomerId
-                        }
-                    });
-                    customerInfo.CustomerAccountInfo = util.ConvertObj2Result(customerAccountInfo.toJSON());
+                if (instances.count > 0) {
+                    let json = {
+                        Array: []
+                    };
+                    let customerInfo ;
+                    for (let record of instances.rows) {
+                        customerInfo = (await record.getCustomerInfo()).toJSON();
+                        logger.info(customerInfo);
+                        let customerAccountInfo = await db.CustomerAccountInfo.findOne({
+                            where: {
+                                CustomerId: customerInfo.CustomerId
+                            }
+                        });
+                        customerInfo.CustomerAccountInfo = util.ConvertObj2Result(customerAccountInfo.toJSON());
+                        customerInfo.ShopInfo = await db.ShopInfo.findById(customerInfo.ShopId);
+                        json.Array.push(customerInfo);
+                    }
                     token = jwt.encode({
                         WechatId: jsonObj.openid,
                         Phone: customerInfo.Phone
                     }, jwtSecret);
-                    res.json({
-                        Code: 200,
-                        Data: {
-                            CustomerInfo: customerInfo,
-                            Token: token
-                        }
-                    }).end();
+                    json.Code = 200;
+                    res.json(json).end();
                 } else {
                     token = jwt.encode({
                         WechatId: jsonObj.openid
@@ -71,31 +76,40 @@ router.post('/login', async function (req, res, next) {
         try {
             let decoded = jwt.decode(token, jwtSecret);
             logger.info(decoded);
-            let record = await db.WechatUser.findOne({
+            let instances = await db.WechatUser.findAndCountAll({
                 where: {
                     WechatId: decoded.WechatId
                 }
             });
-            if (record) {
-                let customerInfo = (await record.getCustomerInfo()).toJSON();
-                logger.info(customerInfo);
-                let customerAccountInfo = await db.CustomerAccountInfo.findOne({
-                    where: {
-                        CustomerId: customerInfo.CustomerId
-                    }
-                });
-                customerInfo.CustomerAccountInfo = util.ConvertObj2Result(customerAccountInfo.toJSON());
-                res.json({
-                    Code: 200,
-                    Data: {
-                        CustomerInfo: customerInfo,
-                    }
-                }).end();
+            if (instances.count > 0) {
+                let json = {
+                    Array: []
+                };
+                let customerInfo ;
+                for (let record of instances.rows) {
+                    customerInfo = (await record.getCustomerInfo()).toJSON();
+                    logger.info(customerInfo);
+                    let customerAccountInfo = await db.CustomerAccountInfo.findOne({
+                        where: {
+                            CustomerId: customerInfo.CustomerId
+                        }
+                    });
+                    customerInfo.CustomerAccountInfo = util.ConvertObj2Result(customerAccountInfo.toJSON());
+                    customerInfo.ShopInfo = await db.ShopInfo.findById(customerInfo.ShopId);
+                    json.Array.push(customerInfo);
+                }
+                token = jwt.encode({
+                    WechatId: decoded.WechatId,
+                    Phone: customerInfo.Phone
+                }, jwtSecret);
+                json.Code = 200;
+                json.Token = token;
+                res.json(json).end();
             } else {
                 res.json({
-                    Code: 204,
-                    Data: {
-                        Token: token
+                    Code: 400,
+                    Error: {
+                        Message: "Token 无效"
                     }
                 }).end();
             }
@@ -196,7 +210,7 @@ router.post('/register', async function (req, res, next) {
                                 WechatId: decoded.WechatId,
                                 CustomerId: customerInfo.CustomerId
                             });
-                            let customerAccountInfo = db.CustomerAccountInfo.findOne({
+                            let customerAccountInfo = await db.CustomerAccountInfo.findOne({
                                 where: {
                                     CustomerId: customerInfo.CustomerId
                                 }
@@ -314,9 +328,9 @@ router.post('/history', async function (req, res, next) {
     let page = util.makeNumericValue(req.body.Page, 1);
     let pageSize = util.makeNumericValue(req.body.Size, 20);
     let offset = (page - 1) * pageSize;
-    let startDate = req.query.Start || null;
-    let endDate = req.query.end || null;
-
+    let startDate = req.body.Start || null;
+    let endDate = req.body.end || null;
+    let shopId = req.body.ShopId || null;
     endDate = Date.parse(moment(endDate).format());
     startDate = Date.parse(moment(startDate).format());
     if (isNaN(endDate) && isNaN(startDate)) {
@@ -353,9 +367,11 @@ router.post('/history', async function (req, res, next) {
                     WechatId: decoded.WechatId
                 }
             });
-            let result = {Array:[]};
-            if (instances) {
-                for (let record of instance.rows) {
+            let result = {
+                Array: []
+            };
+            if (instances.count > 0) {
+                for (let record of instances.rows) {
                     whereObj.CustomerId = record.CustomerId;
                     let details = await db.CustomerAccountChange.findAndCountAll({
                         where: whereObj,
@@ -363,8 +379,9 @@ router.post('/history', async function (req, res, next) {
                         offset: offset,
                         order: [
                             ['id', 'DESC']
-                        ]
+                        ],
                     });
+                    if (details.count == 0) continue; 
                     let data = [];
                     details.rows.forEach(ele => {
                         ele.Date = new Date(ele.Date);
@@ -375,7 +392,7 @@ router.post('/history', async function (req, res, next) {
                     let customerInfo = (await record.getCustomerInfo());
                     result.Array.push({
                         Array: data,
-                        ShopInfo:await customerInfo.getShopInfo(),
+                        ShopInfo: await customerInfo.getShopInfo(),
                         Meta: {
                             PageSize: pageSize,
                             TotalPages: pages,
@@ -383,7 +400,7 @@ router.post('/history', async function (req, res, next) {
                             TotalRows: details.count,
                             CurrentPage: page
                         }
-                    }).end();
+                    });
                 }
                 res.json({
                     Code: 200,
@@ -393,7 +410,7 @@ router.post('/history', async function (req, res, next) {
                 res.json({
                     Code: 400,
                     Error: {
-                        Message: "无绑定信息"
+                        Message: "Token无效"
                     }
                 }).end();
             }
