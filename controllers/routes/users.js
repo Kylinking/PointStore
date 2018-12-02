@@ -57,6 +57,7 @@ router.post('/login', async function (req, res, next) {
                         WechatId: jsonObj.openid,
                         Phone: customerInfo.Phone
                     }, jwtSecret);
+                    json.Token = token;
                     json.Code = 200;
                     res.json(json).end();
                 } else {
