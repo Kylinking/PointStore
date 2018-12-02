@@ -9,12 +9,12 @@ module.exports = (sequelize, DataTypes) => {
         },
         CustomerName: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
             unique: false,
         },
         ShopName: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
             unique: false,
         },
         Phone: {
