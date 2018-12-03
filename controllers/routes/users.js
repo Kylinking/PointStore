@@ -8,6 +8,8 @@ let https = require('https');
 let SMS = require('../../util/sms');
 let globalConfig = require('../../config/global.json');
 let logger = require('../../log');
+let moment = require('moment');
+const Op = require('sequelize').Op;
 router.post('/login', async function (req, res, next) {
     let code = req.body.Code;
     let db = res.locals.db;
@@ -20,35 +22,44 @@ router.post('/login', async function (req, res, next) {
             result.on('data', async (buffer) => {
                 let jsonObj = JSON.parse(buffer.toString());
                 logger.info(jsonObj);
-                if (jsonObj.errcode){
-                    res.json({Code:400,Error:{Message:`Code参数错误,errorcode:${jsonObj.errcode},message:${jsonObj.errmsg}`}}).end();
+                if (jsonObj.errcode) {
+                    res.json({
+                        Code: 400,
+                        Error: {
+                            Message: `Code参数错误,errorcode:${jsonObj.errcode},message:${jsonObj.errmsg}`
+                        }
+                    }).end();
                     return;
                 }
-                let record = await db.WechatUser.findOne({
+                let instances = await db.WechatUser.findAndCountAll({
                     where: {
                         WechatId: jsonObj.openid
                     }
                 })
-                if (record) {
-                    let customerInfo = (await record.getCustomerInfo()).toJSON();
-                    logger.info(customerInfo);
-                    let customerAccountInfo = await db.CustomerAccountInfo.findOne({
-                        where: {
-                            CustomerId: customerInfo.CustomerId
-                        }
-                    });
-                    customerInfo.CustomerAccountInfo = util.ConvertObj2Result(customerAccountInfo.toJSON());
+                if (instances.count > 0) {
+                    let json = {
+                        Array: []
+                    };
+                    let customerInfo ;
+                    for (let record of instances.rows) {
+                        customerInfo = (await record.getCustomerInfo()).toJSON();
+                        logger.info(customerInfo);
+                        let customerAccountInfo = await db.CustomerAccountInfo.findOne({
+                            where: {
+                                CustomerId: customerInfo.CustomerId
+                            }
+                        });
+                        customerInfo.CustomerAccountInfo = util.ConvertObj2Result(customerAccountInfo.toJSON());
+                        customerInfo.ShopInfo = await db.ShopInfo.findById(customerInfo.ShopId);
+                        json.Array.push(customerInfo);
+                    }
                     token = jwt.encode({
                         WechatId: jsonObj.openid,
                         Phone: customerInfo.Phone
                     }, jwtSecret);
-                    res.json({
-                        Code: 200,
-                        Data: {
-                            CustomerInfo: customerInfo,
-                            Token: token
-                        }
-                    }).end();
+                    json.Token = token;
+                    json.Code = 200;
+                    res.json(json).end();
                 } else {
                     token = jwt.encode({
                         WechatId: jsonObj.openid
@@ -66,31 +77,40 @@ router.post('/login', async function (req, res, next) {
         try {
             let decoded = jwt.decode(token, jwtSecret);
             logger.info(decoded);
-            let record = await db.WechatUser.findOne({
+            let instances = await db.WechatUser.findAndCountAll({
                 where: {
                     WechatId: decoded.WechatId
                 }
             });
-            if (record) {
-                let customerInfo = (await record.getCustomerInfo()).toJSON();
-                logger.info(customerInfo);
-                let customerAccountInfo = await db.CustomerAccountInfo.findOne({
-                    where: {
-                        CustomerId: customerInfo.CustomerId
-                    }
-                });
-                customerInfo.CustomerAccountInfo = util.ConvertObj2Result(customerAccountInfo.toJSON());
-                res.json({
-                    Code: 200,
-                    Data: {
-                        CustomerInfo: customerInfo,
-                    }
-                }).end();
+            if (instances.count > 0) {
+                let json = {
+                    Array: []
+                };
+                let customerInfo ;
+                for (let record of instances.rows) {
+                    customerInfo = (await record.getCustomerInfo()).toJSON();
+                    logger.info(customerInfo);
+                    let customerAccountInfo = await db.CustomerAccountInfo.findOne({
+                        where: {
+                            CustomerId: customerInfo.CustomerId
+                        }
+                    });
+                    customerInfo.CustomerAccountInfo = util.ConvertObj2Result(customerAccountInfo.toJSON());
+                    customerInfo.ShopInfo = await db.ShopInfo.findById(customerInfo.ShopId);
+                    json.Array.push(customerInfo);
+                }
+                token = jwt.encode({
+                    WechatId: decoded.WechatId,
+                    Phone: customerInfo.Phone
+                }, jwtSecret);
+                json.Code = 200;
+                json.Token = token;
+                res.json(json).end();
             } else {
                 res.json({
-                    Code: 204,
-                    Data: {
-                        Token: token
+                    Code: 400,
+                    Error: {
+                        Message: "Token 无效"
                     }
                 }).end();
             }
@@ -177,29 +197,32 @@ router.post('/register', async function (req, res, next) {
             } else {
                 if (reply == verifyCode) {
                     redisClient.del(decoded.WechatId);
-                    let customerInfo = await db.CustomerInfo.findOne({
+                    let instance = await db.CustomerInfo.findAndCountAll({
                         where: {
                             Phone: phone
                         }
                     });
-                    if (customerInfo) {
-                        await db.WechatUser.create({
-                            WechatId: decoded.WechatId,
-                            CustomerId: customerInfo.CustomerId
-                        });
-                        let customerAccountInfo = db.CustomerAccountInfo.findOne({
-                            where: {
+                    let json = {
+                        Array: []
+                    };
+                    if (instance.count > 0) {
+                        for (let customerInfo of instance.rows) {
+                            await db.WechatUser.create({
+                                WechatId: decoded.WechatId,
                                 CustomerId: customerInfo.CustomerId
-                            }
-                        });
-                        customerInfo = customerInfo.toJSON();
-                        customerInfo.CustomerAccountInfo = customerAccountInfo;
-                        res.json({
-                            Code: 200,
-                            Data: {
-                                CustomerInfo:customerInfo
-                            }
-                        }).end();
+                            });
+                            let customerAccountInfo = await db.CustomerAccountInfo.findOne({
+                                where: {
+                                    CustomerId: customerInfo.CustomerId
+                                }
+                            });
+                            customerInfo = customerInfo.toJSON();
+                            customerInfo.CustomerAccountInfo = customerAccountInfo;
+                            customerInfo.ShopInfo = await db.ShopInfo.findById(customerInfo.ShopId);
+                            json.Array.push(customerInfo);
+                        }
+                        json.Code = 200;
+                        res.json(json).end();
                     } else {
                         res.json({
                             Code: 400,
@@ -300,6 +323,120 @@ router.post('/verify', async function (req, res, next) {
         return;
     }
 })
+
+router.post('/history', async function (req, res, next) {
+    let db = res.locals.db;
+    let token = req.body.Token;
+    let page = util.makeNumericValue(req.body.Page, 1);
+    let pageSize = util.makeNumericValue(req.body.Size, 20);
+    let offset = (page - 1) * pageSize;
+    let startDate = req.body.Start || null;
+    let endDate = req.body.End || null;
+    let shopId = req.body.ShopId || null;
+    endDate = Date.parse(moment(endDate).format());
+    startDate = Date.parse(moment(startDate).format());
+    if (isNaN(endDate) && isNaN(startDate)) {
+        endDate = Date.parse(moment().format());
+        startDate = Date.parse(moment().subtract(30, 'days').format());
+    } else if (isNaN(endDate) && !isNaN(startDate)) {
+        endDate = Date.parse(moment(startDate).add(30, 'days').format());
+    } else if (!isNaN(endDate) && isNaN(startDate)) {
+        startDate = Date.parse(moment(endDate).subtract(30, 'days').format());
+    } else {
+        if (endDate < startDate) {
+            [endDate, startDate] = [startDate, endDate];
+        }
+    }
+    logger.info(`startDate:${startDate},endDate:${endDate}`);
+
+    let whereObj = {
+        Date: {
+            [Op.and]: [{
+                    [Op.gt]: Date.parse(moment(startDate).format("YYYY-MM-DD 00:00:00"))
+                },
+                {
+                    [Op.lt]: Date.parse(moment(endDate).add(1, "days").format("YYYY-MM-DD 00:00:00"))
+                }
+            ]
+        }
+    };
+    if (token) {
+        try {
+            let decoded = jwt.decode(token, jwtSecret);
+            logger.info(decoded);
+            let instances = await db.WechatUser.findAndCountAll({
+                where: {
+                    WechatId: decoded.WechatId
+                }
+            });
+            let result = {
+                Array: []
+            };
+            if (instances.count > 0) {
+                for (let record of instances.rows) {
+                    whereObj.CustomerId = record.CustomerId;
+                    let details = await db.CustomerAccountChange.findAndCountAll({
+                        where: whereObj,
+                        limit: pageSize,
+                        offset: offset,
+                        order: [
+                            ['id', 'DESC']
+                        ],
+                    });
+                    if (details.count == 0) continue; 
+                    let data = [];
+                    details.rows.forEach(async ele => {
+                        ele.Date = new Date(ele.Date);
+                        ele.dataValues.ShopName = (await ele.getShopInfo()).Name;
+                        data.push(util.ConvertObj2Result(ele.toJSON()));
+                    })
+                    let pages = Math.ceil(details.count / pageSize);
+                    let customerInfo = (await record.getCustomerInfo());
+                    let shopInfo = (await customerInfo.getShopInfo()).toJSON();
+                    customerInfo = customerInfo.toJSON();
+                    customerInfo.ShopInfo = shopInfo;
+                    result.Array.push({
+                        Array: data,
+                        CustomerInfo: customerInfo,
+                        Meta: {
+                            PageSize: pageSize,
+                            TotalPages: pages,
+                            CurrentRows: details.rows.length,
+                            TotalRows: details.count,
+                            CurrentPage: page
+                        }
+                    });
+                }
+                result.Code = 200;
+                res.json(result).end();
+            } else {
+                res.json({
+                    Code: 400,
+                    Error: {
+                        Message: "Token无效"
+                    }
+                }).end();
+            }
+        } catch (error) {
+            logger.info(error);
+            res.json({
+                Code: 400,
+                Error: {
+                    Message: "Token 无效"
+                }
+            }).end();
+            return;
+        }
+    } else {
+        res.json({
+            Code: 400,
+            Error: {
+                Message: "需要传送Token"
+            }
+        }).end();
+        return;
+    }
+});
 
 function GetVerifyCode() {
     let code = [];
