@@ -218,6 +218,7 @@ router.post('/register', async function (req, res, next) {
                             });
                             customerInfo = customerInfo.toJSON();
                             customerInfo.CustomerAccountInfo = customerAccountInfo;
+                            customerInfo.ShopInfo = await db.ShopInfo.findById(customerInfo.ShopId);
                             json.Array.push(customerInfo);
                         }
                         json.Code = 200;
