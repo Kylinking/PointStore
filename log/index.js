@@ -15,4 +15,8 @@ log4js.configure({
   });
 var logger = log4js.getLogger();
 logger.level = 'trace';
+// logger.descrip = function (description,message) {
+//     logger.info(description);
+//     logger.info(message);
+//   }
 module.exports = logger;

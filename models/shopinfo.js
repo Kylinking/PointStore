@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = (sequelize, DataTypes)=>{
     var ShopInfo = sequelize.define('ShopInfo',{
         ShopId:{
