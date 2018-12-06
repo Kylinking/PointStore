@@ -38,7 +38,7 @@ app.all('*', function (req, res, next) {
     res.locals.logger = logger;
     res.locals.db = db;
     res.locals.redisClient = redisClient;
-    res.locals.redis = redis;
+    //res.locals.redis = redis;
     logger.info("=====================================================");
     logger.info(`Transaction begins at:${new Date().toLocaleString()}`)
     logger.info(req.ip);

@@ -10,7 +10,7 @@ var basename = path.basename(__filename);
 var apis = [];
 const version = 'v1';
 const util = require("../../../util/util");
-
+const auth = require('./auth');
 
 // Auto push routes into array apis, .js files in the vX folder will be treated as routes;  
 fs
@@ -24,74 +24,76 @@ fs
     });
     
 //Check authentication and expire time
-router.use('/' + version,
-    async function Authentication(req, res, next) {
-        let token = req.header('TOKEN');
-        let redisClient = res.locals.redisClient;
-        let logger = res.locals.logger;
-        res.locals.logger.info("header token :" + token);
-        let decoded = null;
-        try {
-            decoded = jwt.decode(token, jwtSecret);
-            res.locals.logger.info(decoded);
-            res.locals.shopid = decoded.shopid;
-            logger.info(res.locals.shopid);
-            var operatedShop = await res.locals.db.ShopInfo.findOne({
-                where: {
-                  ShopId: res.locals.shopid
-                }
-            });
-            if (operatedShop){
-                if(operatedShop.Status != 1){
-                    res.json({
-                        Error: {
-                            Message: `店面状态异常，无权操作。Status:${operatedShop.Status}`
-                        }
-                    }).end();
-                    return;
-                }
-            }else{
-                res.json({
-                    Error: {
-                        Message: "店面不存在"
-                    }
-                }).end();
-                return;
-            }
-        } catch (error) {
-            logger.error(error);
-            res.json({
-                Error: {
-                    Message: "Token 无效"
-                }
-            }).end();
-            return;
-        }
-        try {
-            const {
-                promisify
-            } = require('util');
-            const getAsync = promisify(redisClient.get).bind(redisClient);
-            var reply = await getAsync(decoded.shopid);
-            if (reply == null) {
-                next(new Error("登录失效"));
-            } else {
-                next();
-            }
-        } catch (error) {
-            res.json({
-                Error: {
-                    Message: "系统错误，请联系系统管理员。Redis Error!\n" + error.message
-                }
-            }).end();
-            return;
-        }
-    }
-)
+router.use('/',auth.authenticate);
+// router.use('/' + version,
+//     async function Authentication(req, res, next) {
+//         let token = req.header('TOKEN');
+//         let redisClient = res.locals.redisClient;
+//         let logger = res.locals.logger;
+//         res.locals.logger.info("header token :" + token);
+//         let decoded = null;
+//         try {
+//             decoded = jwt.decode(token, jwtSecret);
+//             res.locals.logger.info(decoded);
+//             res.locals.shopid = decoded.shopid;
+//             logger.info(res.locals.shopid);
+//             var operatedShop = await res.locals.db.ShopInfo.findOne({
+//                 where: {
+//                   ShopId: res.locals.shopid
+//                 }
+//             });
+//             if (operatedShop){
+//                 if(operatedShop.Status != 1){
+//                     res.json({
+//                         Error: {
+//                             Message: `店面状态异常，无权操作。Status:${operatedShop.Status}`
+//                         }
+//                     }).end();
+//                     return;
+//                 }
+//             }else{
+//                 res.json({
+//                     Error: {
+//                         Message: "店面不存在"
+//                     }
+//                 }).end();
+//                 return;
+//             }
+//         } catch (error) {
+//             logger.error(error);
+//             res.json({
+//                 Error: {
+//                     Message: "Token 无效"
+//                 }
+//             }).end();
+//             return;
+//         }
+//         try {
+//             const {
+//                 promisify
+//             } = require('util');
+//             const getAsync = promisify(redisClient.get).bind(redisClient);
+//             var reply = await getAsync(decoded.shopid);
+//             if (reply == null) {
+//                 next(new Error("登录失效"));
+//             } else {
+//                 next();
+//             }
+//         } catch (error) {
+//             res.json({
+//                 Error: {
+//                     Message: "系统错误，请联系系统管理员。Redis Error!\n" + error.message
+//                 }
+//             }).end();
+//             return;
+//         }
+//     }
+// )
 
 // Check numeric data validation and route to apis
 router.use('/' + version,
 (req,res,next)=>{
+    console.log('hello')
     var logger = res.locals.logger;
     var queryShopId,phone,queryType,page,pageSize,age;
     logger.info(req.method);
