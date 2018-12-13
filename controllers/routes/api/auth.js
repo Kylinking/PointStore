@@ -1,8 +1,7 @@
 'use strict';
 
 let path = require('path');
-let jwt = require('jwt-simple');
-let jwtSecret = require('../../../config/global.json').jwtSecret;
+
 const util = require("../../../util/util");
 const db = require('../../../models').db;
 const logger = require('../../../log');
@@ -18,7 +17,6 @@ var Authentication = {
             // user:{id:xxxx,name:xxxx,role:['casher'] or ['casher', 'advance']}
             // timeStamp expired in 60s or used 5 times
             try {
-                const redisGetAsync = MakeAsyncRedisMethod(redisClient.get,redisClient);
                 let reply = await redisGetAsync(timeStamp);
                 if (reply == null) {
                     next(new Error("登录失效"));
@@ -71,10 +69,6 @@ var Authentication = {
         
     }
 }
-function MakeAsyncRedisMethod(fn,redisClient)
-{
-    const promisify = require('util').promisify;
-    return promisify(fn).bind(redisClient);
-}
+
 
 module.exports = Authentication;

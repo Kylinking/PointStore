@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes)=>{
         models.CustomerInfo.belongsToMany(models.ShopInfo, {
             through:'CustomerInShop',
             foreignKey: {
-                name: 'ShopId',
+                name: 'CustomerId',
                 allowNull: false
             }
         });
@@ -53,7 +53,13 @@ module.exports = (sequelize, DataTypes)=>{
               allowNull: true
             }
           });
-          
+        models.CustomerInfo.hasOne(models.User,{
+            onDelete: "CASCADE",
+            foreignKey: {
+                name: 'CustomerId',
+                allowNull: true
+            }
+        });
       };
     return CustomerInfo;
 }

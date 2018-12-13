@@ -1,74 +1,79 @@
-let db = require('../models').db;
-let userModel = db.User;
-let Role = require('./role');
-let Users = class {
-    constructor(name) 
-    {
-        this.name = name;
+const db = require('../models').db;
+const Model = require('./base');
+const Role = require('./role');
+let Users = class extends Model {
+    constructor(name) {
+        super(db.User);
+        this._name = name;
+    }
+    // ======================================
+    // property area start
+    get name() {
+        return this._name;
     }
 
-    CheckPassword(password)
-    {
-        if (this.password == password)
-            return true;
-        return false;
+
+    get roleNames(){
+        return this._roleNames;
+    }
+    get shopId() {
+        return this._shopId;
     }
 
-    GetRoleNames()
-    {
-        if (this.isExist){
-            return this.roleNames;
-        }
+    get password() {
+        return this._password
     }
-    async GetPermissions()
-    {
-        if (!this.isExist) return;
-        if (!this._permissions){
-            this._permissions =  await this.role.GetPermissionsAsync();
+
+    
+
+    // property area end
+    // ======================================
+    async  GetPermissions() {
+        if (!this._permissions) {
+            this._roles = new Role(this.roleNames);
+            this._permissions = await this.role.GetPermissionsget();
         }
         return this._permissions;
     }
-
-    toJSON()
-    {
-        if(this.isExist){
-            return {
-                Id:this.id,
-                Name:this.name,
-                Roles:this.GetRoleNames(),
-                Password:this.password,
-                CreatedAt:this.created,
-                UpdatedAt:this.updated,
-                Permission:this.GetPermissions(),
-            };
+    async  GetRoles() {
+        this._roles = [];
+        for(let roleName of this._roleNames){
+            let role = new Role(roleName);
+            await role.InitAsync();
+            this._roles.push(role.resourceIdentify);
         }
-        return {};
+        return this._roles;
     }
-    async InitAsync()
-    {
+    async InitAsync() {
         try {
-            let user = await userModel.findOne({
+            let user = await this.model.findOne({
                 where: {
-                    Name: this.name
+                    Name: this._name
                 }
             });
-            if (user){
+            if (user) {
                 this._user = user;
-                this.isExist = true;
-                this.id = user.Id;
-                this.name = user.Name;
-                this.roleNames = user.Role;
-                this.password = user.Password;
-                this.created= user.CreatedAt;
-                this.updated = user.UpdatedAt;
-                this.role = new Role(this.roleName);
-            }else{
-                this.isExist = false;
-            }  
+                this._isExist = true;
+                this._id = user.Id;
+                this._attributes = {
+                    name: user.Name,
+                    created: user.CreatedAt,
+                    updated: user.UpdatedAt,
+                }
+                this._roleNames = user.Role;
+                this._password = user.Password;
+                this._shopid = user.ShopId;
+            } else {
+                this._isExist = false;
+            }
+            return this;
         } catch (error) {
-            console.log(error);
             throw error;
         }
+    }
+
+    async Refresh() {
+        return await this.InitAsync();
     }
 }
 

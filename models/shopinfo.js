@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
         models.ShopInfo.belongsToMany(models.CustomerInfo, {
             through:'CustomerInShop',
             foreignKey: {
-                name: 'CustomerId',
+                name: 'ShopId',
                 allowNull: false
             }
         });
@@ -64,28 +64,35 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false
             }
         });
-        models.ShopInfo.hasOne(models.ShopAccountChange, {
+        models.ShopInfo.hasOne(models.User,{
+            onDelete: "CASCADE",
+            foreignKey: {
+                name: 'ShopId',
+                allowNull: true
+            }
+        });
+        models.ShopInfo.hasMany(models.ShopAccountChange, {
             onDelete: "CASCADE",
             foreignKey: {
                 name: 'ShopId',
                 allowNull: false
             }
         });
-        models.ShopInfo.hasOne(models.TransactionDetail, {
+        models.ShopInfo.hasMany(models.TransactionDetail, {
             onDelete: "CASCADE",
             foreignKey: {
                 name: 'ShopId',
                 allowNull: false
             }
         });
-        models.ShopInfo.hasOne(models.CustomerAccountChange, {
+        models.ShopInfo.hasMany(models.CustomerAccountChange, {
             onDelete: "CASCADE",
             foreignKey: {
                 name: 'ShopId',
                 allowNull: false
             }
         });
-        models.ShopInfo.hasOne(models.ShortMessageInfo, {
+        models.ShopInfo.hasMany(models.ShortMessageInfo, {
             onDelete: "CASCADE",
             foreignKey: {
                 name: 'ShopId',

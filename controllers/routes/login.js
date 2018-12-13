@@ -5,7 +5,7 @@ var router = express.Router();
 var jwt = require('jwt-simple');
 var jwtSecret = require('../../config/global.json').jwtSecret;
 var redisClient = require('../../models').redisClient;
-const expireTime = 6000; //seconds
+const expireTime = 60000; //seconds
 const expireCount = 5;
 let User = require('../../classes/user');
 // Login in
