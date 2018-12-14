@@ -8,14 +8,8 @@ let Role = class extends Model{
     }
     // ======================================
     // property area start
-    get shop(){
-        return this._shop;
-    }
-
-
-
-
-
+ 
+    
 
     // property area end
     // ======================================

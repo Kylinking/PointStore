@@ -11,8 +11,6 @@ let Users = class extends Model {
     get name() {
         return this._name;
     }
-
-
     get roleNames(){
         return this._roleNames;
     }
@@ -23,8 +21,6 @@ let Users = class extends Model {
     get password() {
         return this._password
     }
-
-    
 
     // property area end
     // ======================================
