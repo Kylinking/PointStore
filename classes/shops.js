@@ -1,8 +1,9 @@
 let db = require('../models').db;
 let shopModel = db.ShopInfo;
 let UTIL = require('./utility');
+let Model = require('./base');
 
-let Shop = class {
+let Shop = class extends Model {
     constructor(shopId) {
         super(shopModel);
         this._id = shopId;
@@ -21,6 +22,7 @@ let Shop = class {
             this._status = shop.Status;
             this._contact = shop.Contact;
         }
+        console.log(this);
         return this;
     }
 

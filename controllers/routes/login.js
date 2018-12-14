@@ -7,58 +7,34 @@ var jwtSecret = require('../../config/global.json').jwtSecret;
 var redisClient = require('../../models').redisClient;
 const expireTime = 60000; //seconds
 const expireCount = 5;
-let User = require('../../classes/user');
+let Unility = require('../../classes/utility');
+let Auth = require('../../classes/auth');
 // Login in
 router.post('/', async function (req, res, next) {
   let logger = res.locals.logger;
   logger.info('POST /login');
-  let username = req.body.Username || '';
-  let password = req.body.Password || '';
-  logger.info(`username:${username}`);
+  let phone = req.body.phone || '';
+  let username = req.body.username || '';
+  username = phone;
+  let password = req.body.password || '';
+  logger.info(`username:${username},password:${password}`);
   if (username == '' || password == '') {
     logger.warn("用户名、密码为空");
-    next("用户名、密码不能为空");
+    res.status(403).json(Unility.MakeErrorResponse({
+      id: 0,
+      detail: "用户名、密码为空"
+    })).end();
     return;
   } else {
-    let user = await new User(username);
-    await user.InitAsync();
-    if (!user.isExist) {
-      logger.error(username + ": 用户不存在");
-      next('用户不存在');
+    let auth = new Auth(username, password);
+    let response = await auth.Login();
+    if (response.success) {
+      res.status(200).json(response.response).end();
     } else {
-      if (!user.CheckPassword(password)) {
-        logger.warn(username + ": 密码错误");
-        next('密码错误');
-        return;
-      }
-      let date = Date.parse(new Date());
-      let token = GenerateToken({date,user},jwtSecret);
-      CacheTimestamp(date,expireTime);
-      logger.info(username + ": 登录成功");
-      res.json({
-        Object: {
-          Token: token
-        }
-      }).end();
+      res.status(403).json(response.response).end();
     }
   }
 });
-
-
-// api入口处需重新生成token并令现有的token过期
-function GenerateToken(params,jwtSecret)
-{
-  const {user,date} = {...params};
-  return jwt.encode({
-    user: user.toJSON(),
-    timeStamp: date
-  }, jwtSecret);
-}
-
-function CacheTimestamp(date,expireTime){
-  redisClient.set(String(date), expireCount);
-  redisClient.expire(String(date), expireTime);
-}
 
 router.use('/', (req, res) => {
   res.json({
@@ -68,7 +44,7 @@ router.use('/', (req, res) => {
   }).end();
 })
 
-router.use('/',(err,req,res,next)=>{
+router.use('/', (err, req, res, next) => {
   next(err);
 })
 

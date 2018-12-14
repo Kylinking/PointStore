@@ -1,7 +1,8 @@
 let db = require('../models').db;
 
-class Base{
-    constructor(){
+class Base {
+    constructor(model) {
+        this._model = model;
         this._hasOne = [];
         this._hasMany = [];
         this._belongsTo = [];
@@ -13,14 +14,13 @@ class Base{
         return this._id;
     }
 
-    get typeName() 
-    {
-        if (this._model){
+    get typeName() {
+        if (this._model) {
             return this._model.name;
         }
     }
 
-    get attributes(){
+    get attributes() {
         return this._attributes;
     }
 
@@ -40,24 +40,24 @@ class Base{
             type: this.typeName
         }
     }
-    
-    hasOne(derived){
+
+    hasOne(derived) {
         this._hasOne.push(derived);
     }
 
-    hasMany(derived){
+    hasMany(derived) {
         this._hasMany.push(derived)
     }
 
-    belongsTo(derived){
+    belongsTo(derived) {
         this._belongsTo.push(derived)
     }
 
-    belongsToMany(derived){
+    belongsToMany(derived) {
         this._belongsToMany.push(derived)
     }
 
-    toJSON(){
+    toJSON() {
 
     }
 }
