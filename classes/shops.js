@@ -1,6 +1,6 @@
 let db = require('../models').db;
 let shopModel = db.ShopInfo;
-let UTIL = require('./utility');
+let Utility = require('./utility');
 let Model = require('./base');
 
 let Shop = class extends Model {
@@ -21,8 +21,9 @@ let Shop = class extends Model {
             this._type = shop.Type;
             this._status = shop.Status;
             this._contact = shop.Contact;
+        } else {
+            this._isExist = false;
         }
-        console.log(this);
         return this;
     }
 
@@ -44,7 +45,8 @@ let Shop = class extends Model {
         let {
             start,
             end
-        } = { ...UTIL.ComputeTime(params)
+        } = {
+            ...Utility.ComputeDate(params)
         };
 
     }

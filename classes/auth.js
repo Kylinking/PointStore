@@ -17,7 +17,7 @@ let Auth = class {
 
     async Login() {
         let user = await new User(this._name).InitAsync();
-        if (user.password == this._password) {
+        if (user && user.password == this._password) {
             let relationships = [{
                 "user": user.resourceIdentify
             }, ];
@@ -51,20 +51,21 @@ let Auth = class {
                 success: false,
                 response: Utility.MakeErrorResponse({
                     id: 0,
-                    detail: "用户名与密码不匹配"
+                    detail: "用户名或密码错误。"
                 })
             };
         }
     }
 
     Authenticate(resJson) {
-
+        
     }
 
     Refresh(token) {
-
         const redisClient = require('../models').redisClient;
         const redisGetAsync = Utility.MakeAsyncRedisMethod(redisClient.get, redisClient);
+        
+    
     }
 
 }

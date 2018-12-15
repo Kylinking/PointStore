@@ -2,13 +2,14 @@ const moment = require('moment');
 const redisClient = require('../models').redisClient;
 const jwt = require('jwt-simple');
 const jwtSecret = require('../config/global.json').jwtSecret;
-const expireDuration = 3; // 60s
+const expireDuration = 5 * 60; // 5*60s
 let Utility = class {
-    static ComputeTime(timePoints) {
+    static ComputeDate(timePoints) {
         let {
             start,
             end
-        } = { ...timePoints
+        } = {
+            ...timePoints
         };
         start = start || null;
         end = end || null;
