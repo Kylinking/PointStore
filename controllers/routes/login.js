@@ -22,11 +22,7 @@ router.post('/', async function (req, res, next) {
   } else {
     let auth = new Auth(username, password);
     let response = await auth.Login();
-    if (response.success) {
-      res.status(200).json(response.response).end();
-    } else {
-      res.status(403).json(response.response).end();
-    }
+    res.status(response.status).json(response.response).end();
   }
 });
 
