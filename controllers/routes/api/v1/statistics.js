@@ -637,12 +637,21 @@ router.get('/statistics/history', async (req, res) => {
         logger.info(numberOfConsumedCustomerOfMonth);
         statShopAccountInfoOfMonth.NewCustomer = statCustomerInfoOfMonth;
         statShopAccountInfoOfMonth.ConsumedCustomer = numberOfConsumedCustomerOfMonth;
+
+
         for (let i of Object.getOwnPropertyNames(statShopAccountInfoOfToday)) {
             statShopAccountInfoOfToday[i] = util.makeNumericValue(statShopAccountInfoOfToday[i],0);
         }
         for (let i of Object.getOwnPropertyNames(statShopAccountInfoOfMonth)) {
             statShopAccountInfoOfMonth[i] = util.makeNumericValue(statShopAccountInfoOfMonth[i],0);
         }
+        let smsCount = await db.ShortMessageInfo.count({
+            where:{
+                ShopName:operateShop.Name,
+                Status:1
+            }
+        });
+        json.SmsCount = smsCount;
         let pages = Math.ceil(instance.count / pageSize);
         json.Meta["TotalPages"] = pages;
         json.Meta["CurrentRows"] = instance.rows.length;
@@ -657,6 +666,7 @@ router.get('/statistics/history', async (req, res) => {
     }
 });
 
+
 // error 
 router.use('/statistics', (req, res) => {
     res.json({
@@ -665,6 +675,7 @@ router.use('/statistics', (req, res) => {
         }
     }).end();
 })
+
 
 router.use((req, res, next) => {
     next();
