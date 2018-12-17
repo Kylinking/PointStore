@@ -1,6 +1,7 @@
 const db = require('../models').db;
 const Model = require('./base');
 const Role = require('./role');
+const logger = require('../log');
 let Users = class extends Model {
     constructor(name) {
         super(db.User);
@@ -27,15 +28,17 @@ let Users = class extends Model {
     async GetPermissions() {
         if (!this._permissions) {
             this._permissions = [];
-            for (let role of this.GetRoles()) {
+            logger.warn(await this.GetRolesAsync());
+            for (let role of await this.GetRolesAsync()) {
                 if (role.isExist) {
                     this._permissions.concat(await role.GetPermissionsAsync())
                 }
             }
         }
+        logger.info(this._permissions);
         return this._permissions;
     }
-    async GetRoles() {
+    async GetRolesAsync() {
         if (!this._roles) {
             this._roles = [];
             for (let roleName of this.roleNames) {

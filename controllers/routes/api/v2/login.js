@@ -2,7 +2,7 @@
 
 var express = require('express');
 var router = express.Router();
-let Unility = require('../../../../classes/utility');
+let Utility = require('../../../../classes/utility');
 let Auth = require('../../../../classes/auth');
 router.post('/token', async function (req, res, next) {
   let logger = res.locals.logger;
@@ -14,7 +14,7 @@ router.post('/token', async function (req, res, next) {
   logger.info(`username:${username},password:${password}`);
   if (username == '' || password == '') {
     logger.warn("用户名、密码为空");
-    res.status(403).json(Unility.MakeErrorResponse({
+    res.status(403).json(Utility.MakeErrorResponse({
       id: 0,
       detail: "用户名、密码不能为空"
     })).end();
@@ -30,15 +30,11 @@ router.post('/refresh', async function (req, res, next) {
   let logger = res.locals.logger;
   logger.info('POST /refresh');
   let auth = new Auth();
-  let response = auth.Refresh(req.headers);
+  let response = auth.Refresh(req.body);
   res.status(response.status).json(response.response).end();
 });
-router.use('/', (req, res) => {
-  res.json({
-    Error: {
-      Message: "No Service with " + req.method
-    }
-  }).end();
+router.use('/', (req, res, next) => {
+  next();
 })
 
 router.use('/', (err, req, res, next) => {
