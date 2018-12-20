@@ -10,7 +10,6 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var logger = require('./log/');
 var UserRouter = require('./controllers/routes/users');
-var LoginRouter = require('./controllers/routes/api/v2/login');
 var ApiRouter = require('./controllers/routes/api/');
 express.static.mime.define({
   'application/wasm': ['wasm']
@@ -69,20 +68,20 @@ app.all('*', function (req, res, next) {
     next();
   }
 })
-app.use('/api/v2', LoginRouter);
 app.use('/users', UserRouter);
 
 app.use('/api', ApiRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  throw `找不到路径:${req.path}`;
+  next(`找不到路径:${req.path}`);
 });
 // error handler
 app.use(function (err, req, res, next) {
   logger.error(err);
-  res.json({
-    Error: {
-      Message: err
+  res.status(404).json({
+    error: {
+      id: 0,
+      detail: err
     }
   }).end();
 });
