@@ -17,12 +17,12 @@ router.post('/token', async function (req, res, next) {
     res.status(403).json(Utility.MakeErrorResponse({
       id: 0,
       detail: "用户名、密码不能为空"
-    })).end();
+    }).content).end();
     return;
   } else {
     let auth = new Auth(username, password);
     let response = await auth.Login();
-    res.status(response.status).json(response.response).end();
+    res.status(response.status).json(response.content).end();
   }
 });
 
