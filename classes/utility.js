@@ -53,12 +53,14 @@ let Utility = class {
             })
         }
         return {
+            success: true,
             status: httpStatusCode['OK'],
             content
         };
     }
     static MakeErrorResponse(obj) {
         return {
+            success: false,
             status: obj.status || httpStatusCode['Bad Request'],
             content: {
                 error: {
