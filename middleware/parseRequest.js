@@ -7,7 +7,6 @@ module.exports = function (req, res, next) {
         conditions: parseConditions(req.query, req.body)
     };
     res.locals.requestInfo = obj;
-    console.log(obj);
     next();
 }
 

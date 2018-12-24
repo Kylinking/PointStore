@@ -95,12 +95,17 @@ const Auth = class {
             let permissions = await user.GetPermissionsAsync({
                 Action: req.method.toUpperCase(),
             });
+            logger.info(permissions);
             for (let permission of permissions) {
                 let re = new RegExp(permission.Path);
-                if (re.test(req.path))
+                logger.info(req.path);
+                logger.info(re);
+                if (re.test(req.path)) {
+                    res.locals.tokenInfo = decodedToken;
                     return {
                         success: true
                     };
+                }
             }
             return this._InvalidTokenResponse('Unauthorized', '无权限进行操作');
         } else {

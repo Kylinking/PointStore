@@ -1,9 +1,11 @@
+/*jslint es6 */
 const db = require('../models').db;
 const Model = require('./base');
 const Role = require('./role');
 const logger = require('../log');
 const Utility = require('./utility');
 const httpStatusCode = require('./http_status_code');
+const isSequelizeError = require('./Sequelize/error');
 let Users = class extends Model {
     constructor(params) {
         super(db.User);
@@ -12,6 +14,8 @@ let Users = class extends Model {
             name: this._name,
             id: this._id
         } = params);
+        logger.info(`test${this._name}`);
+        logger.info(`${params}`);
     }
     // ======================================
     // property area start
@@ -68,6 +72,7 @@ let Users = class extends Model {
                 this._id = user.Id;
                 this._attributes = {
                     name: user.Name,
+                    role: JSON.parse(user.Role),
                     created: user.CreatedAt,
                     updated: user.UpdatedAt,
                 }
@@ -83,46 +88,96 @@ let Users = class extends Model {
         }
     }
 
+    async Update(conditions) {
+        try {
+            const {
+                username,
+                roles,
+                password,
+            } = { ...conditions
+            };
+            let instance = await this._model.findOne({
+                where: {
+                    Id: this._id
+                }
+            });
+            if (instance) {
+                console.log(roles);
+                //username && instance.set('Name', username);
+                roles !== undefined && instance.set('Role', roles);
+                password !== undefined && instance.set('Password', password);
+                await instance.save();
+                this._instance = instance;
+                return Utility.ResponseResource(await this.InitAsync());
+            } else {
+                return Utility.MakeErrorResponse({
+                    id: 0,
+                    detail: '用户不存在'
+                })
+            }
+        } catch (error) {
+            logger.error(error);
+            let resonseError = '服务器内部错误，请联系技术支持！';
+            logger.error(`name:password:shopId:customerId => ${this._name}:${password}:${shopId}:${customerId}`);
+            if (isSequelizeError(error)) {
+                resonseError = '数据错误。请联系技术支持！'
+            }
+            return Utility.MakeErrorResponse({
+                id: 0,
+                status: httpStatusCode['Internal Server Error'],
+                detail: resonseError
+            });
+        }
+    }
+
     async Add(conditions) {
         const {
+            roles,
             password,
             shopId,
             customerId
         } = { ...conditions
         };
-        try {
-            let user = await this._model.findOne({
-                where: {
-                    username: this._name
-                }
-            });
-            if (user) {
-                return Utility.MakeErrorResponse({
-                    status: httpStatusCode['Conflict'],
-                    id: user.Id,
-                    detail: '用户名已存在'
-
-                })
-            } else {
-                user = await this._model.create({
-                    password,
-                    shopId,
-                    customerId
+        if (!password)
+            try {
+                let instance = await this._model.findOne({
+                    where: {
+                        Name: this._name
+                    }
                 });
-                return
+                if (instance) {
+                    return Utility.MakeErrorResponse({
+                        status: httpStatusCode['Conflict'],
+                        id: instance.Id,
+                        detail: '用户名重复'
+                    });
+                } else {
+                    instance = await this._model.create({
+                        Name: this._name,
+                        Role: roles,
+                        Password: password,
+                        ShopId: shopId,
+                        CustomerId: customerId
+                    });
+                    if (instance) {
+                        this._instance = instance;
+                        return Utility.ResponseResource(await this.InitAsync());
+                    }
+                }
+            } catch (error) {
+                logger.error(error);
+                let resonseError = '服务器内部错误，请联系技术支持！';
+                logger.error(`name:password:shopId:customerId => ${this._name}:${password}:${shopId}:${customerId}`);
+                if (isSequelizeError(error)) {
+                    resonseError = '数据错误。请联系技术支持！'
+                }
+                return Utility.MakeErrorResponse({
+                    id: 0,
+                    status: httpStatusCode['Internal Server Error'],
+                    detail: resonseError
+                });
             }
-        } catch (error) {
-            logger.error(error);
-            logger.error(`name:password:shopId:customerId => ${this._name}:${password}:${shopId}:${customerId}`)
-            return Utility.MakeErrorResponse({
-                id: 0,
-                status: httpStatusCode['Internal Server Error'],
-                detail: '服务器内部错误，请联系管理员！'
-            });
-        }
     }
-
-
 
     async _GetInstanceByNameAsync() {
         return await this._model.findOne({

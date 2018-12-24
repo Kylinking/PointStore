@@ -1,10 +1,29 @@
+/*jslint es6 */
 const User = require('../../../../classes/user');
 const Utility = require('../../../../classes/utility');
 let express = require('express');
 let router = express.Router();
 const logger = require('../../../../log');
-router.get('/users/:id', async (req, res, next) => {
+router.post('/users', async (req, res, next) => {
+    let conditions = res.locals.requestInfo.conditions;
+    let user = new User({
+        name: conditions.username
+    });
+    let response = await user.Add(conditions);
+    res.status(response.status).json(response.content).end();
+});
 
+router.put('/users/:id', async (req, res, next) => {
+    let conditions = res.locals.requestInfo.conditions;
+    logger.info(conditions);
+    let user = new User({
+        id: req.params.id
+    });
+    let response = await user.Update(conditions);
+    res.status(response.status).json(response.content).end();
+});
+
+router.get('/users/:id', async (req, res, next) => {
     if (!isNaN(Utility.checkNumber(req.params.id))) {
         let user = await new User({
             id: req.params.id
@@ -16,14 +35,4 @@ router.get('/users/:id', async (req, res, next) => {
         next();
     }
 });
-
-router.post('/users', async (req, res, next) => {
-    let conditions = res.locals.requestInfo.conditions;
-    let customerId = conditions.customerId ? conditions.customerId : null;
-    let shopId = conditions.shopId ? conditions.shopId : null;
-    let user = new User(conditions.username);
-    let response = await user.Add(conditions);
-    res.status(response.status).json(response.content).end();
-});
-
 module.exports = router;
