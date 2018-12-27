@@ -24,7 +24,8 @@ function parseUrl(path) {
             controllerObj.controller = controllers[i];
             i += 1;
         }
-        // console.log(controllerObj)
+        console.log('=====');
+        console.log(controllerObj)
         controllerObj.sub = null;
         requestResource.push(controllerObj);
     }

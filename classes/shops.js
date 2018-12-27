@@ -9,6 +9,17 @@ let Shop = class extends Model {
         this._id = shopId;
     }
 
+//============= 属性 ==========
+
+
+
+
+
+
+
+
+
+
     async InitAsync() {
         let shop = await shopModel.findById(this._id);
         if (shop) {
