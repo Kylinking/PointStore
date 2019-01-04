@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
     var ShopInfo = sequelize.define('ShopInfo', {
-        ShopId: {
+        Id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true

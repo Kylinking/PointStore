@@ -1,45 +1,46 @@
 'use strict';
 
-module.exports = (sequelize, DataTypes)=>{
-    var CustomerInfo = sequelize.define('CustomerInfo',{
-        CustomerId:{
-            type:DataTypes.INTEGER,
-            primaryKey:true,
+module.exports = (sequelize, DataTypes) => {
+    var CustomerInfo = sequelize.define('CustomerInfo', {
+        Id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
             autoIncrement: true,
         },
-        Name:{
-            type:DataTypes.STRING.BINARY,
-            allowNull:true,
+        Name: {
+            type: DataTypes.STRING.BINARY,
+            unique: "name_phone",
+            allowNull: true,
         },
-        Phone:{
-            type:DataTypes.STRING,
-            allowNull:false,
-            unique: true,
+        Phone: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: "name_phone",
         },
-        Address:{
-            type:DataTypes.STRING,
-            allowNull:true,
+        Address: {
+            type: DataTypes.STRING,
+            allowNull: true,
         },
-        Status:{
-            type:DataTypes.INTEGER,
-            allowNull:false,
+        Status: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
         },
-        Age:{
-            type:DataTypes.INTEGER,
-            allowNull:true,
+        Age: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
         },
-        Sex:{
-            type:DataTypes.STRING,
-            allowNull:false,
+        Sex: {
+            type: DataTypes.STRING,
+            allowNull: false,
         },
-    },{
-        updatedAt:'UpdatedAt',
-        createdAt:'CreatedAt'
+    }, {
+        updatedAt: 'UpdatedAt',
+        createdAt: 'CreatedAt'
     });
 
     CustomerInfo.associate = function (models) {
         models.CustomerInfo.belongsToMany(models.ShopInfo, {
-            through:'CustomerInShop',
+            through: 'CustomerInShop',
             foreignKey: {
                 name: 'CustomerId',
                 allowNull: false
@@ -47,19 +48,19 @@ module.exports = (sequelize, DataTypes)=>{
         });
         models.CustomerInfo.belongsTo(models.CustomerInfo, {
             onDelete: "CASCADE",
-            as:"RecommendCustomerInfo",
+            as: "RecommendCustomerInfo",
             foreignKey: {
-              name: 'RecommendCustomerId',
-              allowNull: true
+                name: 'RecommendCustomerId',
+                allowNull: true
             }
-          });
-        models.CustomerInfo.hasOne(models.User,{
+        });
+        models.CustomerInfo.hasOne(models.User, {
             onDelete: "CASCADE",
             foreignKey: {
                 name: 'CustomerId',
                 allowNull: true
             }
         });
-      };
+    };
     return CustomerInfo;
 }

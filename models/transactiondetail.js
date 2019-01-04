@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   var TransactionDetail = sequelize.define('TransactionDetail', {
-    TransactionSeq: {
+    Id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -60,7 +60,7 @@ module.exports = (sequelize, DataTypes) => {
       models.TransactionDetail.belongsTo(models.TransactionDetail, {
         onDelete: "CASCADE",
         foreignKey: {
-          name: 'ReversalTransactionSeq',
+          name: 'ReversalTransactionId',
           allowNull: true
         }
       });
