@@ -12,7 +12,7 @@ let Users = class extends Model {
         return this._name;
     }
     get roleNames() {
-        return JSON.parse(this._roleNames);
+        return this._roleNames;
     }
     get shopId() {
         return this._shopId;
@@ -33,7 +33,7 @@ let Users = class extends Model {
     }
     async GetRoles() {
         this._roles = [];
-        for (let roleName of this.roleNames) {
+        for (let roleName of this._roleNames) {
             let role = new Role(roleName);
             await role.InitAsync();
             this._roles.push(role.resourceIdentify);

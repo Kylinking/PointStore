@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         Role: {
-            type: DataTypes.TEXT,
+            type: DataTypes.JSON,
             allowNull: false,
         },
         Password: {
