@@ -26,24 +26,17 @@ let Users = class extends Model {
     // ======================================
     async GetPermissions() {
         if (!this._permissions) {
-            this._permissions = [];
-            for (let role of this.GetRoles()) {
-                if (role.isExist) {
-                    this._permissions.concat(await role.GetPermissionsAsync())
-                }
-            }
+            this._roles = new Role(this.roleNames);
+            this._permissions = await this.role.GetPermissionsget();
         }
         return this._permissions;
     }
     async GetRoles() {
-        if (!this._roles) {
-            this._roles = [];
-            for (let roleName of this.roleNames) {
-                let role = await new Role(roleName).InitAsync();
-                if (role.resourceIdentify) {
-                    this._roles.push(role);
-                }
-            }
+        this._roles = [];
+        for (let roleName of this.roleNames) {
+            let role = new Role(roleName);
+            await role.InitAsync();
+            this._roles.push(role.resourceIdentify);
         }
         return this._roles;
     }

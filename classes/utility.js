@@ -1,5 +1,8 @@
 const moment = require('moment');
 const redisClient = require('../models').redisClient;
+const jwt = require('jwt-simple');
+const jwtSecret = require('../config/global.json').jwtSecret;
+const expireDuration = 5 * 60; // 5*60s
 let Utility = class {
     static ComputeDate(timePoints) {
         let {
@@ -55,25 +58,52 @@ let Utility = class {
         };
     }
 
+    static DecodeToken(token) {
+        try {
+            return jwt.decode(token, jwtSecret);
+        } catch (error) {
+            //console.log(error.message);
+            if (error.message == 'Token expired') {
+                return {
+                    jwterror: error.message
+                };
+            }
+            return {
+                jwterror: 'Token invalid'
+            };
+        }
+    }
+    static _EncodePayload(payload) {
+        return jwt.encode(payload, jwtSecret);
+    }
+    // 小程序端token无失效时间，店铺端失效时间为5分钟
+    static EncodeToken(params, expire = expireDuration) {
+        // jwt time count as seconds not millseconds
+        const date = Date.parse(new Date()) / 1000;
+        const payload = Object.assign(params, {
+            iat: date,
+            exp: expire + date,
+            sub: "Authentication"
+        });
+        return Utility._EncodePayload(payload);
+    }
+
+    static RefreshToken(token, expire = expireDuration) {
+        let tokenBody = Utility.DecodeToken(token);
+        if (tokenBody.jwterror) {
+            return tokenBody;
+        }
+        const date = Date.parse(new Date()) / 1000;
+        const payload = Object.assign(tokenBody, {
+            iat: date,
+            exp: date + expire,
+        })
+        return Utility._EncodePayload(payload);
+    }
+
     static MakeAsyncRedisMethod(fn, redisClient) {
         const promisify = require('util').promisify;
         return promisify(fn).bind(redisClient);
-    }
-
-    static redis() {
-        if (!redisClient.redisGetAsync) {
-            const redisGetAsync = MakeAsyncRedisMethod(redisClient.get, redisClient);
-            redisClient = Object.assign(redisClient, {
-                redisGetAsync
-            });
-        }
-        if (!redisClient.redisSetAsync) {
-            const redisSetAsync = MakeAsyncRedisMethod(redisClient.set, redisClient);
-            redisClient = Object.assign(redisClient, {
-                redisSetAsync
-            });
-        }
-        return redisClient;
     }
 }
 module.exports = Utility;

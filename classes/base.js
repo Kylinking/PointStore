@@ -20,32 +20,24 @@ class Base {
         }
     }
 
-    get isExist() {
-        return this._isExist;
-    }
-
     get attributes() {
         return this._attributes;
     }
 
     get resourceobj() {
-        if (this._isExist) {
-            return {
-                data: {
-                    id: this.id,
-                    type: this.typeName,
-                    attributes: this._attributes
-                }
+        return {
+            data: {
+                id: this.id,
+                type: this.typeName,
+                attributes: this._attributes
             }
         }
     }
 
     get resourceIdentify() {
-        if (this._isExist) {
-            return {
-                id: this.id,
-                type: this.typeName
-            }
+        return {
+            id: this.id,
+            type: this.typeName
         }
     }
 
