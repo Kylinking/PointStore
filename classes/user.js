@@ -11,7 +11,7 @@ let Users = class extends Model {
     get name() {
         return this._name;
     }
-    get roleNames() {
+    get roleNames(){
         return this._roleNames;
     }
     get shopId() {
@@ -24,16 +24,16 @@ let Users = class extends Model {
 
     // property area end
     // ======================================
-    async GetPermissions() {
+    async  GetPermissions() {
         if (!this._permissions) {
             this._roles = new Role(this.roleNames);
             this._permissions = await this.role.GetPermissionsget();
         }
         return this._permissions;
     }
-    async GetRoles() {
+    async  GetRoles() {
         this._roles = [];
-        for (let roleName of this._roleNames) {
+        for(let roleName of this._roleNames){
             let role = new Role(roleName);
             await role.InitAsync();
             this._roles.push(role.resourceIdentify);
@@ -42,12 +42,11 @@ let Users = class extends Model {
     }
     async InitAsync() {
         try {
-            let user = await this._model.findOne({
+            let user = await this.model.findOne({
                 where: {
                     Name: this._name
                 }
             });
-            console.log(user);
             if (user) {
                 this._user = user;
                 this._isExist = true;
@@ -59,11 +58,10 @@ let Users = class extends Model {
                 }
                 this._roleNames = user.Role;
                 this._password = user.Password;
-                this._shopId = user.ShopId;
+                this._shopid = user.ShopId;
             } else {
                 this._isExist = false;
             }
-
             return this;
         } catch (error) {
             throw error;

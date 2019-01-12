@@ -4,7 +4,7 @@ let Shop = require('./shops');
 let Auth = class {
     constructor(username, password) {
         this._name = username;
-        this._password = password;
+        this.password = password;
     }
 
     get password() {
@@ -17,7 +17,7 @@ let Auth = class {
 
     async Login() {
         let user = await new User(this._name).InitAsync();
-        if (user.password == this._password) {
+        if (user.CheckPassword(this.password)) {
             let relationships = [{
                 "user": user.resourceIdentify
             }, ];
@@ -31,29 +31,18 @@ let Auth = class {
                     "role": i
                 });
             }
-            return {
-                success: true,
-                response: Utility.MakeResponse({
-                    id: 0,
-                    type: 'auth',
-                    attributes: {
-                        token: Utility.EncodeToken({
-                            user: user.id,
-                            role: user.roleNames,
-                            shop: user.shopId
-                        })
-                    },
-                    relationships: relationships
-                })
-            }
-        } else {
-            return {
-                success: false,
-                response: Utility.MakeErrorResponse({
-                    id: 0,
-                    detail: "用户名与密码不匹配"
-                })
-            };
+            return Utility.MakeResponse({
+                id: 0,
+                type: 'auth',
+                attributes: {
+                    token: Utility.EncodeToken({
+                        user: user.id,
+                        role: user.roleNames,
+                        shop: user.shopId
+                    })
+                },
+                relationships: relationships
+            })
         }
     }
 
@@ -68,5 +57,3 @@ let Auth = class {
     }
 
 }
-
-module.exports = Auth;
