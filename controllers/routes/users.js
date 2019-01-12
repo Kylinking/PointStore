@@ -40,7 +40,7 @@ router.post('/login', async function (req, res, next) {
                     let json = {
                         Array: []
                     };
-                    let customerInfo;
+                    let customerInfo ;
                     for (let record of instances.rows) {
                         customerInfo = (await record.getCustomerInfo()).toJSON();
                         logger.info(customerInfo);
@@ -86,7 +86,7 @@ router.post('/login', async function (req, res, next) {
                 let json = {
                     Array: []
                 };
-                let customerInfo;
+                let customerInfo ;
                 for (let record of instances.rows) {
                     customerInfo = (await record.getCustomerInfo()).toJSON();
                     logger.info(customerInfo);
@@ -352,11 +352,11 @@ router.post('/history', async function (req, res, next) {
     let whereObj = {
         Date: {
             [Op.and]: [{
-                [Op.gt]: Date.parse(moment(startDate).format("YYYY-MM-DD 00:00:00"))
-            },
-            {
-                [Op.lt]: Date.parse(moment(endDate).add(1, "days").format("YYYY-MM-DD 00:00:00"))
-            }
+                    [Op.gt]: Date.parse(moment(startDate).format("YYYY-MM-DD 00:00:00"))
+                },
+                {
+                    [Op.lt]: Date.parse(moment(endDate).add(1, "days").format("YYYY-MM-DD 00:00:00"))
+                }
             ]
         }
     };
@@ -369,41 +369,44 @@ router.post('/history', async function (req, res, next) {
                     WechatId: decoded.WechatId
                 }
             });
+            let result = {
+                Array: []
+            };
             if (instances.count > 0) {
-                whereObj.CustomerId = { [Op.or]: [] };
                 for (let record of instances.rows) {
-                    whereObj.CustomerId[Op.or].push(record.CustomerId);
+                    whereObj.CustomerId = record.CustomerId;
+                    let details = await db.CustomerAccountChange.findAndCountAll({
+                        where: whereObj,
+                        limit: pageSize,
+                        offset: offset,
+                        order: [
+                            ['id', 'DESC']
+                        ],
+                    });
+                    if (details.count == 0) continue; 
+                    let data = [];
+                    details.rows.forEach(async ele => {
+                        ele.Date = new Date(ele.Date);
+                        ele.dataValues.ShopName = (await ele.getShopInfo()).Name;
+                        data.push(util.ConvertObj2Result(ele.toJSON()));
+                    })
+                    let pages = Math.ceil(details.count / pageSize);
+                    let customerInfo = (await record.getCustomerInfo());
+                    let shopInfo = (await customerInfo.getShopInfo()).toJSON();
+                    customerInfo = customerInfo.toJSON();
+                    customerInfo.ShopInfo = shopInfo;
+                    result.Array.push({
+                        Array: data,
+                        CustomerInfo: customerInfo,
+                        Meta: {
+                            PageSize: pageSize,
+                            TotalPages: pages,
+                            CurrentRows: details.rows.length,
+                            TotalRows: details.count,
+                            CurrentPage: page
+                        }
+                    });
                 }
-                let details = await db.CustomerAccountChange.findAndCountAll({
-                    where: whereObj,
-                    limit: pageSize,
-                    offset: offset,
-                    order: [
-                        ['id', 'DESC']
-                    ],
-                });
-                let data = [];
-                for (let ele of details.rows) {
-                    ele.Date = new Date(ele.Date);
-                    ele.dataValues.ShopName = (await ele.getShopInfo()).Name;
-                    data.push(util.ConvertObj2Result(ele.toJSON()));
-                }
-                let pages = Math.ceil(details.count / pageSize);
-                let customerInfo = (await instances.rows[0].getCustomerInfo());
-                let shopInfo = (await customerInfo.getShopInfo()).toJSON();
-                customerInfo = customerInfo.toJSON();
-                customerInfo.ShopInfo = shopInfo;
-                let result = {
-                    Array: data,
-                    CustomerInfo: customerInfo,
-                    Meta: {
-                        PageSize: pageSize,
-                        TotalPages: pages,
-                        CurrentRows: details.rows.length,
-                        TotalRows: details.count,
-                        CurrentPage: page
-                    }
-                };
                 result.Code = 200;
                 res.json(result).end();
             } else {
