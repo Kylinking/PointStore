@@ -3,10 +3,9 @@ const Model = require('./base');
 const Role = require('./role');
 const logger = require('../log');
 let Users = class extends Model {
-    constructor(params) {
+    constructor(name) {
         super(db.User);
-        this._name = params.name;
-        this._id = params.id;
+        this._name = name;
     }
     // ======================================
     // property area start
@@ -26,17 +25,17 @@ let Users = class extends Model {
 
     // property area end
     // ======================================
-    async GetPermissionsAsync() {
+    async GetPermissions() {
         if (!this._permissions) {
             this._permissions = [];
-            let roles = await this.GetRolesAsync();
-            for (let role of roles) {
+            logger.warn(await this.GetRolesAsync());
+            for (let role of await this.GetRolesAsync()) {
                 if (role.isExist) {
-                    let perms = await role.GetPermissionsAsync();
-                    this._permissions = this._permissions.concat(perms);
+                    this._permissions.concat(await role.GetPermissionsAsync())
                 }
             }
         }
+        logger.info(this._permissions);
         return this._permissions;
     }
     async GetRolesAsync() {
@@ -53,11 +52,14 @@ let Users = class extends Model {
     }
     async InitAsync() {
         try {
-            let user = this._id && await this._GetInstanceByIdAsync() ||
-                this._name && await this._GetInstanceByNameAsync() ||
-                null;
+            let user = await this._model.findOne({
+                where: {
+                    Name: this._name
+                }
+            });
+            console.log(user);
             if (user) {
-                this._instance = user;
+                this._user = user;
                 this._isExist = true;
                 this._id = user.Id;
                 this._attributes = {
@@ -71,24 +73,16 @@ let Users = class extends Model {
             } else {
                 this._isExist = false;
             }
+
             return this;
         } catch (error) {
             throw error;
         }
     }
 
-    async _GetInstanceByNameAsync() {
-        return await this._model.findOne({
-            where: {
-                Name: this._name
-            }
-        });
+    async Refresh() {
+        return await this.InitAsync();
     }
-
-    async _GetInstanceByIdAsync() {
-        return await this._model.findById(this._id);
-    }
-
 }
 
 module.exports = Users;

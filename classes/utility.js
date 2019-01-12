@@ -1,6 +1,5 @@
 const moment = require('moment');
 const redisClient = require('../models').redisClient;
-const httpStatusCode = require('./http_status_code');
 let Utility = class {
     static ComputeDate(timePoints) {
         let {
@@ -30,50 +29,32 @@ let Utility = class {
             end
         };
     }
-    static GetResponse(obj) {
-        if (obj.isExist) {
-            return this.ResponseResource(obj);
-        }
-        return this.ResponseResourceNotExist();
-    }
-    static ResponseResource(obj) {
-        let content = {
+
+    static MakeResponse(obj) {
+        let response = {
             data: {
                 id: obj.id,
-                type: obj.typeName,
+                type: obj.type,
                 attributes: obj.attributes,
+                relationships: obj.relationships
             }
         }
-        if (obj.relationships) {
-            content.data.relationships = obj.relationships;
-        }
         if (obj.link) {
-            content = Object.assign(content, {
+            response = Object.assign(response, {
                 link: obj.link
             })
         }
-        return {
-            status: httpStatusCode['OK'],
-            content
-        };
+        return response;
     }
     static MakeErrorResponse(obj) {
         return {
-            status: obj.status || httpStatusCode['Bad Request'],
-            content: {
-                error: {
-                    id: obj.id,
-                    detail: obj.detail
-                }
+            error: {
+                id: obj.id,
+                detail: obj.detail
             }
         };
     }
-    static ResponseResourceNotExist() {
-        return this.MakeErrorResponse({
-            id: 0,
-            detail: '请求资源不存在'
-        });
-    }
+
     static MakeAsyncRedisMethod(fn, redisClient) {
         const promisify = require('util').promisify;
         return promisify(fn).bind(redisClient);
@@ -93,12 +74,6 @@ let Utility = class {
             });
         }
         return redisClient;
-    }
-
-    static checkNumber(value) {
-        if (/^(\-|\+)?([0-9]+\.)?([0-9]+|Infinity)$/.test(value))
-            return Number(value);
-        return NaN;
     }
 }
 module.exports = Utility;

@@ -10,16 +10,11 @@ module.exports = (sequelize, DataTypes) => {
             unique: 'actionToPath',
             allowNull: false,
         },
-        Controller: {
+        Path:{
             type: DataTypes.STRING,
             unique: 'actionToPath',
             allowNull: false,
-        },
-        Path: {
-            type: DataTypes.STRING,
-            unique: 'actionToPath',
-            allowNull: false,
-            comment: 'Regular Expression'
+            comment:'Regular Expression'
         }
     }, {
         updatedAt: 'UpdatedAt',
