@@ -16,7 +16,6 @@ const status = {
     'Method Not Allowed': 405,
     'Not Acceptable': 406,
     'Request Timeout': 408,
-    'Conflict': 409,
     'Request Entity Too Large': 413,
     'Requested Range Not Satisfiable': 416,
     'Too Many Requests': 429,

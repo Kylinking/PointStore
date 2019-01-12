@@ -2,16 +2,11 @@ const db = require('../models').db;
 const Model = require('./base');
 const Role = require('./role');
 const logger = require('../log');
-const Utility = require('./utility');
-const httpStatusCode = require('./http_status_code');
 let Users = class extends Model {
     constructor(params) {
         super(db.User);
-        // () have to be here for the stupid ES syntax 
-        ({
-            name: this._name,
-            id: this._id
-        } = params);
+        this._name = params.name;
+        this._id = params.id;
     }
     // ======================================
     // property area start
@@ -58,8 +53,7 @@ let Users = class extends Model {
     }
     async InitAsync() {
         try {
-            let user = this._instance ||
-                this._id && await this._GetInstanceByIdAsync() ||
+            let user = this._id && await this._GetInstanceByIdAsync() ||
                 this._name && await this._GetInstanceByNameAsync() ||
                 null;
             if (user) {
@@ -82,47 +76,6 @@ let Users = class extends Model {
             throw error;
         }
     }
-
-    async Add(conditions) {
-        const {
-            password,
-            shopId,
-            customerId
-        } = { ...conditions
-        };
-        try {
-            let user = await this._model.findOne({
-                where: {
-                    username: this._name
-                }
-            });
-            if (user) {
-                return Utility.MakeErrorResponse({
-                    status: httpStatusCode['Conflict'],
-                    id: user.Id,
-                    detail: '用户名已存在'
-
-                })
-            } else {
-                user = await this._model.create({
-                    password,
-                    shopId,
-                    customerId
-                });
-                return
-            }
-        } catch (error) {
-            logger.error(error);
-            logger.error(`name:password:shopId:customerId => ${this._name}:${password}:${shopId}:${customerId}`)
-            return Utility.MakeErrorResponse({
-                id: 0,
-                status: httpStatusCode['Internal Server Error'],
-                detail: '服务器内部错误，请联系管理员！'
-            });
-        }
-    }
-
-
 
     async _GetInstanceByNameAsync() {
         return await this._model.findOne({
