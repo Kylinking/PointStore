@@ -3,9 +3,9 @@ const Utility = require('./utility');
 const Shop = require('./shops');
 const jwt = require('jwt-simple');
 const jwtSecret = require('../config/global.json').jwtSecret;
-const expireDuration = 5 * 60 * 60; // 5*60s
+const expireDuration = 5 * 60; // 5*60s
 const logger = require('../log');
-const httpStatusCode = require('./http_status_code');
+const httpStatusCode = require('./htt_status_code');
 const Auth = class {
     constructor(username, password) {
         this._name = username;
@@ -21,19 +21,17 @@ const Auth = class {
     }
 
     async Login() {
-        const user = await new User({
-            name: this._name
-        }).InitAsync();
+        const user = await new User(this._name).InitAsync();
         if (user && user.password == this._password) {
             let shop = await (new Shop(user.shopId)).InitAsync();
             return {
                 success: true,
                 status: 200,
-                content: {
+                response: {
                     token: this._EncodeToken({
                         userid: user.id,
                         username: user.name,
-                        roles: user.roleNames,
+                        role: user.roleNames,
                         shop: user.shopId
                     })
                 }
@@ -42,7 +40,7 @@ const Auth = class {
             return {
                 success: false,
                 status: httpStatusCode['Unauthorized'],
-                content: Utility.MakeErrorResponse({
+                response: Utility.MakeErrorResponse({
                     id: 0,
                     detail: "用户名或密码错误。",
                 })
@@ -60,7 +58,7 @@ const Auth = class {
             return {
                 success: true,
                 status: 200,
-                content: {
+                response: {
                     token: refreshToken
                 }
             };
@@ -89,20 +87,9 @@ const Auth = class {
             };
             logger.info(`iat:${iat},exp:${exp},userid:${userid},roles:${roles},
                          username:${username},shop:${shop},customer:${customer}`)
-            let user = await new User({
-                name: username
-            }).InitAsync();
-            let permissions = await user.GetPermissionsAsync({
-                Action: req.method.toUpperCase(),
-            });
-            for (let permission of permissions) {
-                let re = new RegExp(permission.Path);
-                if (re.test(req.path))
-                    return {
-                        success: true
-                    };
-            }
-            return this._InvalidTokenResponse('Unauthorized', '无权限进行操作');
+            let user = await new User(username).InitAsync();
+            let permissions = await user.GetPermissions();
+
         } else {
             logger.warn(decodedToken);
             return this._InvalidTokenResponse('Unauthorized', decodedToken.jwterror);
@@ -113,10 +100,10 @@ const Auth = class {
         return {
             success: false,
             status: httpStatusCode[status],
-            content: Utility.MakeErrorResponse({
+            response: Utility.MakeErrorResponse({
                 id: 0,
                 detail: detail
-            }).content
+            })
         }
     }
 
@@ -125,6 +112,7 @@ const Auth = class {
             return undefined;
         }
         let array = header.authorization.split(' ');
+        console.log(array)
         if (array.length != 2) {
             return undefined;
         }
