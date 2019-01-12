@@ -261,7 +261,7 @@ router.post('/customers', async (req, res) => {
                 res.json({
                     Object: newCustomer
                 }).end();
-                SMS.sendNewMemberMessage(newCustomer.Name, operatedShop.Name, "阿文造型",newCustomer.Phone);
+                SMS.sendNewMemberMessage(newCustomer.Name, operatedShop.Name, "阿文造型")
             } catch (error) {
                 if (error.name != null) {
                     if (error.errors[0].type == "unique violation") {

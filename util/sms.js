@@ -13,7 +13,8 @@ let SMS = {
     for (let i of arguments){
         log.info(i);
     }
-    return "ok";
+    return 'OK';
+    phone = testSmsPhone;
     let smsClient = new SMSClient({
         accessKeyId,
         secretAccessKey
@@ -42,11 +43,8 @@ let SMS = {
                 Date:new Date(),
                 Result:JSON.stringify(res),
                 Status:status
-            }).catch(error=>{
-                log.error(error);
             });
     }, function (err) {
-            log.error(err);
             log.error(phone);
             log.error(template);
             log.error(params);
@@ -61,8 +59,6 @@ let SMS = {
                 Date:new Date(),
                 Result:JSON.stringify(err),
                 Status:0
-            }).catch(error=>{
-                log.error(error);
             });
     })
 },
@@ -109,7 +105,7 @@ sendNewMemberMessage: async function (name, shop,shopName,phone) {
         shop,
         shopName
     });
-    let content =`尊敬的${name}用户，恭喜你成为${shop}的联动会员，你在该店所有的消费都会获得积分，同时你也可以通过推荐朋友的消费来获得积分，积分可以在${shopName}店抵扣消费。`;
+    let content =`尊敬的${name}用户，恭喜你成为${shop}的联动会员，你在该店所有的消费都会获得积分，同时你也可以通过推荐朋友的消费来获得积分，积分可以在 ${shopName} 店抵扣消费。`;
     return this.sendMessage(phone, globalConfig.sms.newMemberTemplate, param,content);
 },
 sendReversalCostMessage: async function (name, shop,transactionSeq,remainMoney,remainPoints,phone) {
