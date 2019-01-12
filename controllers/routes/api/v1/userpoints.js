@@ -507,7 +507,14 @@ router.post('/userpoints', async (req, res) => {
                 ShopBounusPoints: (bounus),
                 Date: new Date(date),
             });
-            if (costMoney != 0) {
+            if (costOrigin == 0 && rechargedMoney != 0) {
+                SMS.sendRechargeMessage(customerInfo.Name,
+                    operateShop.Name,
+                    util.Convert2Result(rechargedMoney),
+                    util.Convert2Result(result.RemainMoney),
+                    util.Convert2Result(result.RemainPoints),
+                    customerInfo.Phone);
+            }else{
                 SMS.sendMixCostMessage(customerInfo.Name,
                     operateShop.Name,
                     util.Convert2Result(costOrigin),
@@ -519,14 +526,7 @@ router.post('/userpoints', async (req, res) => {
                     util.Convert2Result(result.RemainPoints),
                     customerInfo.Phone);
             }
-            if (costOrigin == 0 && rechargedMoney != 0) {
-                SMS.sendRechargeMessage(customerInfo.Name,
-                    operateShop.Name,
-                    util.Convert2Result(rechargedMoney),
-                    util.Convert2Result(result.RemainMoney),
-                    util.Convert2Result(result.RemainPoints),
-                    customerInfo.Phone);
-            }
+            
             json.Object.CustomerAccountInfo = util.ConvertObj2Result(result.toJSON());
             if (recommendCustomerInfo) {
                 json.Object.RecommendCustomerInfo = recommendCustomerInfo;
