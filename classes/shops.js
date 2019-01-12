@@ -3,48 +3,37 @@ let shopModel = db.ShopInfo;
 let UTIL = require('./utility');
 
 let Shop = class {
-    constructor(shopId) {
-        super(shopModel);
-        this._id = shopId;
+    constructor(userId){
+        this.userId = userId;
+        this.isExist = false;
     }
 
-    async InitAsync() {
-        let shop = await shopModel.findById(this._id);
-        if (shop) {
-            this._isExist = true;
-            this._name = shop.Name;
-            this._created = shop.CreatedAt;
-            this._updated = shop.UpdatedAt;
-            this._phone = shop.Phone;
-            this._address = shop.Address;
-            this._type = shop.Type;
-            this._status = shop.Status;
-            this._contact = shop.Contact;
+    async InitAsync(){
+        this._shop = await shopModel.findOne({where:{UserId:this.userId}});
+        if (this._shop){
+            this.isExist = true;
         }
-        return this;
     }
 
-    async GetCustomersAsync() {
+    async GetCustomersAsync()
+    {
         let customers = [];
-        if (this._isExist) {
+        if (this.isExist){
             customers = await this._shop.getCustomerInfos();
         }
         return customers;
     }
 
-    async GetAccountAsync() {
-        if (this._isExist) {
+    async GetAccountAsync()
+    {
+        if(this.isExist){
             return await this._shop.getShopAccountInfo();
         }
     }
 
-    async GetAccountChangesAsync(params) {
-        let {
-            start,
-            end
-        } = { ...UTIL.ComputeTime(params)
-        };
-
+    async GetAccountChangesAsync(params){
+        let {start,end} = {...UTIL.ComputeTime(params)};
+        
     }
 
 }
