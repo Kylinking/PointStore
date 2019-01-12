@@ -25,6 +25,11 @@ module.exports = (sequelize, DataTypes) => {
         updatedAt: 'UpdatedAt',
         createdAt: 'CreatedAt'
     });
+    Permission.associate = function (models) {
+        models.Permission.belongsToMany(models.Role, {
+            through: 'PermissionOfRole'
+        });
+    };
 
     return Permission;
 }
