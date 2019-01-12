@@ -2,8 +2,14 @@
 
 var express = require('express');
 var router = express.Router();
+var jwt = require('jwt-simple');
+var jwtSecret = require('../../config/global.json').jwtSecret;
+var redisClient = require('../../models').redisClient;
+const expireTime = 60000; //seconds
+const expireCount = 5;
 let Unility = require('../../classes/utility');
 let Auth = require('../../classes/auth');
+// Login in
 router.post('/', async function (req, res, next) {
   let logger = res.locals.logger;
   logger.info('POST /login');
@@ -16,7 +22,7 @@ router.post('/', async function (req, res, next) {
     logger.warn("用户名、密码为空");
     res.status(403).json(Unility.MakeErrorResponse({
       id: 0,
-      detail: "用户名、密码不能为空"
+      detail: "用户名、密码为空"
     })).end();
     return;
   } else {
