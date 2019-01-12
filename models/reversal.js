@@ -5,6 +5,10 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 autoIncrement: true,
             },
+            CustomerId:{
+                type: DataTypes.INTEGER,
+                allowNull: false
+            }
         }, {
             updatedAt: 'UpdatedAt',
             createdAt: 'CreatedAt'
@@ -24,10 +28,10 @@ module.exports = (sequelize, DataTypes) => {
                   allowNull: false
                 }
               });
-            models.ReversalRecord.belongsTo(models.CustomerInShop, {
+            models.ReversalRecord.belongsTo(models.CustomerInfo, {
                 onDelete: "CASCADE",
                 foreignKey: {
-                  name: 'CustomerInShopId',
+                  name: 'CustomerId',
                   allowNull: false
                 }
               });

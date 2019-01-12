@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes)=>{
         Phone:{
             type:DataTypes.STRING,
             allowNull:false,
-            unique: true,
+            unique: "phone_shopid",
         },
         Address:{
             type:DataTypes.STRING,
@@ -39,6 +39,15 @@ module.exports = (sequelize, DataTypes)=>{
     });
 
     CustomerInfo.associate = function (models) {
+        models.CustomerInfo.belongsTo(models.ShopInfo, {
+          onDelete: "CASCADE",
+          foreignKey: {
+            name: 'ShopId',
+            allowNull: false,
+            unique: "phone_shopid"
+          }
+        });
+
         models.CustomerInfo.belongsTo(models.CustomerInfo, {
             onDelete: "CASCADE",
             as:"RecommendCustomerInfo",

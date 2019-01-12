@@ -56,12 +56,11 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     CustomerAccountInfo.associate = function (models) {
-        models.CustomerAccountInfo.belongsTo(models.CustomerInShop, {
+        models.CustomerAccountInfo.belongsTo(models.CustomerInfo, {
             onDelete: "CASCADE",
             foreignKey: {
-                name: 'CustomerInShopId',
-                allowNull: false,
-                unique:true
+                name: 'CustomerId',
+                allowNull: false
             }
         });
     };

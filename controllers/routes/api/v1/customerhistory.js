@@ -53,7 +53,11 @@ router.get('/customerhistory', async (req, res) => {
         ]
         }
     };
-    let operateShop = await db.ShopInfo.findById(operateShopId);
+    let operateShop = await db.ShopInfo.findOne({
+        where:{
+            ShopId:operateShopId
+        }
+    });
     let whereCustomer = {
         Phone: phone
     };

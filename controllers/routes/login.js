@@ -11,12 +11,12 @@ const expireTime = 8 * 3600; //seconds
 // Login in
 router.post('/', async function  (req, res, next) {
   let logger = res.locals.logger;
-  logger.info('POST /login');
+  logger.info('enter post /login"');
   let shopId = req.body.ShopId || '';
   let password = req.body.Password || '';
   let db = res.locals.db;
   let redisClient = res.locals.redisClient;
-  logger.info(`shopId:${shopId}`);
+
   if (shopId == '' || password == '') {
     logger.warn("用户名、密码为空");
     res.json({
@@ -26,28 +26,31 @@ router.post('/', async function  (req, res, next) {
     }).end();
     return;
   }  
+  
   else {
-    db.Login.findById(shopId)
-     .then(async login => {
+    db.Login.findOne({
+      where: {
+        Id: shopId
+      }
+    }).then(login => {
       if (login == null) {
-        logger.error(shopId + ": 用户不存在");
+        logger.warn(shopId + ": 用户不存在");
         res.json({
           Error: {
             Message: "用户不存在"
           }
         }).end();
       } else {
-        let shop = await db.ShopInfo.findById(shopId);
-        if (shop.Status != 1) {
-          logger.warn(shopId + "状态不正常");
-          res.json({
-            Error: {
-              Message: `店面状态不正常 Status:${shop.Status}`
-            }
-          }).end();
-          return;
-        }
-        if (login.Password !== password) {
+        // if (login.Status != 1) {
+        //   logger.warn(shopId + "状态不正常");
+        //   res.json({
+        //     Error: {
+        //       Message: `店面状态不正常 Status:${login.Status}`
+        //     }
+        //   }).end();
+        //   return;
+        // }
+        if (login.dataValues.Password !== password) {
           logger.warn(shopId + ": 密码错误");
           res.json({
             Error: {
@@ -68,6 +71,7 @@ router.post('/', async function  (req, res, next) {
             Token: token
           }
         }).end();
+
       }
     }).then(() => {
       logger.info("exit post /login")
