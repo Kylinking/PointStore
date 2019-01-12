@@ -7,6 +7,7 @@ let util = require('../../util/util');
 let https = require('https');
 let SMS = require('../../util/sms');
 let globalConfig = require('../../config/global.json');
+let logger = require('../../log');
 router.post('/login', async function (req, res, next) {
     let code = req.body.Code;
     let db = res.locals.db;
@@ -18,7 +19,7 @@ router.post('/login', async function (req, res, next) {
         https.get(url, (result) => {
             result.on('data', async (buffer) => {
                 let jsonObj = JSON.parse(buffer.toString());
-                console.log(jsonObj);
+                logger.info(jsonObj);
                 if (jsonObj.errcode){
                     res.json({Code:400,Error:{Message:`Code参数错误,errorcode:${jsonObj.errcode},message:${jsonObj.errmsg}`}}).end();
                     return;
@@ -46,7 +47,7 @@ router.post('/login', async function (req, res, next) {
                         json.Array.push(customerInfo);
                     }
                     token = jwt.encode({
-                        WechatId: decoded.WechatId,
+                        WechatId: jsonObj.openid,
                         Phone: customerInfo.Phone
                     }, jwtSecret);
                     res.json({
@@ -72,7 +73,7 @@ router.post('/login', async function (req, res, next) {
     } else if (token) {
         try {
             let decoded = jwt.decode(token, jwtSecret);
-            console.log(decoded);
+            logger.info(decoded);
             let record = await db.WechatUser.findOne({
                 where: {
                     WechatId: decoded.WechatId
@@ -111,7 +112,7 @@ router.post('/login', async function (req, res, next) {
                 }).end();
             }
         } catch (error) {
-            console.log(error);
+            logger.info(error);
             res.json({
                 Code: 400,
                 Error: {
@@ -149,7 +150,7 @@ router.post('/register', async function (req, res, next) {
     }
     try {
         let decoded = jwt.decode(token, jwtSecret);
-        console.log(decoded);
+        logger.info(decoded);
         if (decoded.Phone != phone) {
             res.json({
                 Code: 400,
@@ -244,7 +245,7 @@ router.post('/register', async function (req, res, next) {
             return;
         }
     } catch (error) {
-        console.log(error);
+        logger.info(error);
         res.json({
             Code: 400,
             Error: {
@@ -269,7 +270,7 @@ router.post('/verify', async function (req, res, next) {
         }).end();
         return;
     }
-    console.log(req.ip.toString());
+    logger.info(req.ip.toString());
     const {
         promisify
     } = require('util');
@@ -285,11 +286,11 @@ router.post('/verify', async function (req, res, next) {
         return;
     }
     try {
-        console.log(token);
+        logger.info(token);
         let decoded = jwt.decode(token, jwtSecret);
-        console.log(decoded);
+        logger.info(decoded);
         let verifyCode = GetVerifyCode();
-        console.log(verifyCode);
+        logger.info(verifyCode);
         SMS.sendRegisterMessage(verifyCode, phone);
         redisClient.set(decoded.WechatId, verifyCode);
         redisClient.set(req.ip.toString(), new Date());
@@ -306,7 +307,7 @@ router.post('/verify', async function (req, res, next) {
             }
         }).end();
     } catch (error) {
-        console.log(error);
+        logger.error(error);
         res.json({
             Code: 400,
             Error: {
