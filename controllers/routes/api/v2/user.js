@@ -13,7 +13,7 @@ router.post('/users', async (req, res, next) => {
     res.status(response.status).json(response.content).end();
 });
 
-router.patch('/users/:id', async (req, res, next) => {
+router.put('/users/:id', async (req, res, next) => {
     let conditions = res.locals.requestInfo.conditions;
     logger.info(conditions);
     let user = new User({
