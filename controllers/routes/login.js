@@ -59,8 +59,8 @@ router.post('/', async function  (req, res, next) {
         var token = jwt.encode({
           shopid: shopId
         }, jwtSecret);
-        redisClient.set(String(shopId), token,expireTime);
-       // redisClient.expire(String(shopId), expireTime);
+        redisClient.set(String(shopId), token);
+        redisClient.expire(String(shopId), expireTime);
         logger.info(shopId + ": 登录成功");
         res.json({
           Object: {
