@@ -23,18 +23,35 @@ const Auth = class {
     async Login() {
         const user = await new User(this._name).InitAsync();
         if (user && user.password == this._password) {
+            let relationships = [{
+                "user": user.resourceIdentify
+            }, ];
             let shop = await (new Shop(user.shopId)).InitAsync();
+            relationships.push({
+                "shop": shop.resourceIdentify
+            });
+            let roles = await user.GetRoles();
+            for (let i of roles) {
+                relationships.push({
+                    "role": i.resourceIdentify
+                });
+            }
             return {
                 success: true,
                 status: 200,
-                response: {
-                    token: this.EncodeToken({
-                        userid: user.id,
-                        username: user.name,
-                        role: user.roleNames,
-                        shop: user.shopId
-                    })
-                }
+                response: Utility.MakeResponse({
+                    id: 0,
+                    type: 'auth',
+                    attributes: {
+                        token: this.EncodeToken({
+                            userid: user.id,
+                            username: user.name,
+                            role: user.roleNames,
+                            shop: user.shopId
+                        })
+                    },
+                    relationships: relationships
+                })
             }
         } else {
             return {
@@ -83,7 +100,7 @@ const Auth = class {
             }
             let user = await new User(username).InitAsync();
             let permissions = await user.GetPermissions();
-
+            
         } else {
             return invalidTokenResponse('Unauthorized', 'token无效');
         }
