@@ -407,7 +407,7 @@ router.post('/history', async function (req, res, next) {
                 result.Code = 200;
                 res.json(result).end();
             } else {
-                res.status(400).json({
+                res.json({
                     Code: 400,
                     Error: {
                         Message: "Token无效"

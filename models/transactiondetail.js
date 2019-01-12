@@ -57,6 +57,40 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   TransactionDetail.associate = function (models) {
+
+    models.TransactionDetail.belongsTo(models.CustomerInShop, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: 'CustomerInShopId',
+        allowNull: false
+      }
+    });
+
+    models.TransactionDetail.belongsTo(models.CustomerInShop, {
+      onDelete: "CASCADE",
+      as: 'RecommendCustomer',
+      foreignKey: {
+        name: 'RecommendCustomerInShopId',
+        allowNull: true
+      }
+    });
+    models.TransactionDetail.belongsTo(models.CustomerInShop, {
+      onDelete: "CASCADE",
+      as: 'IndirectRecommendCustomer',
+      foreignKey: {
+        name: 'IndirectRecommendCustomerInShopId',
+        allowNull: true
+      }
+    });
+    models.TransactionDetail.belongsTo(models.CustomerInShop, {
+      onDelete: "CASCADE",
+      as: 'ThirdRecommendCustomer',
+      foreignKey: {
+        name: 'ThirdRecommendCustomerInShopId',
+        allowNull: true
+      }
+    });
+
       models.TransactionDetail.belongsTo(models.TransactionDetail, {
         onDelete: "CASCADE",
         foreignKey: {

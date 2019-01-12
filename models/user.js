@@ -22,5 +22,23 @@ module.exports = (sequelize, DataTypes) => {
         updatedAt: 'UpdatedAt',
         createdAt: 'CreatedAt'
     });
+    User.associate = function (models) {
+        User.hasOne(models.ShopInfo, {
+            onDelete: "CASCADE",
+            foreignKey: {
+                name: 'UserId',
+                allowNull: false,
+                unique:true
+            }
+        });
+        User.hasOne(models.CustomerInfo, {
+            onDelete: "CASCADE",
+            foreignKey: {
+                name: 'UserId',
+                allowNull: false,
+                unique:true
+            }
+        });
+    }
     return User;
 }

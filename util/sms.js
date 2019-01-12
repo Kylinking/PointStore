@@ -14,9 +14,6 @@ let SMS = {
         log.info(i);
     }
     return "ok";
-    phone = testSmsPhone;
-    if (phone.length < 11 || phone.slice(0,1) != '1')
-    return;
     let smsClient = new SMSClient({
         accessKeyId,
         secretAccessKey
