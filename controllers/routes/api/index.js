@@ -29,8 +29,8 @@ router.use(
     async (req, res, next) => {
             let auth = new Auth();
             let result = await auth.Authenticate(req, res);
-            //next()
-            result.success ? next() : next(result);
+            next()
+            //result.success ? next() : next(result);
         },
         parseRequest,
         apis
