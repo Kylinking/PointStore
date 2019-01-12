@@ -2,11 +2,11 @@
 
 var express = require('express');
 var router = express.Router();
-let Unility = require('../../../../classes/utility');
-let Auth = require('../../../../classes/auth');
-router.post('/token', async function (req, res, next) {
+let Unility = require('../../classes/utility');
+let Auth = require('../../classes/auth');
+router.post('/', async function (req, res, next) {
   let logger = res.locals.logger;
-  logger.info('POST /token');
+  logger.info('POST /login');
   let phone = req.body.phone || '';
   let username = req.body.username || '';
   username = phone;
@@ -26,13 +26,6 @@ router.post('/token', async function (req, res, next) {
   }
 });
 
-router.post('/refresh', async function (req, res, next) {
-  let logger = res.locals.logger;
-  logger.info('POST /refresh');
-  let auth = new Auth();
-  let response = auth.Refresh(req.headers);
-  res.status(response.status).json(response.response).end();
-});
 router.use('/', (req, res) => {
   res.json({
     Error: {

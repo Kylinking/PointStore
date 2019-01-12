@@ -3,7 +3,7 @@ const Utility = require('./utility');
 const Shop = require('./shops');
 const jwt = require('jwt-simple');
 const jwtSecret = require('../config/global.json').jwtSecret;
-const expireDuration = 5 * 60; // 5*60s
+const expireDuration = 60; // 5*60s
 const logger = require('../log');
 const httpStatusCode = require('./htt_status_code');
 const Auth = class {
@@ -28,7 +28,7 @@ const Auth = class {
                 success: true,
                 status: 200,
                 response: {
-                    token: this._EncodeToken({
+                    token: this.EncodeToken({
                         userid: user.id,
                         username: user.name,
                         role: user.roleNames,
@@ -48,32 +48,22 @@ const Auth = class {
         }
     }
 
-    Refresh(body) {
-        let token = body.token;
-        if (token) {
-            let refreshToken = this._RefreshToken(token);
-            if (refreshToken.jwterror) {
-                return this._InvalidTokenResponse('Unauthorized', refreshToken.jwterror);
-            }
-            return {
-                success: true,
-                status: 200,
-                response: {
-                    token: refreshToken
-                }
-            };
-        } else {
-            return this._InvalidTokenResponse('Unauthorized', 'token无效');
-        }
-    }
+
 
     async Authenticate(req, res) {
-        const token = this._GetTokenFromHeader(req.headers);
+        const token = this.GetTokenFromHeader(req.headers);
         if (!token) {
-            return this._InvalidTokenResponse('Unauthorized', 'token 无效');
+            console.log('!token');
+            return this.invalidTokenResponse('Unauthorized', 'token 无效');
         }
-        let decodedToken = this._DecodeToken(token);
-        if (!decodedToken.jwterror) {
+        let decodedToken;
+        try {
+            decodedToken = this.DecodeToken(token);
+        } catch (jwterror) {
+            logger.warn(jwterror);
+            return this.invalidTokenResponse('Unauthorized', 'token 无效');
+        }
+        if (decodedToken && !decodedToken.jwterror) {
             let {
                 iat,
                 exp,
@@ -87,16 +77,20 @@ const Auth = class {
             };
             logger.info(`iat:${iat},exp:${exp},userid:${userid},roles:${roles},
                          username:${username},shop:${shop},customer:${customer}`)
+            const now = Date.parse(new Date()) / 1000;
+            if (now - iat > expire) {
+                logger.warn(`过期token: now - iat:${now - iat} > expire:${expire}`);
+                return this.invalidTokenResponse('Unauthorized', 'token已过期');
+            }
             let user = await new User(username).InitAsync();
             let permissions = await user.GetPermissions();
 
         } else {
-            logger.warn(decodedToken);
-            return this._InvalidTokenResponse('Unauthorized', decodedToken.jwterror);
+            return this.invalidTokenResponse('Unauthorized', 'token无效');
         }
     }
 
-    _InvalidTokenResponse(status, detail) {
+    invalidTokenResponse(status, detail) {
         return {
             success: false,
             status: httpStatusCode[status],
@@ -106,8 +100,9 @@ const Auth = class {
             })
         }
     }
+    // 无效token 对象 
 
-    _GetTokenFromHeader(header) {
+    GetTokenFromHeader(header) {
         if (!header || !header.authorization) {
             return undefined;
         }
@@ -119,7 +114,27 @@ const Auth = class {
         return array[1];
     }
 
-    _DecodeToken(token) {
+    Refresh(headers) {
+        let token = this.GetTokenFromHeader(headers);
+        console.log(token);
+        if (token) {
+            let refreshToken = this.RefreshToken(token);
+            if (refreshToken.jwterror) {
+                return this.invalidTokenResponse('Unauthorized', refreshToken.jwterror);
+            }
+            return {
+                success: true,
+                status: 200,
+                response: {
+                    token: refreshToken
+                }
+            };
+        } else {
+            return this.invalidTokenResponse('Unauthorized', 'token无效');
+        }
+    }
+
+    DecodeToken(token) {
         try {
             return jwt.decode(token, jwtSecret);
         } catch (error) {
@@ -134,13 +149,11 @@ const Auth = class {
             };
         }
     }
-
     _EncodePayload(payload) {
         return jwt.encode(payload, jwtSecret);
     }
-
     // 小程序端token无失效时间，店铺端失效时间为5分钟
-    _EncodeToken(params, expire = expireDuration) {
+    EncodeToken(params, expire = expireDuration) {
         // jwt time count as seconds not millseconds
         const date = Date.parse(new Date()) / 1000;
         const payload = Object.assign(params, {
@@ -151,8 +164,8 @@ const Auth = class {
         return this._EncodePayload(payload);
     }
 
-    _RefreshToken(token, expire = expireDuration) {
-        let tokenBody = this._DecodeToken(token);
+    RefreshToken(token, expire = expireDuration) {
+        let tokenBody = this.DecodeToken(token);
         if (tokenBody.jwterror) {
             return tokenBody;
         }

@@ -14,7 +14,6 @@ let Role = class extends Model {
     // property area end
     // ======================================
     async GetPermissionsAsync() {
-        let permissions = [];
         let records = await this.role.getPermissions();
         for (let permission of records) {
             permissions.push(permission.toJSON());
