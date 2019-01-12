@@ -3,7 +3,7 @@ const Utility = require('./utility');
 const Shop = require('./shops');
 const jwt = require('jwt-simple');
 const jwtSecret = require('../config/global.json').jwtSecret;
-const expireDuration = 60; // 5*60s
+const expireDuration = 5 * 60; // 5*60s
 const logger = require('../log');
 const httpStatusCode = require('./htt_status_code');
 const Auth = class {
@@ -51,22 +51,21 @@ const Auth = class {
 
 
     async Authenticate(req, res) {
-        const token = this.GetTokenFromHeader(req.headers);
+        const token = this.GetTokenFromHeader(req.header);
         if (!token) {
-            console.log('!token');
-            return this.invalidTokenResponse('Unauthorized', 'token 无效');
+            return invalidTokenResponse('Unauthorized', 'token 无效');
         }
         let decodedToken;
         try {
             decodedToken = this.DecodeToken(token);
         } catch (jwterror) {
             logger.warn(jwterror);
-            return this.invalidTokenResponse('Unauthorized', 'token 无效');
+            return invalidTokenResponse('Unauthorized', 'token 无效');
         }
         if (decodedToken && !decodedToken.jwterror) {
             let {
                 iat,
-                exp,
+                expire,
                 userid,
                 username,
                 roles,
@@ -75,18 +74,18 @@ const Auth = class {
             } = {
                 ...decodedToken
             };
-            logger.info(`iat:${iat},exp:${exp},userid:${userid},roles:${roles},
+            logger.info(`iat:${iat},expire:${expire},userid:${userid},roles:${roles},
                          username:${username},shop:${shop},customer:${customer}`)
             const now = Date.parse(new Date()) / 1000;
             if (now - iat > expire) {
                 logger.warn(`过期token: now - iat:${now - iat} > expire:${expire}`);
-                return this.invalidTokenResponse('Unauthorized', 'token已过期');
+                return invalidTokenResponse('Unauthorized', 'token已过期');
             }
             let user = await new User(username).InitAsync();
             let permissions = await user.GetPermissions();
 
         } else {
-            return this.invalidTokenResponse('Unauthorized', 'token无效');
+            return invalidTokenResponse('Unauthorized', 'token无效');
         }
     }
 
@@ -103,35 +102,21 @@ const Auth = class {
     // 无效token 对象 
 
     GetTokenFromHeader(header) {
-        if (!header || !header.authorization) {
+        if (!header || !header.Authentication) {
             return undefined;
         }
-        let array = header.authorization.split(' ');
-        console.log(array)
+        let array = header.Authentication.split(' ');
         if (array.length != 2) {
             return undefined;
         }
         return array[1];
     }
 
-    Refresh(headers) {
-        let token = this.GetTokenFromHeader(headers);
-        console.log(token);
-        if (token) {
-            let refreshToken = this.RefreshToken(token);
-            if (refreshToken.jwterror) {
-                return this.invalidTokenResponse('Unauthorized', refreshToken.jwterror);
-            }
-            return {
-                success: true,
-                status: 200,
-                response: {
-                    token: refreshToken
-                }
-            };
-        } else {
-            return this.invalidTokenResponse('Unauthorized', 'token无效');
-        }
+    Refresh(token) {
+        const redisClient = require('../models').redisClient;
+        const redisGetAsync = Utility.MakeAsyncRedisMethod(redisClient.get, redisClient);
+
+
     }
 
     DecodeToken(token) {
@@ -141,11 +126,11 @@ const Auth = class {
             //console.log(error.message);
             if (error.message == 'Token expired') {
                 return {
-                    jwterror: 'token过期'
+                    jwterror: error.message
                 };
             }
             return {
-                jwterror: 'token无效'
+                jwterror: 'Token invalid'
             };
         }
     }
@@ -158,7 +143,7 @@ const Auth = class {
         const date = Date.parse(new Date()) / 1000;
         const payload = Object.assign(params, {
             iat: date,
-            exp: expire + date,
+            expire: expire + date,
             sub: "Authentication"
         });
         return this._EncodePayload(payload);
