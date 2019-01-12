@@ -44,6 +44,13 @@ module.exports = (sequelize, DataTypes) => {
     createdAt: 'CreatedAt'
   });
   ShopAccountChange.associate = function (models) {
+    models.ShopAccountChange.belongsTo(models.ShopInfo, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: 'ShopId',
+        allowNull: false
+      }
+    });
     models.ShopAccountChange.belongsTo(models.TransactionDetail, {
       onDelete: "CASCADE",
       foreignKey: {

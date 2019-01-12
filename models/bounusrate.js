@@ -37,5 +37,14 @@ module.exports = (sequelize, DataTypes)=>{
         updatedAt:'UpdatedAt',
         createdAt:'CreatedAt'
     });
+    BounusPointRate.associate = function (models) {
+        models.BounusPointRate.belongsTo(models.ShopInfo, {
+          onDelete: "CASCADE",
+          foreignKey: {
+            name: 'ShopId',
+            allowNull: false
+          }
+        });
+    };
     return BounusPointRate;
 };

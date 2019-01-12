@@ -38,13 +38,6 @@ module.exports = (sequelize, DataTypes)=>{
     });
 
     CustomerInfo.associate = function (models) {
-        models.CustomerInfo.belongsToMany(models.ShopInfo, {
-            through:'CustomerInShop',
-            foreignKey: {
-                name: 'ShopId',
-                allowNull: false
-            }
-        });
         models.CustomerInfo.belongsTo(models.CustomerInfo, {
             onDelete: "CASCADE",
             as:"RecommendCustomerInfo",
@@ -53,7 +46,6 @@ module.exports = (sequelize, DataTypes)=>{
               allowNull: true
             }
           });
-          
       };
     return CustomerInfo;
 }

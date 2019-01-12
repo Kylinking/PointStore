@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        // ChargedPoints:{
+        //     type:DataTypes.INTEGER,
+        //     allowNull:false,
+        // },
         ShopBounusPoints:{
             type:DataTypes.INTEGER,
             allowNull:false,
@@ -29,5 +33,15 @@ module.exports = (sequelize, DataTypes) => {
         updatedAt:'UpdatedAt',
         createdAt:'CreatedAt'
     });
+
+    ShopAccountInfo.associate = function (models) {
+        models.ShopAccountInfo.belongsTo(models.ShopInfo, {
+          onDelete: "CASCADE",
+          foreignKey: {
+            name:"ShopId",
+            allowNull: false
+          }
+        });
+      };
    return ShopAccountInfo;
 }

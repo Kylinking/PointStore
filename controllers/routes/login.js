@@ -4,61 +4,118 @@ var express = require('express');
 var router = express.Router();
 var jwt = require('jwt-simple');
 var jwtSecret = require('../../config/global.json').jwtSecret;
-var redisClient = require('../../models').redisClient;
-const expireTime = 6000; //seconds
-const expireCount = 5;
-let User = require('../../classes/user');
+let util = require('../../util/util');
+//TODO: Take expire time
+const expireTime = 8 * 3600; //seconds
+
 // Login in
-router.post('/', async function (req, res, next) {
+router.post('/', async function  (req, res, next) {
   let logger = res.locals.logger;
   logger.info('POST /login');
-  let username = req.body.Username || '';
+  let shopId = req.body.ShopId || '';
   let password = req.body.Password || '';
-  logger.info(`username:${username}`);
-  if (username == '' || password == '') {
+  let db = res.locals.db;
+  let redisClient = res.locals.redisClient;
+  logger.info(`shopId:${shopId}`);
+  if (shopId == '' || password == '') {
     logger.warn("用户名、密码为空");
-    next("用户名、密码不能为空");
-    return;
-  } else {
-    let user = await new User(username);
-    await user.InitAsync();
-    if (!user.isExist) {
-      logger.error(username + ": 用户不存在");
-      next('用户不存在');
-    } else {
-      if (!user.CheckPassword(password)) {
-        logger.warn(username + ": 密码错误");
-        next('密码错误');
-        return;
+    res.json({
+      Error: {
+        Message: "用户名、密码不能为空"
       }
-      let date = Date.parse(new Date());
-      let token = GenerateToken({date,user},jwtSecret);
-      CacheTimestamp(date,expireTime);
-      logger.info(username + ": 登录成功");
-      res.json({
-        Object: {
-          Token: token
+    }).end();
+    return;
+  }  
+  else {
+    db.Login.findById(shopId)
+     .then(async login => {
+      if (login == null) {
+        logger.error(shopId + ": 用户不存在");
+        res.json({
+          Error: {
+            Message: "用户不存在"
+          }
+        }).end();
+      } else {
+        let shop = await db.ShopInfo.findById(shopId);
+        if (shop.Status != 1) {
+          logger.warn(shopId + "状态不正常");
+          res.json({
+            Error: {
+              Message: `店面状态不正常 Status:${shop.Status}`
+            }
+          }).end();
+          return;
         }
-      }).end();
-    }
+        if (login.Password !== password) {
+          logger.warn(shopId + ": 密码错误");
+          res.json({
+            Error: {
+              Message: "密码错误"
+            }
+          }).end();
+          return;
+        }
+        var token = jwt.encode({
+          shopid: shopId
+        }, jwtSecret);
+        redisClient.set(String(shopId), token,expireTime);
+       // redisClient.expire(String(shopId), expireTime);
+        logger.info(shopId + ": 登录成功");
+        res.json({
+          Object: {
+            Message: "Login Success!",
+            Token: token
+          }
+        }).end();
+      }
+    }).then(() => {
+      logger.info("exit post /login")
+    })
   }
 });
 
+// router.patch('/',async function  (req, res, next){
+//   let logger = res.locals.logger;
+//   logger.info('enter post /login"');
+//   let operateShopId = res.locals.shopid;
+//   let queryShopId = util.makeNumericValue(req.query.ShopId, null);
+//   let password = req.body.Password || '';
+//   let newPassword = req.body.NewPassword || '';
+//   let db = res.locals.db;
+//   if (String(newPassword).length < 5){
+//     res.json({Error:{Message:"密码过短！密码长度须大于5."}}).end();
+//     return;
+//   }
+//   try{
+//   let whereObj = {};
+//   let operatedShop = await util.getShopByIdAsync(operatedShopId);
+//   let queryShop = await util.getShopByIdAsync(queryShopId);
+//   switch(operatedShop.Type){
+//      case 0:
+//      break;
+//      case 1:
+//       let login = db.Login.findOne({
+//         where:{Id:operateShopId}
+//       });
+//       if (queryShop.ParentShopId == operateShopId){
+//          whereObj.Id = queryShopId;
+//       }else{
+//         throw "无权重置该分店密码。";
+//       }
+//      break;
+//      default:
+//         if (queryShopId != operatedShopId){
+//           throw "无权设置其它分店密码。";
+//         }
+//      break;
+//   }
+// }catch(error){
 
-// api入口处需重新生成token并令现有的token过期
-function GenerateToken(params,jwtSecret)
-{
-  const {user,date} = {...params};
-  return jwt.encode({
-    user: user.toJSON(),
-    timeStamp: date
-  }, jwtSecret);
-}
+// }
 
-function CacheTimestamp(date,expireTime){
-  redisClient.set(String(date), expireCount);
-  redisClient.expire(String(date), expireTime);
-}
+// });
+
 
 router.use('/', (req, res) => {
   res.json({
@@ -68,8 +125,5 @@ router.use('/', (req, res) => {
   }).end();
 })
 
-router.use('/',(err,req,res,next)=>{
-  next(err);
-})
-
 module.exports = router;
+

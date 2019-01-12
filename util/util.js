@@ -168,7 +168,7 @@ var util = {
         return obj;
     },
     BuildDatabase:async function(){
-        await db.sequelize.sync({force:true});
+        await db.sequelize.sync({force:false});
     },
 }
 module.exports = util;

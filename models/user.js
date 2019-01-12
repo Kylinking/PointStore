@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         Role: {
-            type: DataTypes.JSON,
+            type: DataTypes.TEXT,
             allowNull: false,
         },
         Password: {
@@ -22,23 +22,5 @@ module.exports = (sequelize, DataTypes) => {
         updatedAt: 'UpdatedAt',
         createdAt: 'CreatedAt'
     });
-    User.associate = function (models) {
-        User.hasOne(models.ShopInfo, {
-            onDelete: "CASCADE",
-            foreignKey: {
-                name: 'UserId',
-                allowNull: false,
-                unique:true
-            }
-        });
-        User.hasOne(models.CustomerInfo, {
-            onDelete: "CASCADE",
-            foreignKey: {
-                name: 'UserId',
-                allowNull: false,
-                unique:true
-            }
-        });
-    }
     return User;
 }
